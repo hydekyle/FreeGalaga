@@ -17,7 +17,13 @@ public class GameManager : MonoBehaviour
 
     private void Start ()
     {
+        StartGame ();
+    }
+
+    public void StartGame ()
+    {
         activeGame = true;
+        AudioManager.Instance.StartMusic ();
     }
 
     public void GameOver ()

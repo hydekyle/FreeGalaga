@@ -10,6 +10,8 @@ public class Player : MonoBehaviour
     EZObjectPool playerShots;
     float lastTimeShot;
     float minPosX = -5f, maxPosX = 5f, minPosY = -4.5f, maxPosY = -2.5f;
+    AudioSource audioSource;
+    AudioClip shotAudioClip;
 
     private void Start ()
     {
@@ -18,6 +20,8 @@ public class Player : MonoBehaviour
 
     void Initialize ()
     {
+        shotAudioClip = AudioManager.Instance.scriptableSounds.basicShot;
+        audioSource = GetComponent<AudioSource> ();
         playerShots = EZObjectPool.CreateObjectPool (playerShot, "PlayerShots", 4, true, true, true);
     }
 
@@ -35,6 +39,7 @@ public class Player : MonoBehaviour
         {
             go.GetComponent<Rigidbody2D> ().velocity = Vector2.up * stats.shootSpeed * 10;
             lastTimeShot = Time.time;
+            audioSource.PlayOneShot (shotAudioClip);
         }
     }
 

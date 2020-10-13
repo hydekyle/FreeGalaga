@@ -5,5 +5,5 @@ using UnityEngine;
 [CreateAssetMenu ()]
 public class ScriptableEnemies : ScriptableObject
 {
-    public List<EnemyModel> enemies = new List<EnemyModel> ();
+    public List<EnemyModel> enemigos = new List<EnemyModel> ();
 }
