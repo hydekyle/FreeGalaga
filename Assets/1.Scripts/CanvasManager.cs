@@ -7,8 +7,9 @@ public class CanvasManager : MonoBehaviour
 {
     public static CanvasManager Instance;
     public int score = 0;
-    public Text scoreText, livesText;
+    public Text scoreText, livesText, levelText;
     public Image levelBackground;
+    public Image barImage;
 
     private void Awake ()
     {
@@ -25,6 +26,16 @@ public class CanvasManager : MonoBehaviour
     public void SetBackground (Sprite sprite)
     {
         levelBackground.sprite = sprite;
+    }
+
+    public void SetLevelNumber (int levelNumber)
+    {
+        levelText.text = levelNumber.ToString ();
+    }
+
+    public void SetBarColor (Color color)
+    {
+        barImage.color = color;
     }
 
 }

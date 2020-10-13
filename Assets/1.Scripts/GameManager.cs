@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     public Player player;
     public bool gameIsActive = false;
     public int activeLevelNumber = 0;
+    public ScriptableLevels levelsTables;
 
     private void Awake ()
     {
@@ -29,6 +30,36 @@ public class GameManager : MonoBehaviour
     public void LoadNextLevel ()
     {
         LoadLevel (++activeLevelNumber);
+    }
+
+    void LoadLevel (int levelNumber)
+    {
+        Sprite background;
+        float animationSpeed;
+
+        switch (levelNumber)
+        {
+            case 2:
+                background = levelsTables.backgroundLevel2;
+                animationSpeed = levelsTables.animSpeed2;
+                break;
+            default:
+                background = levelsTables.backgroundLevel1;
+                animationSpeed = levelsTables.animSpeed1;
+                break;
+        }
+
+        CanvasManager.Instance.SetBackground (background);
+        EnemiesManager.Instance.LoadEnemies ();
+        EnemiesManager.Instance.SetAnimationSpeed (animationSpeed);
+        CanvasManager.Instance.SetLevelNumber (levelNumber);
+        CanvasManager.Instance.SetBarColor (GetColorByLevel (levelNumber));
+    }
+
+    public void LevelCompleted ()
+    {
+        gameIsActive = false;
+        Invoke ("LoadNextLevel", 1f);
     }
 
     public void GameOver ()
@@ -56,34 +87,29 @@ public class GameManager : MonoBehaviour
         return activeLevelNumber;
     }
 
-    public ScriptableLevels levelsTables;
-
-    void LoadLevel (int levelNumber)
+    Color GetColorByLevel (int levelNumber)
     {
-        Sprite background;
-        float animationSpeed;
-
+        Color color;
         switch (levelNumber)
         {
+            case 1:
+                color = levelsTables.barColorLevel1;
+                break;
             case 2:
-                background = levelsTables.backgroundLevel2;
-                animationSpeed = levelsTables.animSpeed2;
+                color = levelsTables.barColorLevel2;
+                break;
+            case 3:
+                color = levelsTables.barColorLevel3;
+                break;
+            case 4:
+                color = levelsTables.barColorLevel4;
                 break;
             default:
-                background = levelsTables.backgroundLevel1;
-                animationSpeed = levelsTables.animSpeed1;
+                color = levelsTables.barColorLevelFinal;
                 break;
         }
-
-        CanvasManager.Instance.SetBackground (background);
-        EnemiesManager.Instance.LoadEnemies ();
-        EnemiesManager.Instance.SetAnimationSpeed (animationSpeed);
-    }
-
-    public void LevelCompleted ()
-    {
-        gameIsActive = false;
-        Invoke ("LoadNextLevel", 1f);
+        color.a = 1;
+        return color;
     }
 
 }
