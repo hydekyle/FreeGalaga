@@ -8,6 +8,7 @@ public class CanvasManager : MonoBehaviour
     public static CanvasManager Instance;
     public int score = 0;
     public Text scoreText, livesText;
+    public Image levelBackground;
 
     private void Awake ()
     {
@@ -19,6 +20,11 @@ public class CanvasManager : MonoBehaviour
     {
         score += value;
         scoreText.text = score.ToString ();
+    }
+
+    public void SetBackground (Sprite sprite)
+    {
+        levelBackground.sprite = sprite;
     }
 
 }

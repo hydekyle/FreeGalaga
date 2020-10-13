@@ -213,7 +213,7 @@ GameObject:
   - component: {fileID: 123178028}
   - component: {fileID: 123178027}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -596,10 +596,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ad072fab273afb4b90b5fda7d167df9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rows: 6
-  columns: 10
+  rows: 3
+  columns: 3
   enemyPrefab: {fileID: 1618572500841612074, guid: 84a035e41eb8f3740824701f6ee60ddb, type: 3}
-  enemiesTransformParent: {fileID: 1515216073}
+  enemiesT: {fileID: 1515216073}
   enemiesTable: {fileID: 11400000, guid: 95d1818983f557146abd6e3283eddd24, type: 2}
 --- !u!4 &488060943
 Transform:
@@ -669,8 +669,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -250.5, y: -301.1}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: -249.88228, y: -301.1}
+  m_SizeDelta: {x: 87.8091, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &499686972
 MonoBehaviour:
@@ -1949,6 +1949,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 911732566}
   activeGame: 0
+  activeLevelNumber: 0
   levelsTables: {fileID: 11400000, guid: ae0b94fa7657c85438c53ca0847ed761, type: 2}
 --- !u!4 &2140480312
 Transform:

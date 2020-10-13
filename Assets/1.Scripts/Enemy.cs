@@ -45,11 +45,17 @@ public class Enemy : MonoBehaviour
         alive = false;
         CanvasManager.Instance.AddScore (100);
         gameObject.SetActive (false);
+        EnemiesManager.Instance.EnemyDestroyed (this);
     }
 
     public void ChasePlayer ()
     {
+        print ("Distance: " + Mathf.FloorToInt (Vector3.Distance (transform.position, playerT.position)));
+        int velocity = stats.movementVelocity * Mathf.FloorToInt (Vector3.Distance (transform.position, playerT.position)) / 10;
+        velocity = Mathf.Clamp (velocity, 1, 6);
+        stats.movementVelocity = velocity;
         chasingPlayer = true;
         transform.parent = null;
+        GetComponent<SpriteRenderer> ().sortingOrder = 1;
     }
 }

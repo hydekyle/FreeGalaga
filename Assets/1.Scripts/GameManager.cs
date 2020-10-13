@@ -7,7 +7,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public Player player;
-    public bool activeGame = false;
+    public bool gameIsActive = false;
+    public int activeLevelNumber = 0;
 
     private void Awake ()
     {
@@ -22,26 +23,68 @@ public class GameManager : MonoBehaviour
 
     public void StartGame ()
     {
-        activeGame = true;
         AudioManager.Instance.StartMusic ();
+        LoadLevel (++activeLevelNumber);
+    }
+
+    public void LoadNextLevel ()
+    {
+        gameIsActive = false;
+        LoadLevel (++activeLevelNumber);
     }
 
     public void GameOver ()
     {
         player.gameObject.SetActive (false);
         EnemiesManager.Instance.StopEnemies ();
-        activeGame = false;
+        gameIsActive = false;
     }
 
     private void Update ()
     {
-        if (!activeGame && Input.GetKeyDown (KeyCode.Mouse0)) RestartLevel ();
-        if (Input.GetKeyDown (KeyCode.F1)) EnemiesManager.Instance.MakeCrazyEnemy ();
+        if (Input.GetKey (KeyCode.Mouse0) && gameIsActive) player.Disparar ();
+        if (Input.GetKeyDown (KeyCode.Mouse0) && !player.gameObject.activeSelf) RestartLevel ();
+        if (Input.GetKeyDown (KeyCode.Mouse1)) EnemiesManager.Instance.MakeCrazyEnemy ();
     }
 
     public void RestartLevel ()
     {
-        SceneManager.LoadScene (0);
+        player.gameObject.SetActive (true);
+        LoadLevel (activeLevelNumber);
+    }
+
+    public int GetLevelNumber ()
+    {
+        return activeLevelNumber;
+    }
+
+    public ScriptableLevels levelsTables;
+
+    void LoadLevel (int levelNumber)
+    {
+        Sprite background;
+        float animationSpeed;
+
+        switch (levelNumber)
+        {
+            case 2:
+                background = levelsTables.backgroundLevel2;
+                animationSpeed = levelsTables.animSpeed2;
+                break;
+            default:
+                background = levelsTables.backgroundLevel1;
+                animationSpeed = levelsTables.animSpeed1;
+                break;
+        }
+
+        CanvasManager.Instance.SetBackground (background);
+        EnemiesManager.Instance.LoadEnemies ();
+        EnemiesManager.Instance.SetAnimationSpeed (animationSpeed);
+    }
+
+    public void LevelCompleted ()
+    {
+        LoadNextLevel ();
     }
 
 }

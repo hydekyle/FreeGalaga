@@ -12,22 +12,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 383ecd4de136bc045ba28bef88d12898, type: 3}
   m_Name: Enemigos
   m_EditorClassIdentifier: 
-  enemies:
-  - sprite: {fileID: 0}
+  level1:
+  - sprite: {fileID: -3737660375136226851, guid: b066ced6ae40c344189d0d4fc76a597a, type: 3}
     name: 
     stats:
-      health: 0
-      velocity: 0
-      special: 0
-  - sprite: {fileID: 0}
+      health: 5
+      damage: 1
+      movementVelocity: 1
+      shootCooldown: 1
+      shootSpeed: 1
+  - sprite: {fileID: -301290188327071341, guid: b066ced6ae40c344189d0d4fc76a597a, type: 3}
     name: 
     stats:
-      health: 0
-      velocity: 0
-      special: 0
-  - sprite: {fileID: 0}
+      health: 11
+      damage: 4
+      movementVelocity: 2
+      shootCooldown: 4
+      shootSpeed: 4
+  level2:
+  - sprite: {fileID: -3391789765007776365, guid: 1a112f4a173160f4abfebd63e7cf1104, type: 3}
     name: 
     stats:
-      health: 0
-      velocity: 0
-      special: 0
+      health: 11
+      damage: 11
+      movementVelocity: 3
+      shootCooldown: 11
+      shootSpeed: 11
+  - sprite: {fileID: 1721019896616348300, guid: 1a112f4a173160f4abfebd63e7cf1104, type: 3}
+    name: 
+    stats:
+      health: 11
+      damage: 11
+      movementVelocity: 4
+      shootCooldown: 11
+      shootSpeed: 11

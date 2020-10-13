@@ -12,10 +12,12 @@ public class Player : MonoBehaviour
     float minPosX = -5f, maxPosX = 5f, minPosY = -4.5f, maxPosY = -2.5f;
     AudioSource audioSource;
     AudioClip shotAudioClip;
+    Transform gunPoint;
 
     private void Start ()
     {
         Initialize ();
+        gunPoint = transform.Find ("GunPoint");
     }
 
     void Initialize ()
@@ -29,13 +31,11 @@ public class Player : MonoBehaviour
     {
         transform.position += new Vector3 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical"), 0) * Time.deltaTime * stats.movementVelocity;
         transform.position = new Vector3 (Mathf.Clamp (transform.position.x, minPosX, maxPosX), Mathf.Clamp (transform.position.y, minPosY, maxPosY), 0);
-
-        if (Input.GetKey (KeyCode.Mouse0) && isShootAvailable ()) Disparar ();
     }
 
-    void Disparar ()
+    public void Disparar ()
     {
-        if (playerShots.TryGetNextObject (transform.position, Quaternion.identity, out GameObject go))
+        if (isShootAvailable () && playerShots.TryGetNextObject (gunPoint.transform.position, Quaternion.identity, out GameObject go))
         {
             go.GetComponent<Rigidbody2D> ().velocity = Vector2.up * stats.shootSpeed * 10;
             lastTimeShot = Time.time;
