@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using EZObjectPools;
 
 public class EnemiesManager : MonoBehaviour
 {
@@ -10,10 +11,13 @@ public class EnemiesManager : MonoBehaviour
     float animationSpeed = 1;
 
     public GameObject enemyPrefab;
+    public GameObject explosionPrefab;
     public Transform enemiesT;
     Vector3 defaultPosEnemies;
     Animator enemiesAnimator;
     List<Enemy> enemiesList = new List<Enemy> ();
+
+    EZObjectPool explosionsPool;
 
     public ScriptableEnemies enemiesTable;
 
@@ -28,8 +32,14 @@ public class EnemiesManager : MonoBehaviour
 
     private void Start ()
     {
+        Initialize ();
+    }
+
+    void Initialize ()
+    {
         defaultPosEnemies = enemiesT.localPosition;
         enemiesAnimator = enemiesT.parent.GetComponent<Animator> ();
+        explosionsPool = EZObjectPool.CreateObjectPool (explosionPrefab, "Explosiones", 4, true, true, true);
     }
 
     public void LoadEnemies ()
@@ -63,7 +73,7 @@ public class EnemiesManager : MonoBehaviour
                 go.SetActive (true);
                 enemiesList.Add (enemy);
                 enemiesleft++;
-                yield return new WaitForSeconds (0.03f);
+                yield return new WaitForSeconds (0.015f);
             }
         }
         enemiesAnimator.Play ("Enemies");
@@ -130,9 +140,19 @@ public class EnemiesManager : MonoBehaviour
 
     public void EnemyDestroyed (Enemy enemy)
     {
+        if (explosionsPool.TryGetNextObject (enemy.transform.position, Quaternion.identity, out GameObject explosion))
+        {
+            StartCoroutine (DesactivateOnTime (explosion, 0.06f));
+        }
         enemiesleft--;
         if (enemiesleft % 20 == 0) SetAnimationSpeed (animationSpeed + 1);
         if (enemiesleft == 0) GameManager.Instance.LevelCompleted ();
+    }
+
+    public IEnumerator DesactivateOnTime (GameObject go, float time)
+    {
+        yield return new WaitForSeconds (time);
+        go.SetActive (false);
     }
 
 }

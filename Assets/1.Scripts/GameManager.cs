@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -29,7 +28,6 @@ public class GameManager : MonoBehaviour
 
     public void LoadNextLevel ()
     {
-        gameIsActive = false;
         LoadLevel (++activeLevelNumber);
     }
 
@@ -84,7 +82,8 @@ public class GameManager : MonoBehaviour
 
     public void LevelCompleted ()
     {
-        LoadNextLevel ();
+        gameIsActive = false;
+        Invoke ("LoadNextLevel", 1f);
     }
 
 }

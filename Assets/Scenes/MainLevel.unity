@@ -596,9 +596,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ad072fab273afb4b90b5fda7d167df9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rows: 3
-  columns: 3
+  rows: 9
+  columns: 7
   enemyPrefab: {fileID: 1618572500841612074, guid: 84a035e41eb8f3740824701f6ee60ddb, type: 3}
+  explosionPrefab: {fileID: 1611615205289938810, guid: e18ebc9bc9c67d1418ff030aa0977266, type: 3}
   enemiesT: {fileID: 1515216073}
   enemiesTable: {fileID: 11400000, guid: 95d1818983f557146abd6e3283eddd24, type: 2}
 --- !u!4 &488060943
@@ -1125,7 +1126,7 @@ MonoBehaviour:
   playerShot: {fileID: 4674503822870743029, guid: 6ba947c1be3d00e498fca6406bdad386, type: 3}
   stats:
     health: 11
-    damage: 8
+    damage: 111
     movementVelocity: 3
     shootCooldown: 3
     shootSpeed: 3
@@ -1948,7 +1949,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 911732566}
-  activeGame: 0
+  gameIsActive: 0
   activeLevelNumber: 0
   levelsTables: {fileID: 11400000, guid: ae0b94fa7657c85438c53ca0847ed761, type: 2}
 --- !u!4 &2140480312
