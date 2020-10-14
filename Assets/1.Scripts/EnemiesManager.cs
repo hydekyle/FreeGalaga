@@ -169,10 +169,10 @@ public class EnemiesManager : MonoBehaviour
     {
         if (explosionsPool.TryGetNextObject (enemy.transform.position, Quaternion.identity, out GameObject explosionGO))
         {
-            StartCoroutine (GameManager.Instance.DesactivateOnTime (explosionGO, 0.06f));
+            GameManager.Instance.DesactivateOnTime (explosionGO, 0.06f);
         }
         enemiesleft--;
-        if (enemiesleft % 20 == 0) SetAnimationSpeed (animationSpeed + 1);
+        if (enemiesleft % 15 == 0) SetAnimationSpeed (animationSpeed + 1);
         if (enemiesleft == 0) GameManager.Instance.LevelCompleted ();
     }
 

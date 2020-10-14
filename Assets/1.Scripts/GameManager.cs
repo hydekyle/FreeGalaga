@@ -111,7 +111,12 @@ public class GameManager : MonoBehaviour
         return color;
     }
 
-    public IEnumerator DesactivateOnTime (GameObject go, float time)
+    public void DesactivateOnTime (GameObject go, float time)
+    {
+        StartCoroutine (_DesactivateOnTime (go, time));
+    }
+
+    IEnumerator _DesactivateOnTime (GameObject go, float time)
     {
         yield return new WaitForSeconds (time);
         go.SetActive (false);
