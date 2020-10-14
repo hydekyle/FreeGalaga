@@ -49,9 +49,18 @@ public class EnemiesManager : MonoBehaviour
 
     void Reset ()
     {
+        ClearAllEnemies ();
         forwardSteps = 0;
         enemiesT.parent.position = Vector3.zero;
         enemiesT.localPosition = defaultPosEnemies;
+    }
+
+    void ClearAllEnemies ()
+    {
+        if (enemiesT.childCount > 0)
+            foreach (Transform t in enemiesT) Destroy (t.gameObject);
+
+        foreach (Enemy enemy in enemiesList) Destroy (enemy.gameObject);
     }
 
     public void LoadEnemies ()
@@ -146,6 +155,7 @@ public class EnemiesManager : MonoBehaviour
     public void MakeCrazyEnemy ()
     {
         var lista = enemiesList.FindAll (enemy => enemy.alive == true);
+        if (lista.Count == 0) return;
         lista [Random.Range (0, lista.Count)].ChasePlayer ();
     }
 
@@ -157,19 +167,13 @@ public class EnemiesManager : MonoBehaviour
 
     public void EnemyDestroyed (Enemy enemy)
     {
-        if (explosionsPool.TryGetNextObject (enemy.transform.position, Quaternion.identity, out GameObject explosion))
+        if (explosionsPool.TryGetNextObject (enemy.transform.position, Quaternion.identity, out GameObject explosionGO))
         {
-            StartCoroutine (DesactivateOnTime (explosion, 0.06f));
+            StartCoroutine (GameManager.Instance.DesactivateOnTime (explosionGO, 0.06f));
         }
         enemiesleft--;
         if (enemiesleft % 20 == 0) SetAnimationSpeed (animationSpeed + 1);
         if (enemiesleft == 0) GameManager.Instance.LevelCompleted ();
-    }
-
-    public IEnumerator DesactivateOnTime (GameObject go, float time)
-    {
-        yield return new WaitForSeconds (time);
-        go.SetActive (false);
     }
 
 }

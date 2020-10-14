@@ -16,7 +16,7 @@ public class Enemy : MonoBehaviour
 
     private void Update ()
     {
-        if (chasingPlayer)
+        if (chasingPlayer && GameManager.Instance.gameIsActive)
         {
             var dir = (playerT.position - transform.position).normalized;
             var angle = Mathf.Atan2 (dir.y, dir.x) * Mathf.Rad2Deg;
@@ -50,12 +50,11 @@ public class Enemy : MonoBehaviour
 
     public void ChasePlayer ()
     {
-        print ("Distance: " + Mathf.FloorToInt (Vector3.Distance (transform.position, playerT.position)));
         int velocity = stats.movementVelocity * Mathf.FloorToInt (Vector3.Distance (transform.position, playerT.position)) / 10;
         velocity = Mathf.Clamp (velocity, 1, 6);
         stats.movementVelocity = velocity;
-        chasingPlayer = true;
         transform.parent = null;
         GetComponent<SpriteRenderer> ().sortingOrder = 1;
+        chasingPlayer = true;
     }
 }

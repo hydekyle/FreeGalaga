@@ -15,7 +15,7 @@ MonoBehaviour:
   backgroundLevel1: {fileID: 21300000, guid: ceb27cd484c5cc14db5e4c9c5436b9bb, type: 3}
   barColorLevel1: {r: 0.16862746, g: 0.7490196, b: 0.9058824, a: 0}
   animSpeed1: 4
-  prefabLevel1: {fileID: 6768246466652972997, guid: e1a79eccc24b81443b7ab1b3a2e8b600, type: 3}
+  prefabLevel1: {fileID: 129102842776391718, guid: 088296ce7f2cd6349be35819b8567dfc, type: 3}
   backgroundLevel2: {fileID: 21300000, guid: bb2e5dcb79fb6fe4a8f18ccaca041315, type: 3}
   barColorLevel2: {r: 0.18039216, g: 0.7960785, b: 0.39607847, a: 0}
   animSpeed2: 5
@@ -31,4 +31,4 @@ MonoBehaviour:
   backgroundLevelFinal: {fileID: 21300000, guid: 90b5534b0999ef744a2d2d79590d264f, type: 3}
   barColorLevelFinal: {r: 0, g: 0, b: 0, a: 0}
   animSpeedFinal: 7
-  prefabLevel5: {fileID: 0}
+  prefabLevelFinal: {fileID: 0}

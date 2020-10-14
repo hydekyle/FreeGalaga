@@ -1220,8 +1220,8 @@ MonoBehaviour:
   stats:
     health: 11
     damage: 111
-    movementVelocity: 3
-    shootCooldown: 3
+    movementVelocity: 5
+    shootCooldown: 6
     shootSpeed: 3
 --- !u!61 &911732567
 BoxCollider2D:
