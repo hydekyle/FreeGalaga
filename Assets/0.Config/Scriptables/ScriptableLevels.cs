@@ -33,5 +33,5 @@ public class ScriptableLevels : ScriptableObject
     public Sprite backgroundLevelFinal;
     public Color barColorLevelFinal;
     public float animSpeedFinal;
-    public GameObject prefabLevel5;
+    public GameObject prefabLevelFinal;
 }

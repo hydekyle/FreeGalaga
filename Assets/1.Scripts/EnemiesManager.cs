@@ -112,7 +112,7 @@ public class EnemiesManager : MonoBehaviour
                 levelPrefab = GameManager.Instance.levelsTables.prefabLevel4;
                 break;
             default:
-                levelPrefab = GameManager.Instance.levelsTables.prefabLevel5;
+                levelPrefab = GameManager.Instance.levelsTables.prefabLevelFinal;
                 break;
         }
 
