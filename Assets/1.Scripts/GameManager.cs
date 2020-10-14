@@ -51,7 +51,6 @@ public class GameManager : MonoBehaviour
 
         CanvasManager.Instance.SetBackground (background);
         EnemiesManager.Instance.LoadEnemies ();
-        EnemiesManager.Instance.SetAnimationSpeed (animationSpeed);
         CanvasManager.Instance.SetLevelNumber (levelNumber);
         CanvasManager.Instance.SetBarColor (GetColorByLevel (levelNumber));
     }

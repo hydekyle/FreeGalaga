@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace EZObjectPools
 {
-    [AddComponentMenu("EZ Object Pool/Object Pool")]
+    [AddComponentMenu ("EZ Object Pool/Object Pool")]
     public class EZObjectPool : MonoBehaviour
     {
-        static Dictionary<string, EZObjectPool> SharedPools = new Dictionary<string, EZObjectPool>();
+        static Dictionary<string, EZObjectPool> SharedPools = new Dictionary<string, EZObjectPool> ();
         static GameObject Marker;
 
         /// <summary>
@@ -48,28 +48,28 @@ namespace EZObjectPools
         /// <param name="instantiateImmediate">Should this pool be instantiated immediately?</param>
         /// <param name="shared">Should pools with the same name be shared?</param>
         /// <returns>A reference to the created pool.</returns>
-        public static EZObjectPool CreateObjectPool(GameObject template, string name, int size, bool autoResize, bool instantiateImmediate, bool shared)
+        public static EZObjectPool CreateObjectPool (GameObject template, string name, int size, bool autoResize, bool instantiateImmediate, bool shared)
         {
             if (Marker == null)
             {
-                Marker = new GameObject("EZ Object Pools Container");
-                SharedPools.Clear();
+                Marker = new GameObject ("EZ Object Pools Container");
+                SharedPools.Clear ();
             }
 
             if (shared)
             {
-                if (SharedPools.ContainsKey(name))
-                    return SharedPools[name];
+                if (SharedPools.ContainsKey (name))
+                    return SharedPools [name];
                 else
                 {
-                    GameObject g = new GameObject(name);
-                    EZObjectPool pool = g.AddComponent<EZObjectPool>();
+                    GameObject g = new GameObject (name);
+                    EZObjectPool pool = g.AddComponent<EZObjectPool> ();
                     pool.InstantiateOnAwake = false;
-                    pool.SetProperties(template, size, name, autoResize);
-                    SharedPools.Add(name, pool);
+                    pool.SetProperties (template, size, name, autoResize);
+                    SharedPools.Add (name, pool);
 
                     if (instantiateImmediate)
-                        pool.InstantiatePool();
+                        pool.InstantiatePool ();
 
                     g.transform.parent = Marker.transform;
 
@@ -78,13 +78,13 @@ namespace EZObjectPools
             }
             else
             {
-                GameObject g = new GameObject(name);
-                EZObjectPool pool = g.AddComponent<EZObjectPool>();
+                GameObject g = new GameObject (name);
+                EZObjectPool pool = g.AddComponent<EZObjectPool> ();
                 pool.InstantiateOnAwake = false;
-                pool.SetProperties(template, size, name, autoResize);
+                pool.SetProperties (template, size, name, autoResize);
 
                 if (instantiateImmediate)
-                    pool.InstantiatePool();
+                    pool.InstantiatePool ();
 
                 g.transform.parent = Marker.transform;
 
@@ -92,24 +92,24 @@ namespace EZObjectPools
             }
         }
 
-        void Awake()
+        void Awake ()
         {
             if (Marker == null)
             {
-                Marker = new GameObject("EZ Object Pools Container");
-                SharedPools.Clear();
+                Marker = new GameObject ("EZ Object Pools Container");
+                SharedPools.Clear ();
             }
 
             if (InstantiateOnAwake)
             {
-                ObjectList = new List<GameObject>(PoolSize);
-                AvailableObjects = new List<GameObject>(PoolSize);
-                InstantiatePool();
+                ObjectList = new List<GameObject> (PoolSize);
+                AvailableObjects = new List<GameObject> (PoolSize);
+                InstantiatePool ();
             }
 
             if (Shared)
             {
-                SharedPools.Add(this.PoolName, this);
+                SharedPools.Add (this.PoolName, this);
             }
         }
 
@@ -124,12 +124,12 @@ namespace EZObjectPools
         /// <param name="size">The amount of clones to create</param>
         /// <param name="name">Name of this pool</param>
         /// <param name="autoResize">Should new objects be instantiated if the pool is empty?</param>
-        public void SetProperties(GameObject objectTemplate, int size, string name, bool autoResize)
+        public void SetProperties (GameObject objectTemplate, int size, string name, bool autoResize)
         {
             Template = objectTemplate;
             PoolSize = size;
-            ObjectList = new List<GameObject>(size);
-            AvailableObjects = new List<GameObject>(size);
+            ObjectList = new List<GameObject> (size);
+            AvailableObjects = new List<GameObject> (size);
             PoolName = name;
             this.AutoResize = autoResize;
         }
@@ -137,21 +137,21 @@ namespace EZObjectPools
         /// <summary>
         /// Creates the set number of objects at the world origin (0,0,0) and sets them to inactive. Deletes any previous objects.
         /// </summary>
-        public void InstantiatePool()
+        public void InstantiatePool ()
         {
             if (Template == null)
             {
-                Debug.LogError("EZ Object Pool: " + name + ": Template GameObject is null! Make sure you assigned a template either in the inspector or in your scripts.");
+                Debug.LogError ("EZ Object Pool: " + name + ": Template GameObject is null! Make sure you assigned a template either in the inspector or in your scripts.");
                 return;
             }
 
-            ClearPool();
+            ClearPool ();
 
             for (int i = 0; i < PoolSize; i++)
             {
-                GameObject g = NewActiveObject();
-                g.SetActive(false);
-                ObjectList.Add(g);
+                GameObject g = NewActiveObject ();
+                g.SetActive (false);
+                ObjectList.Add (g);
             }
         }
 
@@ -162,38 +162,38 @@ namespace EZObjectPools
         /// <param name="rot">The rotation to spawn the object at.</param>
         /// <param name="obj">A reference to the GameObject being spawned.</param>
         /// <returns>Returns true if an object was successfully retrieved, False if not.</returns>
-        public bool TryGetNextObject(Vector3 pos, Quaternion rot, out GameObject obj)
+        public bool TryGetNextObject (Vector3 pos, Quaternion rot, out GameObject obj)
         {
             if (ObjectList.Count == 0)
             {
-                Debug.LogError("EZ Object Pool " + PoolName + ", the pool has not been instantiated but you are trying to retrieve an object!");
+                Debug.LogError ("EZ Object Pool " + PoolName + ", the pool has not been instantiated but you are trying to retrieve an object!");
             }
 
             int lastIndex = AvailableObjects.Count - 1;
 
             if (AvailableObjects.Count > 0)
             {
-                if (AvailableObjects[lastIndex] == null)
+                if (AvailableObjects [lastIndex] == null)
                 {
-                    Debug.LogError("EZObjectPool " + PoolName + " has missing objects in its pool! Are you accidentally destroying any GameObjects retrieved from the pool?");
+                    Debug.LogError ("EZObjectPool " + PoolName + " has missing objects in its pool! Are you accidentally destroying any GameObjects retrieved from the pool?");
                     obj = null;
                     return false;
                 }
 
-                AvailableObjects[lastIndex].transform.position = pos;
-                AvailableObjects[lastIndex].transform.rotation = rot;
-                AvailableObjects[lastIndex].SetActive(true);
-                obj = AvailableObjects[lastIndex];
-                AvailableObjects.RemoveAt(lastIndex);
+                AvailableObjects [lastIndex].transform.position = pos;
+                AvailableObjects [lastIndex].transform.rotation = rot;
+                AvailableObjects [lastIndex].SetActive (true);
+                obj = AvailableObjects [lastIndex];
+                AvailableObjects.RemoveAt (lastIndex);
                 return true;
             }
 
             if (AutoResize)
             {
-                GameObject g = NewActiveObject();
+                GameObject g = NewActiveObject ();
                 g.transform.position = pos;
                 g.transform.rotation = rot;
-                ObjectList.Add(g);
+                ObjectList.Add (g);
                 obj = g;
                 return true;
             }
@@ -209,50 +209,50 @@ namespace EZObjectPools
         /// </summary>
         /// <param name="pos">The position to put the object at.</param>
         /// <param name="rot">The rotation to put the object at.</param>
-        public void TryGetNextObject(Vector3 pos, Quaternion rot)
+        public void TryGetNextObject (Vector3 pos, Quaternion rot)
         {
             if (ObjectList.Count == 0)
             {
-                Debug.LogError("EZ Object Pool " + PoolName + ", the pool has not been instantiated but you are trying to retrieve an object!");
+                Debug.LogError ("EZ Object Pool " + PoolName + ", the pool has not been instantiated but you are trying to retrieve an object!");
             }
 
             int lastIndex = AvailableObjects.Count - 1;
 
             if (AvailableObjects.Count > 0)
             {
-                if (AvailableObjects[lastIndex] == null)
+                if (AvailableObjects [lastIndex] == null)
                 {
-                    Debug.LogError("EZObjectPool " + PoolName + " has missing objects in its pool! Are you accidentally destroying any GameObjects retrieved from the pool?");
+                    Debug.LogError ("EZObjectPool " + PoolName + " has missing objects in its pool! Are you accidentally destroying any GameObjects retrieved from the pool?");
                     return;
                 }
 
-                AvailableObjects[lastIndex].transform.position = pos;
-                AvailableObjects[lastIndex].transform.rotation = rot;
-                AvailableObjects[lastIndex].SetActive(true);
-                AvailableObjects.RemoveAt(lastIndex);
+                AvailableObjects [lastIndex].transform.position = pos;
+                AvailableObjects [lastIndex].transform.rotation = rot;
+                AvailableObjects [lastIndex].SetActive (true);
+                AvailableObjects.RemoveAt (lastIndex);
                 return;
             }
 
             if (AutoResize)
             {
-                GameObject g = NewActiveObject();
+                GameObject g = NewActiveObject ();
                 g.transform.position = pos;
                 g.transform.rotation = rot;
-                ObjectList.Add(g);
+                ObjectList.Add (g);
             }
         }
 
-        GameObject NewActiveObject()
+        GameObject NewActiveObject ()
         {
-            GameObject g = (GameObject)Instantiate(Template);
-            g.transform.parent = transform;
+            GameObject g = (GameObject) Instantiate (Template);
+            g.transform.SetParent (transform);
 
-            PooledObject p = g.GetComponent<PooledObject>();
+            PooledObject p = g.GetComponent<PooledObject> ();
 
             if (p)
                 p.ParentPool = this;
             else
-                g.AddComponent<PooledObject>().ParentPool = this;
+                g.AddComponent<PooledObject> ().ParentPool = this;
 
             return g;
         }
@@ -260,27 +260,27 @@ namespace EZObjectPools
         /// <summary>
         /// Destroys all objects that are a part of this pool.
         /// </summary>
-        public void ClearPool()
+        public void ClearPool ()
         {
             for (int i = 0; i < ObjectList.Count; i++)
             {
-                Destroy(ObjectList[i]);
+                Destroy (ObjectList [i]);
             }
 
-            ObjectList.Clear();
-            AvailableObjects.Clear();
+            ObjectList.Clear ();
+            AvailableObjects.Clear ();
         }
 
         /// <summary>
         /// Destroys this pool.
         /// </summary>
         /// <param name="deleteActiveObjects">Should it delete any active GameObjects that are part of this pool?</param>
-        public void DeletePool(bool deleteActiveObjects)
+        public void DeletePool (bool deleteActiveObjects)
         {
             for (int i = 0; i < ObjectList.Count; i++)
             {
-                if (!ObjectList[i].activeInHierarchy || (ObjectList[i].activeInHierarchy && deleteActiveObjects))
-                    Destroy(ObjectList[i]);
+                if (!ObjectList [i].activeInHierarchy || (ObjectList [i].activeInHierarchy && deleteActiveObjects))
+                    Destroy (ObjectList [i]);
             }
         }
 
@@ -288,9 +288,9 @@ namespace EZObjectPools
         /// Adds the given GameObject to the Available Objects list.
         /// </summary>
         /// <param name="obj">The GameObject to add.</param>
-        public void AddToAvailableObjects(GameObject obj)
+        public void AddToAvailableObjects (GameObject obj)
         {
-            AvailableObjects.Add(obj);
+            AvailableObjects.Add (obj);
         }
 
         #endregion
@@ -300,7 +300,7 @@ namespace EZObjectPools
         /// <summary>
         /// Gets the number of currently active objects.
         /// </summary>
-        public int ActiveObjectCount()
+        public int ActiveObjectCount ()
         {
             return ObjectList.Count - AvailableObjects.Count;
         }
@@ -308,7 +308,7 @@ namespace EZObjectPools
         /// <summary>
         /// Gets the number of currently available objects.
         /// </summary>
-        public int AvailableObjectCount()
+        public int AvailableObjectCount ()
         {
             return AvailableObjects.Count;
         }

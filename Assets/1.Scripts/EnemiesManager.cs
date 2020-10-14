@@ -7,7 +7,6 @@ public class EnemiesManager : MonoBehaviour
 {
     public static EnemiesManager Instance;
 
-    public int rows = 6, columns = 10;
     float animationSpeed = 1;
 
     public GameObject enemyPrefab;
@@ -16,7 +15,7 @@ public class EnemiesManager : MonoBehaviour
     Vector3 defaultPosEnemies;
     Animator enemiesAnimator;
     List<Enemy> enemiesList = new List<Enemy> ();
-
+    List<Transform> levels = new List<Transform> ();
     EZObjectPool explosionsPool;
 
     public ScriptableEnemies enemiesTable;
@@ -40,45 +39,40 @@ public class EnemiesManager : MonoBehaviour
         defaultPosEnemies = enemiesT.localPosition;
         enemiesAnimator = enemiesT.parent.GetComponent<Animator> ();
         explosionsPool = EZObjectPool.CreateObjectPool (explosionPrefab, "Explosiones", 4, true, true, true);
+        foreach (Transform t in enemiesT) levels.Add (t);
+    }
+
+    Transform GetLevelTransform (int levelNumber)
+    {
+        return levels [levelNumber - 1];
+    }
+
+    void Reset ()
+    {
+        forwardSteps = 0;
+        enemiesT.parent.position = Vector3.zero;
+        enemiesT.localPosition = defaultPosEnemies;
     }
 
     public void LoadEnemies ()
     {
         StopEnemies ();
-        forwardSteps = 0;
-        enemiesT.parent.position = Vector3.zero;
-        enemiesT.localPosition = defaultPosEnemies;
-        SpawnEnemies (GameManager.Instance.activeLevelNumber);
+        Reset ();
+        LoadEnemies (GameManager.Instance.activeLevelNumber);
     }
 
-    void SpawnEnemies (int levelNumber)
+    void LoadEnemies (int levelNumber)
     {
-        StartCoroutine (SpawnEnemies ());
-    }
-
-    IEnumerator SpawnEnemies ()
-    {
-        foreach (Transform t in enemiesT) Destroy (t.gameObject);
-
-        for (var x = 0; x < columns; x++)
-        {
-            for (var y = 0; y < rows; y++)
-            {
-                var enemyModel = GetEnemyModel (GameManager.Instance.GetLevelNumber ());
-                var go = GameObject.Instantiate (enemyPrefab, Vector3.zero, Quaternion.Euler (0, 0, -90), enemiesT);
-                go.GetComponent<SpriteRenderer> ().sprite = enemyModel.sprite;
-                go.transform.localPosition = new Vector3 (x / 1.5f, y / 1.5f, 0);
-                Enemy enemy = go.GetComponent<Enemy> ();
-                enemy.stats = enemyModel.stats;
-                go.SetActive (true);
-                enemiesList.Add (enemy);
-                enemiesleft++;
-                yield return new WaitForSeconds (0.015f);
-            }
-        }
+        var go = Instantiate (GetLevelPrefab (levelNumber), Vector3.zero, Quaternion.identity, enemiesT);
+        go.transform.localPosition = Vector3.zero;
+        enemiesleft = go.transform.childCount;
         enemiesAnimator.Play ("Enemies");
-        enemiesAnimator.speed = animationSpeed;
+        SetAnimationSpeed (animationSpeed);
         GameManager.Instance.gameIsActive = true;
+        List<Enemy> newEnemiesList = new List<Enemy> ();
+        foreach (Transform t in go.transform) newEnemiesList.Add (t.GetComponent<Enemy> ());
+        enemiesList = newEnemiesList;
+
     }
 
     private EnemyModel GetEnemyModel (int levelNumber)
@@ -100,6 +94,31 @@ public class EnemiesManager : MonoBehaviour
         return enemyModel;
     }
 
+    GameObject GetLevelPrefab (int levelNumber)
+    {
+        GameObject levelPrefab;
+        switch (levelNumber)
+        {
+            case 1:
+                levelPrefab = GameManager.Instance.levelsTables.prefabLevel1;
+                break;
+            case 2:
+                levelPrefab = GameManager.Instance.levelsTables.prefabLevel2;
+                break;
+            case 3:
+                levelPrefab = GameManager.Instance.levelsTables.prefabLevel3;
+                break;
+            case 4:
+                levelPrefab = GameManager.Instance.levelsTables.prefabLevel4;
+                break;
+            default:
+                levelPrefab = GameManager.Instance.levelsTables.prefabLevel5;
+                break;
+        }
+
+        return levelPrefab;
+    }
+
     public void StepForward ()
     {
         StartCoroutine (MoveForwardEnemies ());
@@ -116,12 +135,10 @@ public class EnemiesManager : MonoBehaviour
             v += Time.deltaTime * animationSpeed;
             yield return new WaitForEndOfFrame ();
         }
-
     }
 
     public void StopEnemies ()
     {
-        enemiesAnimator.Play ("Idle");
         enemiesAnimator.speed = 0;
         StopAllCoroutines ();
     }
