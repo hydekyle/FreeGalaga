@@ -1219,10 +1219,10 @@ MonoBehaviour:
   playerShot: {fileID: 4674503822870743029, guid: 6ba947c1be3d00e498fca6406bdad386, type: 3}
   stats:
     health: 11
-    damage: 111
-    movementVelocity: 5
-    shootCooldown: 6
-    shootSpeed: 3
+    damage: 2
+    movementVelocity: 3
+    shootCooldown: 2
+    shootSpeed: 2
 --- !u!61 &911732567
 BoxCollider2D:
   m_ObjectHideFlags: 0

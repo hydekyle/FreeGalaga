@@ -53,6 +53,7 @@ public class EnemiesManager : MonoBehaviour
         forwardSteps = 0;
         enemiesT.parent.position = Vector3.zero;
         enemiesT.localPosition = defaultPosEnemies;
+        SetAnimationSpeed (GetLevelSpeed (GameManager.Instance.activeLevelNumber));
     }
 
     void ClearAllEnemies ()
@@ -76,6 +77,7 @@ public class EnemiesManager : MonoBehaviour
         go.transform.localPosition = Vector3.zero;
         enemiesleft = go.transform.childCount;
         enemiesAnimator.Play ("Enemies");
+        enemiesAnimator.enabled = true;
         SetAnimationSpeed (animationSpeed);
         GameManager.Instance.gameIsActive = true;
         List<Enemy> newEnemiesList = new List<Enemy> ();
@@ -128,6 +130,30 @@ public class EnemiesManager : MonoBehaviour
         return levelPrefab;
     }
 
+    float GetLevelSpeed (int levelNumber)
+    {
+        float value;
+        switch (levelNumber)
+        {
+            case 1:
+                value = GameManager.Instance.levelsTables.animSpeed1;
+                break;
+            case 2:
+                value = GameManager.Instance.levelsTables.animSpeed2;
+                break;
+            case 3:
+                value = GameManager.Instance.levelsTables.animSpeed3;
+                break;
+            case 4:
+                value = GameManager.Instance.levelsTables.animSpeed4;
+                break;
+            default:
+                value = GameManager.Instance.levelsTables.animSpeedFinal;
+                break;
+        }
+        return value;
+    }
+
     public void StepForward ()
     {
         StartCoroutine (MoveForwardEnemies ());
@@ -135,15 +161,20 @@ public class EnemiesManager : MonoBehaviour
 
     IEnumerator MoveForwardEnemies ()
     {
+        float actualSpeed = animationSpeed;
+        enemiesAnimator.enabled = false;
         forwardSteps++;
         float v = 0f;
-        Vector3 targetPos = Vector3.down * forwardSteps / 4f;
+        Vector3 targetPos = Vector3.down * forwardSteps / 3f;
         while (v < 1f)
         {
-            transform.position = Vector3.Lerp (transform.position, targetPos, v);
-            v += Time.deltaTime * animationSpeed;
+            transform.position = Vector3.Lerp (transform.position, targetPos, v / 10);
+            v += Time.deltaTime * actualSpeed;
             yield return new WaitForEndOfFrame ();
         }
+        transform.position = targetPos;
+        enemiesAnimator.enabled = true;
+
     }
 
     public void StopEnemies ()
@@ -174,6 +205,7 @@ public class EnemiesManager : MonoBehaviour
         enemiesleft--;
         if (enemiesleft % 15 == 0) SetAnimationSpeed (animationSpeed + 1);
         if (enemiesleft == 0) GameManager.Instance.LevelCompleted ();
+        else if (enemiesleft == 1) SetAnimationSpeed (animationSpeed * 2);
     }
 
 }

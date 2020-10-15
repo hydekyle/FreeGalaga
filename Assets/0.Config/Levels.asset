@@ -15,7 +15,7 @@ MonoBehaviour:
   backgroundLevel1: {fileID: 21300000, guid: ceb27cd484c5cc14db5e4c9c5436b9bb, type: 3}
   barColorLevel1: {r: 0.16862746, g: 0.7490196, b: 0.9058824, a: 0}
   animSpeed1: 1
-  prefabLevel1: {fileID: 6768246466652972997, guid: e75436944f38ac349931c9d5b95539a0, type: 3}
+  prefabLevel1: {fileID: 6768246466652972997, guid: e1a79eccc24b81443b7ab1b3a2e8b600, type: 3}
   backgroundLevel2: {fileID: 21300000, guid: bb2e5dcb79fb6fe4a8f18ccaca041315, type: 3}
   barColorLevel2: {r: 0.18039216, g: 0.7960785, b: 0.39607847, a: 0}
   animSpeed2: 1
