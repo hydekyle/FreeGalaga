@@ -33,6 +33,11 @@ public class CanvasManager : MonoBehaviour
         levelText.text = levelNumber.ToString ();
     }
 
+    public void SetLivesNumber (int lives)
+    {
+        livesText.text = lives.ToString ();
+    }
+
     public void SetBarColor (Color color)
     {
         barImage.color = color;

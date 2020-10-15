@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -9,6 +10,7 @@ public class GameManager : MonoBehaviour
     public bool gameIsActive = false;
     public int activeLevelNumber = 0;
     public ScriptableLevels levelsTables;
+    public int lives = 3;
 
     private void Awake ()
     {
@@ -29,6 +31,7 @@ public class GameManager : MonoBehaviour
 
     public void LoadNextLevel ()
     {
+        if (lives == 0) return;
         LoadLevel (++activeLevelNumber);
     }
 
@@ -58,7 +61,8 @@ public class GameManager : MonoBehaviour
     public void LevelCompleted ()
     {
         gameIsActive = false;
-        Invoke ("LoadNextLevel", 1f);
+        EnemiesManager.Instance.ClearAllEnemies ();
+        Invoke ("LoadNextLevel", 2.5f);
     }
 
     public void GameOver ()
@@ -66,19 +70,27 @@ public class GameManager : MonoBehaviour
         player.gameObject.SetActive (false);
         EnemiesManager.Instance.StopEnemies ();
         gameIsActive = false;
+        LoseLives (lives);
+        print ("Game Over");
     }
 
     private void Update ()
     {
         if (Input.GetKey (KeyCode.Mouse0) && gameIsActive) player.Disparar ();
-        if (Input.GetKeyDown (KeyCode.Mouse0) && !player.gameObject.activeSelf) RestartLevel ();
+        if (Input.GetKeyDown (KeyCode.Mouse0) && lives == 0) SceneManager.LoadScene (0);
         if (Input.GetKeyDown (KeyCode.Mouse1)) EnemiesManager.Instance.MakeCrazyEnemy ();
     }
 
     public void RestartLevel ()
     {
         player.gameObject.SetActive (true);
-        LoadLevel (activeLevelNumber);
+        EnemiesManager.Instance.Reset ();
+    }
+
+    public void LoseLives (int livesLost)
+    {
+        lives -= livesLost;
+        CanvasManager.Instance.SetLivesNumber (lives);
     }
 
     public int GetLevelNumber ()

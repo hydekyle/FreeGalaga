@@ -16,12 +16,13 @@ public class Enemy : MonoBehaviour
 
     private void Update ()
     {
-        if (chasingPlayer && GameManager.Instance.gameIsActive)
+        if (chasingPlayer && GameManager.Instance.gameIsActive && EnemiesManager.Instance.animationSpeed > 0)
         {
+            float velocity = Mathf.Clamp (Vector3.Distance (transform.position, playerT.position) + stats.movementVelocity / 4, 0.66f, 3.3f);
             var dir = (playerT.position - transform.position).normalized;
             var angle = Mathf.Atan2 (dir.y, dir.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Lerp (transform.rotation, Quaternion.AngleAxis (angle, transform.forward), Time.deltaTime * stats.movementVelocity);
-            transform.position = Vector3.MoveTowards (transform.position, playerT.position, Time.deltaTime * stats.movementVelocity);
+            transform.rotation = Quaternion.Lerp (transform.rotation, Quaternion.AngleAxis (angle, transform.forward), Time.deltaTime * velocity);
+            transform.position = Vector3.MoveTowards (transform.position, playerT.position, Time.deltaTime * velocity);
         }
     }
 
@@ -40,18 +41,23 @@ public class Enemy : MonoBehaviour
         if (stats.health <= 0) Die ();
     }
 
-    void Die ()
+    public void Die ()
+    {
+        CanvasManager.Instance.AddScore (100);
+        Erase ();
+    }
+
+    public void Erase ()
     {
         alive = false;
-        CanvasManager.Instance.AddScore (100);
         gameObject.SetActive (false);
         EnemiesManager.Instance.EnemyDestroyed (this);
     }
 
     public void ChasePlayer ()
     {
-        int velocity = stats.movementVelocity * Mathf.FloorToInt (Vector3.Distance (transform.position, playerT.position)) / 10;
-        velocity = Mathf.Clamp (velocity, 1, 6);
+        int velocity = stats.movementVelocity;
+        velocity = Mathf.Clamp (velocity * (int) EnemiesManager.Instance.animationSpeed, 1, 20);
         stats.movementVelocity = velocity;
         transform.parent = null;
         GetComponent<SpriteRenderer> ().sortingOrder = 1;

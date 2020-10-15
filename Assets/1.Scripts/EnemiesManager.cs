@@ -7,7 +7,7 @@ public class EnemiesManager : MonoBehaviour
 {
     public static EnemiesManager Instance;
 
-    float animationSpeed = 1;
+    public float animationSpeed = 1;
 
     public GameObject enemyPrefab;
     public GameObject explosionPrefab;
@@ -47,16 +47,15 @@ public class EnemiesManager : MonoBehaviour
         return levels [levelNumber - 1];
     }
 
-    void Reset ()
+    public void Reset ()
     {
-        ClearAllEnemies ();
         forwardSteps = 0;
         enemiesT.parent.position = Vector3.zero;
         enemiesT.localPosition = defaultPosEnemies;
         SetAnimationSpeed (GetLevelSpeed (GameManager.Instance.activeLevelNumber));
     }
 
-    void ClearAllEnemies ()
+    public void ClearAllEnemies ()
     {
         if (enemiesT.childCount > 0)
             foreach (Transform t in enemiesT) Destroy (t.gameObject);

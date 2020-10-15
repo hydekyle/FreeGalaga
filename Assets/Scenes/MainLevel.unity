@@ -691,6 +691,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ad072fab273afb4b90b5fda7d167df9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animationSpeed: 1
   enemyPrefab: {fileID: 1618572500841612074, guid: 84a035e41eb8f3740824701f6ee60ddb, type: 3}
   explosionPrefab: {fileID: 1611615205289938810, guid: e18ebc9bc9c67d1418ff030aa0977266, type: 3}
   enemiesT: {fileID: 1515216073}
@@ -1220,9 +1221,9 @@ MonoBehaviour:
   stats:
     health: 11
     damage: 2
-    movementVelocity: 3
-    shootCooldown: 2
-    shootSpeed: 2
+    movementVelocity: 4
+    shootCooldown: 4
+    shootSpeed: 4
 --- !u!61 &911732567
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1981,6 +1982,7 @@ MonoBehaviour:
   gameIsActive: 0
   activeLevelNumber: 0
   levelsTables: {fileID: 11400000, guid: ae0b94fa7657c85438c53ca0847ed761, type: 2}
+  lives: 3
 --- !u!4 &2140480312
 Transform:
   m_ObjectHideFlags: 0

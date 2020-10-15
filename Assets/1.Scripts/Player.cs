@@ -9,19 +9,22 @@ public class Player : MonoBehaviour
     public Stats stats;
     EZObjectPool playerShots;
     float lastTimeShot;
-    float minPosX = -5f, maxPosX = 5f, minPosY = -4.5f, maxPosY = -2.5f;
+    float minPosX = -5f, maxPosX = 5f, minPosY = -4.5f, maxPosY = -2f;
     AudioSource audioSource;
     AudioClip shotAudioClip;
     Transform gunPoint;
+    BoxCollider2D myCollider;
+    bool hitActive = true;
 
     private void Start ()
     {
         Initialize ();
-        gunPoint = transform.Find ("GunPoint");
     }
 
     void Initialize ()
     {
+        myCollider = GetComponent<BoxCollider2D> ();
+        gunPoint = transform.Find ("GunPoint");
         shotAudioClip = AudioManager.Instance.scriptableSounds.basicShot;
         audioSource = GetComponent<AudioSource> ();
         playerShots = EZObjectPool.CreateObjectPool (playerShot, "PlayerShots", 4, true, true, true);
@@ -48,12 +51,36 @@ public class Player : MonoBehaviour
         return Time.time > lastTimeShot + 0.4f / stats.shootCooldown;
     }
 
+    void GetStrike ()
+    {
+        GameManager.Instance.LoseLives (1);
+        if (GameManager.Instance.lives > 0)
+        {
+            StartCoroutine (InmuneTime (1.5f));
+        }
+        else GameManager.Instance.GameOver ();
+    }
+
+    IEnumerator InmuneTime (float time)
+    {
+        var lastSpeed = EnemiesManager.Instance.animationSpeed;
+        EnemiesManager.Instance.SetAnimationSpeed (0);
+        lastTimeShot = Time.time + time;
+        myCollider.enabled = false;
+        var spriteRenderer = GetComponent<SpriteRenderer> ();
+        spriteRenderer.color = Color.yellow;
+        yield return new WaitForSeconds (time);
+        spriteRenderer.color = Color.white;
+        EnemiesManager.Instance.SetAnimationSpeed (lastSpeed);
+        myCollider.enabled = true;
+    }
+
     private void OnTriggerEnter2D (Collider2D other)
     {
         if (other.CompareTag ("Enemy"))
         {
-            other.gameObject.SetActive (false);
-            GameManager.Instance.GameOver ();
+            other.GetComponent<Enemy> ().Erase ();
+            GetStrike ();
         }
     }
 
