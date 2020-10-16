@@ -174,7 +174,6 @@ public class EnemiesManager : MonoBehaviour
         }
         transform.position = targetPos;
         enemiesAnimator.enabled = true;
-
     }
 
     public void StopEnemies ()
@@ -185,9 +184,20 @@ public class EnemiesManager : MonoBehaviour
 
     public void MakeCrazyEnemy ()
     {
-        var lista = enemiesList.FindAll (enemy => enemy.alive == true);
+        var lista = enemiesList.FindAll (e => e.alive == true);
         if (lista.Count == 0) return;
-        lista [Random.Range (0, lista.Count)].ChasePlayer ();
+
+        var enemy = lista [Random.Range (0, lista.Count)];
+
+        switch (enemy.ID)
+        {
+            case "2B":
+                enemy.SetBehavior (EnemyBehavior.PointAndShoot);
+                break;
+            default:
+                enemy.SetBehavior (EnemyBehavior.Kamikaze);
+                break;
+        }
     }
 
     public void SetAnimationSpeed (float speed)
@@ -204,7 +214,7 @@ public class EnemiesManager : MonoBehaviour
         }
         AudioManager.Instance.PlayAudioClip (GameManager.Instance.tablesSounds.explosionLow);
         enemiesleft--;
-        if (enemiesleft % 4 == 0) MakeCrazyEnemy ();
+        if (enemiesleft % 3 == 0) MakeCrazyEnemy ();
         if (enemiesleft % 10 == 0) SetAnimationSpeed (animationSpeed + 0.5f);
         if (enemiesleft == 0) GameManager.Instance.LevelCompleted ();
         else if (enemiesleft == 1) SetAnimationSpeed (animationSpeed * 2);

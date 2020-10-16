@@ -3,6 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+public enum EnemyBehavior
+{
+    None,
+    Kamikaze,
+    PointAndShoot,
+    Shooter
+}
+
 [Serializable]
 public struct ShootModel
 {

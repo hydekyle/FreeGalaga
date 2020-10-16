@@ -13,7 +13,6 @@ public class Player : MonoBehaviour
     AudioClip shotAudioClip;
     Transform gunPoint;
     BoxCollider2D myCollider;
-    bool hitActive = true;
 
     private void Start ()
     {
@@ -55,6 +54,7 @@ public class Player : MonoBehaviour
 
     void GetStrike ()
     {
+        myCollider.enabled = false;
         GameManager.Instance.LoseLives (1);
         if (GameManager.Instance.lives > 0)
         {
@@ -68,7 +68,6 @@ public class Player : MonoBehaviour
         var lastSpeed = EnemiesManager.Instance.animationSpeed;
         EnemiesManager.Instance.SetAnimationSpeed (0);
         lastTimeShot = Time.time + time;
-        myCollider.enabled = false;
         var spriteRenderer = GetComponent<SpriteRenderer> ();
         spriteRenderer.color = Color.yellow;
         yield return new WaitForSeconds (time);
@@ -82,6 +81,11 @@ public class Player : MonoBehaviour
         if (other.CompareTag ("Enemy"))
         {
             other.GetComponent<Enemy> ().Erase ();
+            GetStrike ();
+        }
+        else if (other.CompareTag ("EnemyShot"))
+        {
+            other.gameObject.SetActive (false);
             GetStrike ();
         }
     }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using EZObjectPools;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -13,6 +14,12 @@ public class GameManager : MonoBehaviour
     public ScriptableSounds tablesSounds;
     public int lives = 3;
 
+    public GameObject bulletEnemyPrefab;
+    [HideInInspector]
+    public EZObjectPool enemyBulletsPool;
+
+    public float minPosX = -3.8f, maxPosX = 3.8f, minPosY = -4.5f, maxPosY = -2f;
+
     private void Awake ()
     {
         if (Instance) Destroy (this.gameObject);
@@ -21,7 +28,13 @@ public class GameManager : MonoBehaviour
 
     private void Start ()
     {
+        Initialize ();
         StartGame ();
+    }
+
+    void Initialize ()
+    {
+        enemyBulletsPool = EZObjectPool.CreateObjectPool (bulletEnemyPrefab, "Bullets Enemy", 9, true, true, true);
     }
 
     public void StartGame ()
