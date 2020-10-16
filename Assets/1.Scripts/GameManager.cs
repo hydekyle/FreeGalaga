@@ -9,7 +9,8 @@ public class GameManager : MonoBehaviour
     public Player player;
     public bool gameIsActive = false;
     public int activeLevelNumber = 0;
-    public ScriptableLevels levelsTables;
+    public ScriptableLevels tablesLevels;
+    public ScriptableSounds tablesSounds;
     public int lives = 3;
 
     private void Awake ()
@@ -43,12 +44,12 @@ public class GameManager : MonoBehaviour
         switch (levelNumber)
         {
             case 2:
-                background = levelsTables.backgroundLevel2;
-                animationSpeed = levelsTables.animSpeed2;
+                background = tablesLevels.backgroundLevel2;
+                animationSpeed = tablesLevels.animSpeed2;
                 break;
             default:
-                background = levelsTables.backgroundLevel1;
-                animationSpeed = levelsTables.animSpeed1;
+                background = tablesLevels.backgroundLevel1;
+                animationSpeed = tablesLevels.animSpeed1;
                 break;
         }
 
@@ -89,6 +90,7 @@ public class GameManager : MonoBehaviour
 
     public void LoseLives (int livesLost)
     {
+        AudioManager.Instance.PlayAudioClip (GameManager.Instance.tablesSounds.playerDestroyed);
         lives -= livesLost;
         CanvasManager.Instance.SetLivesNumber (lives);
     }
@@ -104,19 +106,19 @@ public class GameManager : MonoBehaviour
         switch (levelNumber)
         {
             case 1:
-                color = levelsTables.barColorLevel1;
+                color = tablesLevels.barColorLevel1;
                 break;
             case 2:
-                color = levelsTables.barColorLevel2;
+                color = tablesLevels.barColorLevel2;
                 break;
             case 3:
-                color = levelsTables.barColorLevel3;
+                color = tablesLevels.barColorLevel3;
                 break;
             case 4:
-                color = levelsTables.barColorLevel4;
+                color = tablesLevels.barColorLevel4;
                 break;
             default:
-                color = levelsTables.barColorLevelFinal;
+                color = tablesLevels.barColorLevelFinal;
                 break;
         }
         color.a = 1;

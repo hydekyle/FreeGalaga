@@ -16,3 +16,6 @@ MonoBehaviour:
   gameOver: {fileID: 0}
   basicShot: {fileID: 8300000, guid: e93ed19488473e847b4b1fefaa201504, type: 3}
   specialShot: {fileID: 0}
+  playerDestroyed: {fileID: 8300000, guid: 75a9c31013edc284e8724889805ade6a, type: 3}
+  explosionLow: {fileID: 8300000, guid: 44c3820e452879a4b8cc099018759f68, type: 3}
+  explosionBig: {fileID: 0}

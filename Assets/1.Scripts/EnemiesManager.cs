@@ -17,6 +17,7 @@ public class EnemiesManager : MonoBehaviour
     List<Enemy> enemiesList = new List<Enemy> ();
     List<Transform> levels = new List<Transform> ();
     EZObjectPool explosionsPool;
+    public AudioSource enemiesAudio;
 
     public ScriptableEnemies enemiesTable;
 
@@ -110,19 +111,19 @@ public class EnemiesManager : MonoBehaviour
         switch (levelNumber)
         {
             case 1:
-                levelPrefab = GameManager.Instance.levelsTables.prefabLevel1;
+                levelPrefab = GameManager.Instance.tablesLevels.prefabLevel1;
                 break;
             case 2:
-                levelPrefab = GameManager.Instance.levelsTables.prefabLevel2;
+                levelPrefab = GameManager.Instance.tablesLevels.prefabLevel2;
                 break;
             case 3:
-                levelPrefab = GameManager.Instance.levelsTables.prefabLevel3;
+                levelPrefab = GameManager.Instance.tablesLevels.prefabLevel3;
                 break;
             case 4:
-                levelPrefab = GameManager.Instance.levelsTables.prefabLevel4;
+                levelPrefab = GameManager.Instance.tablesLevels.prefabLevel4;
                 break;
             default:
-                levelPrefab = GameManager.Instance.levelsTables.prefabLevelFinal;
+                levelPrefab = GameManager.Instance.tablesLevels.prefabLevelFinal;
                 break;
         }
 
@@ -135,19 +136,19 @@ public class EnemiesManager : MonoBehaviour
         switch (levelNumber)
         {
             case 1:
-                value = GameManager.Instance.levelsTables.animSpeed1;
+                value = GameManager.Instance.tablesLevels.animSpeed1;
                 break;
             case 2:
-                value = GameManager.Instance.levelsTables.animSpeed2;
+                value = GameManager.Instance.tablesLevels.animSpeed2;
                 break;
             case 3:
-                value = GameManager.Instance.levelsTables.animSpeed3;
+                value = GameManager.Instance.tablesLevels.animSpeed3;
                 break;
             case 4:
-                value = GameManager.Instance.levelsTables.animSpeed4;
+                value = GameManager.Instance.tablesLevels.animSpeed4;
                 break;
             default:
-                value = GameManager.Instance.levelsTables.animSpeedFinal;
+                value = GameManager.Instance.tablesLevels.animSpeedFinal;
                 break;
         }
         return value;
@@ -201,6 +202,7 @@ public class EnemiesManager : MonoBehaviour
         {
             GameManager.Instance.DesactivateOnTime (explosionGO, 0.06f);
         }
+        AudioManager.Instance.PlayAudioClip (GameManager.Instance.tablesSounds.explosionLow);
         enemiesleft--;
         if (enemiesleft % 15 == 0) SetAnimationSpeed (animationSpeed + 1);
         if (enemiesleft == 0) GameManager.Instance.LevelCompleted ();

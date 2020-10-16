@@ -6,7 +6,7 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
     public ScriptableSounds scriptableSounds;
-    public AudioSource audioSource;
+    public AudioSource musicSource, soundsSource;
 
     private void Awake ()
     {
@@ -16,7 +16,12 @@ public class AudioManager : MonoBehaviour
 
     public void StartMusic ()
     {
-        audioSource.clip = scriptableSounds.mainTheme;
-        audioSource.Play ();
+        musicSource.clip = scriptableSounds.mainTheme;
+        musicSource.Play ();
+    }
+
+    public void PlayAudioClip (AudioClip clip)
+    {
+        soundsSource.PlayOneShot (clip);
     }
 }

@@ -10,7 +10,6 @@ public class Player : MonoBehaviour
     EZObjectPool playerShots;
     float lastTimeShot;
     float minPosX = -5f, maxPosX = 5f, minPosY = -4.5f, maxPosY = -2f;
-    AudioSource audioSource;
     AudioClip shotAudioClip;
     Transform gunPoint;
     BoxCollider2D myCollider;
@@ -26,7 +25,6 @@ public class Player : MonoBehaviour
         myCollider = GetComponent<BoxCollider2D> ();
         gunPoint = transform.Find ("GunPoint");
         shotAudioClip = AudioManager.Instance.scriptableSounds.basicShot;
-        audioSource = GetComponent<AudioSource> ();
         playerShots = EZObjectPool.CreateObjectPool (playerShot, "PlayerShots", 4, true, true, true);
     }
 
@@ -42,7 +40,7 @@ public class Player : MonoBehaviour
         {
             go.GetComponent<Rigidbody2D> ().velocity = Vector2.up * stats.shootSpeed * 10;
             lastTimeShot = Time.time;
-            audioSource.PlayOneShot (shotAudioClip);
+            AudioManager.Instance.PlayAudioClip (shotAudioClip);
         }
     }
 

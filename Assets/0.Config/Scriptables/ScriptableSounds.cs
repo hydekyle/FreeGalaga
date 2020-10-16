@@ -12,4 +12,6 @@ public class ScriptableSounds : ScriptableObject
     [Header ("Sonidos")]
     public AudioClip basicShot;
     public AudioClip specialShot;
+    public AudioClip playerDestroyed;
+    public AudioClip explosionLow, explosionBig;
 }
