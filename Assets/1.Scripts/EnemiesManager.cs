@@ -204,7 +204,8 @@ public class EnemiesManager : MonoBehaviour
         }
         AudioManager.Instance.PlayAudioClip (GameManager.Instance.tablesSounds.explosionLow);
         enemiesleft--;
-        if (enemiesleft % 15 == 0) SetAnimationSpeed (animationSpeed + 1);
+        if (enemiesleft % 4 == 0) MakeCrazyEnemy ();
+        if (enemiesleft % 10 == 0) SetAnimationSpeed (animationSpeed + 0.5f);
         if (enemiesleft == 0) GameManager.Instance.LevelCompleted ();
         else if (enemiesleft == 1) SetAnimationSpeed (animationSpeed * 2);
     }

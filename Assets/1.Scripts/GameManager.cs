@@ -79,7 +79,7 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKey (KeyCode.Mouse0) && gameIsActive) player.Disparar ();
         if (Input.GetKeyDown (KeyCode.Mouse0) && lives == 0) SceneManager.LoadScene (0);
-        if (Input.GetKeyDown (KeyCode.Mouse1)) EnemiesManager.Instance.MakeCrazyEnemy ();
+        //if (Input.GetKeyDown (KeyCode.Mouse1)) EnemiesManager.Instance.MakeCrazyEnemy ();
     }
 
     public void RestartLevel ()

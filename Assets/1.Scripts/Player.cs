@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
     public Stats stats;
     EZObjectPool playerShots;
     float lastTimeShot;
-    float minPosX = -5f, maxPosX = 5f, minPosY = -4.5f, maxPosY = -2f;
+    float minPosX = -3.8f, maxPosX = 3.8f, minPosY = -4.5f, maxPosY = -2f;
     AudioClip shotAudioClip;
     Transform gunPoint;
     BoxCollider2D myCollider;
@@ -28,9 +28,13 @@ public class Player : MonoBehaviour
         playerShots = EZObjectPool.CreateObjectPool (playerShot, "PlayerShots", 4, true, true, true);
     }
 
+    float myVelocity;
+
     void Update ()
     {
-        transform.position += new Vector3 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical"), 0) * Time.deltaTime * stats.movementVelocity;
+        var targetVelocity = Input.GetKey (KeyCode.Mouse0) ? stats.movementVelocity / 1.8f : stats.movementVelocity;
+        myVelocity = Mathf.Lerp (myVelocity, targetVelocity, Time.deltaTime * 10);
+        transform.position += new Vector3 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical"), 0) * Time.deltaTime * myVelocity;
         transform.position = new Vector3 (Mathf.Clamp (transform.position.x, minPosX, maxPosX), Mathf.Clamp (transform.position.y, minPosY, maxPosY), 0);
     }
 

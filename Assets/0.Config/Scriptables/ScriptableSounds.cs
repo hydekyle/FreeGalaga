@@ -7,11 +7,12 @@ public class ScriptableSounds : ScriptableObject
 {
     [Header ("Músicas")]
     public AudioClip mainTheme;
-    public AudioClip gameOver;
 
     [Header ("Sonidos")]
     public AudioClip basicShot;
     public AudioClip specialShot;
     public AudioClip playerDestroyed;
     public AudioClip explosionLow, explosionBig;
+    public AudioClip shieldBuff, shipUpgrade;
+    public AudioClip gameOverSFX;
 }
