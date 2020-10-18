@@ -15,11 +15,8 @@ public class EnemiesManager : MonoBehaviour
     Vector3 defaultPosEnemies;
     Animator enemiesAnimator;
     List<Enemy> enemiesList = new List<Enemy> ();
-    List<Transform> levels = new List<Transform> ();
     EZObjectPool explosionsPool;
     public AudioSource enemiesAudio;
-
-    public ScriptableEnemies enemiesTable;
 
     int forwardSteps = 0; // Veces que los enemigos han avanzado
     int enemiesleft = 0;
@@ -40,12 +37,6 @@ public class EnemiesManager : MonoBehaviour
         defaultPosEnemies = enemiesT.localPosition;
         enemiesAnimator = enemiesT.parent.GetComponent<Animator> ();
         explosionsPool = EZObjectPool.CreateObjectPool (explosionPrefab, "Explosiones", 4, true, true, true);
-        foreach (Transform t in enemiesT) levels.Add (t);
-    }
-
-    Transform GetLevelTransform (int levelNumber)
-    {
-        return levels [levelNumber - 1];
     }
 
     public void Reset ()
@@ -84,25 +75,6 @@ public class EnemiesManager : MonoBehaviour
         foreach (Transform t in go.transform) newEnemiesList.Add (t.GetComponent<Enemy> ());
         enemiesList = newEnemiesList;
 
-    }
-
-    private EnemyModel GetEnemyModel (int levelNumber)
-    {
-        EnemyModel enemyModel;
-        switch (levelNumber)
-        {
-            case 1:
-                enemyModel = enemiesTable.level1 [Random.Range (0, enemiesTable.level1.Count)];
-                break;
-            case 2:
-                enemyModel = enemiesTable.level2 [Random.Range (0, enemiesTable.level1.Count)];
-                break;
-            default:
-                enemyModel = enemiesTable.level1 [Random.Range (0, enemiesTable.level1.Count)];
-                break;
-        }
-
-        return enemyModel;
     }
 
     GameObject GetLevelPrefab (int levelNumber)
@@ -188,16 +160,7 @@ public class EnemiesManager : MonoBehaviour
         if (lista.Count == 0) return;
 
         var enemy = lista [Random.Range (0, lista.Count)];
-
-        switch (enemy.ID)
-        {
-            case "2B":
-                enemy.SetBehavior (EnemyBehavior.PointAndShoot);
-                break;
-            default:
-                enemy.SetBehavior (EnemyBehavior.Kamikaze);
-                break;
-        }
+        enemy.SetBehavior (enemy.defaultBehavior);
     }
 
     public void SetAnimationSpeed (float speed)

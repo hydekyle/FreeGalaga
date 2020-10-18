@@ -695,7 +695,6 @@ MonoBehaviour:
   explosionPrefab: {fileID: 1611615205289938810, guid: e18ebc9bc9c67d1418ff030aa0977266, type: 3}
   enemiesT: {fileID: 1515216073}
   enemiesAudio: {fileID: 0}
-  enemiesTable: {fileID: 11400000, guid: 95d1818983f557146abd6e3283eddd24, type: 2}
 --- !u!4 &488060943
 Transform:
   m_ObjectHideFlags: 0
@@ -1200,7 +1199,7 @@ Transform:
   m_GameObject: {fileID: 911732563}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -3.18, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.24578701, y: 0.24578701, z: 0.24578701}
   m_Children:
   - {fileID: 1663861746}
   m_Father: {fileID: 0}
@@ -1221,10 +1220,11 @@ MonoBehaviour:
   playerShot: {fileID: 4674503822870743029, guid: 6ba947c1be3d00e498fca6406bdad386, type: 3}
   stats:
     health: 11
-    damage: 2
-    movementVelocity: 3
-    shootCooldown: 3
-    shootSpeed: 3
+    damage: 111
+    movementVelocity: 5
+    shootCooldown: 5
+    shootSpeed: 5
+  playerLevel: 0
 --- !u!61 &911732567
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1238,18 +1238,18 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.029785156}
+  m_Offset: {x: 0.017778754, y: -0.017795116}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.52666664, y: 0.64}
+    oldSize: {x: 1.975, y: 2.4}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.7, y: 0.80281067}
+  m_Size: {x: 1.3490834, y: 1.5687959}
   m_EdgeRadius: 0
 --- !u!50 &911732568
 Rigidbody2D:
@@ -2017,6 +2017,7 @@ MonoBehaviour:
   player: {fileID: 911732566}
   gameIsActive: 0
   activeLevelNumber: 0
+  tablesEtc: {fileID: 11400000, guid: 4b0f27825b10ff349bf6d5f6aa4cc6be, type: 2}
   tablesLevels: {fileID: 11400000, guid: ae0b94fa7657c85438c53ca0847ed761, type: 2}
   tablesSounds: {fileID: 11400000, guid: ea939c3f0f44fe541b678c53ad879eb7, type: 2}
   lives: 3

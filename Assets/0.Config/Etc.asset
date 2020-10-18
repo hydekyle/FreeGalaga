@@ -15,7 +15,8 @@ MonoBehaviour:
   navesJugador:
   - {fileID: 21300000, guid: d7575a8149ff4c54ca6a3e9f617f50a4, type: 3}
   - {fileID: -6596058969607702259, guid: 1a112f4a173160f4abfebd63e7cf1104, type: 3}
-  - {fileID: -6596058969607702259, guid: 1a112f4a173160f4abfebd63e7cf1104, type: 3}
+  - {fileID: -1025412334162026258, guid: b553374732947144d8d43aef51b61c43, type: 3}
+  - {fileID: 9044042778717724469, guid: 20be347966ea6aa4681f245e9f38bf1c, type: 3}
   disparos:
   - sprite: {fileID: 21300000, guid: d7575a8149ff4c54ca6a3e9f617f50a4, type: 3}
     name: 

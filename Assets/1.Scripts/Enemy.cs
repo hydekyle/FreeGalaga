@@ -4,20 +4,30 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    public EnemyBehavior defaultBehavior = EnemyBehavior.Kamikaze;
     public Stats stats;
-    [HideInInspector]
-    public string ID;
-    [HideInInspector]
-    public Transform playerT;
+
     [HideInInspector]
     public EnemyBehavior activeBehavior = EnemyBehavior.None;
+    [HideInInspector]
+    public Transform playerT;
+
     [HideInInspector]
     public bool alive = true;
     Vector3 targetPos;
     float lastTimeShot;
+    SpriteRenderer spriteRenderer;
+
+    public string ID;
 
     private void Start ()
     {
+        Initialize ();
+    }
+
+    void Initialize ()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer> ();
         playerT = GameManager.Instance.player.transform;
         ID = transform.name.Split (' ') [1].Substring (0, 2);
     }
@@ -114,19 +124,23 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    void Unparent ()
+    {
+        transform.parent = null;
+        spriteRenderer.sortingOrder = 1;
+    }
+
     void BehaviorChasePlayer ()
     {
         int velocity = stats.movementVelocity;
         velocity = Mathf.Clamp (velocity * (int) EnemiesManager.Instance.animationSpeed, 1, 20);
         stats.movementVelocity = velocity;
-        transform.parent = null;
-        GetComponent<SpriteRenderer> ().sortingOrder = 1;
         activeBehavior = EnemyBehavior.Kamikaze;
+        Unparent ();
     }
 
     public void BehaviorPointAndShoot ()
     {
-        transform.parent = null;
         targetPos = playerT.position + Vector3.up * Random.Range (0f, 4f) + Vector3.right * Random.Range (-1.5f, 1.5f);
         targetPos = new Vector3 (
             Mathf.Clamp (targetPos.x, GameManager.Instance.minPosX, GameManager.Instance.maxPosX),
@@ -134,6 +148,7 @@ public class Enemy : MonoBehaviour
             0
         );
         activeBehavior = EnemyBehavior.PointAndShoot;
+        Unparent ();
     }
 
     public void BehaviorShooter ()

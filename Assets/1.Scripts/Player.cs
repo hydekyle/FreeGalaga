@@ -31,9 +31,9 @@ public class Player : MonoBehaviour
 
     void Update ()
     {
-        var targetVelocity = Input.GetKey (KeyCode.Mouse0) ? stats.movementVelocity / 1.8f : stats.movementVelocity;
-        myVelocity = Mathf.Lerp (myVelocity, targetVelocity, Time.deltaTime * 10);
-        transform.position += new Vector3 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical"), 0) * Time.deltaTime * myVelocity;
+        // var targetVelocity = Input.GetKey (KeyCode.Mouse0) ? stats.movementVelocity / 1.8f : stats.movementVelocity;
+        // myVelocity = Mathf.Lerp (myVelocity, targetVelocity, Time.deltaTime * 10);
+        transform.position += new Vector3 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical"), 0) * Time.deltaTime * stats.movementVelocity;
         transform.position = new Vector3 (Mathf.Clamp (transform.position.x, minPosX, maxPosX), Mathf.Clamp (transform.position.y, minPosY, maxPosY), 0);
     }
 
@@ -74,6 +74,24 @@ public class Player : MonoBehaviour
         spriteRenderer.color = Color.white;
         EnemiesManager.Instance.SetAnimationSpeed (lastSpeed);
         myCollider.enabled = true;
+    }
+
+    public int playerLevel = 0;
+
+    public void LevelUp ()
+    {
+        playerLevel++;
+        stats.movementVelocity += 1;
+        stats.shootSpeed += 1;
+        stats.shootCooldown += 1;
+        try
+        {
+            GetComponent<SpriteRenderer> ().sprite = GameManager.Instance.tablesEtc.navesJugador [playerLevel];
+        }
+        catch
+        {
+            Debug.Log ("El jugador sube de nivel pero no se ha asignado un Sprite para la nueva nave.");
+        }
     }
 
     private void OnTriggerEnter2D (Collider2D other)

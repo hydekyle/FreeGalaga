@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public Player player;
     public bool gameIsActive = false;
     public int activeLevelNumber = 0;
+    public ScriptableEtc tablesEtc;
     public ScriptableLevels tablesLevels;
     public ScriptableSounds tablesSounds;
     public int lives = 3;
@@ -56,13 +57,21 @@ public class GameManager : MonoBehaviour
 
         switch (levelNumber)
         {
+            case 1:
+                background = tablesLevels.backgroundLevel1;
+                animationSpeed = tablesLevels.animSpeed1;
+                break;
             case 2:
                 background = tablesLevels.backgroundLevel2;
                 animationSpeed = tablesLevels.animSpeed2;
                 break;
+            case 3:
+                background = tablesLevels.backgroundLevel3;
+                animationSpeed = tablesLevels.animSpeed3;
+                break;
             default:
-                background = tablesLevels.backgroundLevel1;
-                animationSpeed = tablesLevels.animSpeed1;
+                background = tablesLevels.backgroundLevelFinal;
+                animationSpeed = tablesLevels.animSpeedFinal;
                 break;
         }
 
@@ -76,7 +85,13 @@ public class GameManager : MonoBehaviour
     {
         gameIsActive = false;
         EnemiesManager.Instance.ClearAllEnemies ();
-        Invoke ("LoadNextLevel", 2.5f);
+        Invoke ("PlayerLevelUp", 1.2f);
+        Invoke ("LoadNextLevel", 2.6f);
+    }
+
+    public void PlayerLevelUp ()
+    {
+        player.LevelUp ();
     }
 
     public void GameOver ()
@@ -85,7 +100,6 @@ public class GameManager : MonoBehaviour
         EnemiesManager.Instance.StopEnemies ();
         gameIsActive = false;
         LoseLives (lives);
-        print ("Game Over");
     }
 
     private void Update ()
