@@ -1217,7 +1217,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5b70727aa27f5a4c8582c91a3ea0de9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerShot: {fileID: 4674503822870743029, guid: 6ba947c1be3d00e498fca6406bdad386, type: 3}
+  shotPrefab: {fileID: 4674503822870743029, guid: 6ba947c1be3d00e498fca6406bdad386, type: 3}
   stats:
     health: 11
     damage: 111

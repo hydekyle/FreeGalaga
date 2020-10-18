@@ -5,7 +5,7 @@ using EZObjectPools;
 
 public class Player : MonoBehaviour
 {
-    public GameObject playerShot;
+    public GameObject shotPrefab;
     public Stats stats;
     EZObjectPool playerShots;
     float lastTimeShot;
@@ -24,15 +24,19 @@ public class Player : MonoBehaviour
         myCollider = GetComponent<BoxCollider2D> ();
         gunPoint = transform.Find ("GunPoint");
         shotAudioClip = AudioManager.Instance.scriptableSounds.basicShot;
-        playerShots = EZObjectPool.CreateObjectPool (playerShot, "PlayerShots", 4, true, true, true);
+        SetBulletsPool (0);
     }
 
-    float myVelocity;
+    void SetBulletsPool (int level)
+    {
+        playerShots?.ClearPool ();
+        var newShotPrefab = shotPrefab;
+        newShotPrefab.GetComponent<SpriteRenderer> ().sprite = GameManager.Instance.tablesEtc.disparosJugador [level];
+        playerShots = EZObjectPool.CreateObjectPool (newShotPrefab, "PlayerShots" + level, 4, true, true, true);
+    }
 
     void Update ()
     {
-        // var targetVelocity = Input.GetKey (KeyCode.Mouse0) ? stats.movementVelocity / 1.8f : stats.movementVelocity;
-        // myVelocity = Mathf.Lerp (myVelocity, targetVelocity, Time.deltaTime * 10);
         transform.position += new Vector3 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical"), 0) * Time.deltaTime * stats.movementVelocity;
         transform.position = new Vector3 (Mathf.Clamp (transform.position.x, minPosX, maxPosX), Mathf.Clamp (transform.position.y, minPosY, maxPosY), 0);
     }
@@ -65,6 +69,7 @@ public class Player : MonoBehaviour
 
     IEnumerator InmuneTime (float time)
     {
+        var lastLevel = GameManager.Instance.activeLevelNumber;
         var lastSpeed = EnemiesManager.Instance.animationSpeed;
         EnemiesManager.Instance.SetAnimationSpeed (0);
         lastTimeShot = Time.time + time;
@@ -72,7 +77,7 @@ public class Player : MonoBehaviour
         spriteRenderer.color = Color.yellow;
         yield return new WaitForSeconds (time);
         spriteRenderer.color = Color.white;
-        EnemiesManager.Instance.SetAnimationSpeed (lastSpeed);
+        if (lastLevel == GameManager.Instance.activeLevelNumber) EnemiesManager.Instance.SetAnimationSpeed (lastSpeed);
         myCollider.enabled = true;
     }
 
@@ -84,14 +89,20 @@ public class Player : MonoBehaviour
         stats.movementVelocity += 1;
         stats.shootSpeed += 1;
         stats.shootCooldown += 1;
+
         try
         {
+            Sprite newDisparosSprite = GameManager.Instance.tablesEtc.disparosJugador [playerLevel];
+            SetBulletsPool (playerLevel);
             GetComponent<SpriteRenderer> ().sprite = GameManager.Instance.tablesEtc.navesJugador [playerLevel];
+            shotPrefab.GetComponent<SpriteRenderer> ().sprite = newDisparosSprite;
         }
         catch
         {
             Debug.Log ("El jugador sube de nivel pero no se ha asignado un Sprite para la nueva nave.");
         }
+        AudioManager.Instance.PlayAudioClip (GameManager.Instance.tablesSounds.shipUpgrade);
+
     }
 
     private void OnTriggerEnter2D (Collider2D other)

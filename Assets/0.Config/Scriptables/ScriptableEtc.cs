@@ -6,6 +6,6 @@ using UnityEngine;
 public class ScriptableEtc : ScriptableObject
 {
     public List<Sprite> navesJugador = new List<Sprite> ();
+    public List<Sprite> disparosJugador = new List<Sprite> ();
 
-    public List<ShootModel> disparos = new List<ShootModel> ();
 }
