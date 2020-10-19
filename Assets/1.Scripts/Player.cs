@@ -12,7 +12,7 @@ public class Player : MonoBehaviour
     float minPosX = -3.8f, maxPosX = 3.8f, minPosY = -4.5f, maxPosY = -2f;
     AudioClip shotAudioClip;
     Transform gunPoint;
-    BoxCollider2D myCollider;
+    public BoxCollider2D myCollider;
     public int playerLevel = 1;
 
     private void Start ()
@@ -70,16 +70,10 @@ public class Player : MonoBehaviour
 
     void GetStrike ()
     {
-        myCollider.enabled = false;
-        GameManager.Instance.LoseLives (1);
-        if (GameManager.Instance.lives > 0)
-        {
-            StartCoroutine (InmuneTime (1.5f));
-        }
-        else GameManager.Instance.GameOver ();
+        GameManager.Instance.LoseLives (1, 2f);
     }
 
-    IEnumerator InmuneTime (float time)
+    public IEnumerator InmuneTime (float time)
     {
         var lastLevel = GameManager.Instance.activeLevelNumber;
         var lastSpeed = EnemiesManager.Instance.animationSpeed;

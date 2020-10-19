@@ -101,7 +101,7 @@ public class GameManager : MonoBehaviour
         player.gameObject.SetActive (false);
         EnemiesManager.Instance.StopEnemies ();
         gameIsActive = false;
-        LoseLives (lives);
+        LoseLives (lives, 0f);
     }
 
     private void Update ()
@@ -117,11 +117,17 @@ public class GameManager : MonoBehaviour
         EnemiesManager.Instance.Reset ();
     }
 
-    public void LoseLives (int livesLost)
+    public void LoseLives (int livesLost, float inmuneTime)
     {
         AudioManager.Instance.PlayAudioClip (GameManager.Instance.tablesSounds.playerDestroyed);
         lives -= livesLost;
         CanvasManager.Instance.SetLivesNumber (lives);
+        if (lives > 0)
+        {
+            player.myCollider.enabled = false;
+            StartCoroutine (player.InmuneTime (inmuneTime));
+        }
+        else GameOver ();
     }
 
     public int GetLevelNumber ()

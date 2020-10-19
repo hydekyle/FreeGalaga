@@ -50,7 +50,7 @@ public class EnemiesManager : MonoBehaviour
     public void EnemyTouchBottom ()
     {
         RestartPositions ();
-        GameManager.Instance.LoseLives (1);
+        GameManager.Instance.LoseLives (1, 0.5f);
     }
 
     public void RestartPositions ()
@@ -91,22 +91,33 @@ public class EnemiesManager : MonoBehaviour
 
     void ReloadEnemies ()
     {
+        List<Enemy> newEnemies = new List<Enemy> ();
+        var enemiesAlive = enemiesList.FindAll (enemy => enemy.alive);
+        print (enemiesAlive.Count);
+
         var levelNumber = GameManager.Instance.activeLevelNumber;
-        var go = Instantiate (GetLevelPrefab (levelNumber), Vector3.zero, Quaternion.identity, enemiesT);
-        var kills = go.transform.childCount - enemiesleft;
-        kills++;
-        for (var x = 0; x < kills; x++) go.transform.GetChild (x).gameObject.SetActive (false); // Remove killed ones
+        var go = Instantiate (GetLevelPrefab (levelNumber), Vector3.zero, Quaternion.identity);
+
+        foreach (Transform t in go.transform) t.gameObject.SetActive (false); // Desactivar todos del nuevo GO
+
+        foreach (Enemy enemy in enemiesAlive)
+        {
+            var newEnemyT = go.transform.Find (enemy.transform.name);
+            newEnemyT.gameObject.SetActive (true); // Activar sólo los que quedaron vivos
+            newEnemies.Add (newEnemyT.GetComponent<Enemy> ());
+        }
+
+        ClearAllEnemies ();
+
+        go.transform.SetParent (enemiesT);
+
+        enemiesList = newEnemies;
+
         go.transform.localPosition = Vector3.zero;
         enemiesAnimator.Play ("Enemies");
         enemiesAnimator.enabled = true;
         SetAnimationSpeed (animationSpeed);
         GameManager.Instance.gameIsActive = true;
-        List<Enemy> newEnemiesList = new List<Enemy> ();
-        foreach (Transform t in go.transform)
-        {
-            if (t.gameObject.activeSelf) newEnemiesList.Add (t.GetComponent<Enemy> ());
-        }
-        enemiesList = newEnemiesList;
     }
 
     GameObject GetLevelPrefab (int levelNumber)
