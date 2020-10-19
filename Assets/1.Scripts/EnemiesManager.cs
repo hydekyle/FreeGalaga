@@ -169,6 +169,11 @@ public class EnemiesManager : MonoBehaviour
         enemiesAnimator.speed = animationSpeed;
     }
 
+    bool IsFinalLevel ()
+    {
+        return GameManager.Instance.activeLevelNumber == 5;
+    }
+
     public void EnemyDestroyed (Enemy enemy)
     {
         if (explosionsPool.TryGetNextObject (enemy.transform.position, Quaternion.identity, out GameObject explosionGO))
@@ -176,11 +181,15 @@ public class EnemiesManager : MonoBehaviour
             GameManager.Instance.DesactivateOnTime (explosionGO, 0.06f);
         }
         AudioManager.Instance.PlayAudioClip (GameManager.Instance.tablesSounds.explosionLow);
-        enemiesleft--;
-        if (enemiesleft % 3 == 0) MakeCrazyEnemy ();
-        if (enemiesleft % 10 == 0) SetAnimationSpeed (animationSpeed + 0.5f);
-        if (enemiesleft == 0) GameManager.Instance.LevelCompleted ();
-        else if (enemiesleft == 1) SetAnimationSpeed (animationSpeed * 2);
+
+        if (!IsFinalLevel ())
+        {
+            enemiesleft--;
+            if (enemiesleft % 3 == 0) MakeCrazyEnemy ();
+            if (enemiesleft % 10 == 0) SetAnimationSpeed (animationSpeed + 0.5f);
+            if (enemiesleft == 0) GameManager.Instance.LevelCompleted ();
+            else if (enemiesleft == 1) SetAnimationSpeed (animationSpeed * 2);
+        }
     }
 
 }

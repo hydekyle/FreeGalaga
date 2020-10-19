@@ -77,15 +77,6 @@ public class Enemy : MonoBehaviour
         transform.position = Vector3.MoveTowards (transform.position, playerT.position, Time.deltaTime * velocity);
     }
 
-    private void OnTriggerEnter2D (Collider2D other)
-    {
-        if (other.CompareTag ("PlayerShot"))
-        {
-            other.gameObject.SetActive (false);
-            GetStrike (GameManager.Instance.player.stats.damage);
-        }
-    }
-
     void GetStrike (int strikeForce)
     {
         stats.health -= strikeForce;
@@ -154,6 +145,15 @@ public class Enemy : MonoBehaviour
     public void BehaviorShooter ()
     {
 
+    }
+
+    private void OnTriggerEnter2D (Collider2D other)
+    {
+        if (other.CompareTag ("PlayerShot"))
+        {
+            other.gameObject.SetActive (false);
+            GetStrike (GameManager.Instance.player.stats.damage);
+        }
     }
 
 }

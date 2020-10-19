@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
     AudioClip shotAudioClip;
     Transform gunPoint;
     BoxCollider2D myCollider;
+    public int playerLevel = 1;
 
     private void Start ()
     {
@@ -43,12 +44,23 @@ public class Player : MonoBehaviour
 
     public void Disparar ()
     {
-        if (isShootAvailable () && playerShots.TryGetNextObject (gunPoint.transform.position, Quaternion.identity, out GameObject go))
+        if (isShootAvailable () && playerShots.TryGetNextObject (GetGunPosition (), Quaternion.identity, out GameObject go))
         {
             go.GetComponent<Rigidbody2D> ().velocity = Vector2.up * stats.shootSpeed * 10;
             lastTimeShot = Time.time;
             AudioManager.Instance.PlayAudioClip (shotAudioClip);
         }
+    }
+
+    bool lastShootRight;
+    Vector3 GetGunPosition ()
+    {
+        if (playerLevel == 4)
+        {
+            lastShootRight = !lastShootRight;
+            return gunPoint.transform.position + (lastShootRight ? Vector3.right / 3 : Vector3.left / 3);
+        }
+        return gunPoint.transform.position;
     }
 
     bool isShootAvailable ()
@@ -81,8 +93,6 @@ public class Player : MonoBehaviour
         myCollider.enabled = true;
     }
 
-    public int playerLevel = 0;
-
     public void LevelUp ()
     {
         playerLevel++;
@@ -92,17 +102,19 @@ public class Player : MonoBehaviour
 
         try
         {
-            Sprite newDisparosSprite = GameManager.Instance.tablesEtc.disparosJugador [playerLevel];
-            SetBulletsPool (playerLevel);
-            GetComponent<SpriteRenderer> ().sprite = GameManager.Instance.tablesEtc.navesJugador [playerLevel];
+            GetComponent<SpriteRenderer> ().sprite = GameManager.Instance.tablesEtc.navesJugador [playerLevel - 1];
+            SetBulletsPool (playerLevel - 1);
+        }
+        catch
+        { }
+        try
+        {
+            Sprite newDisparosSprite = GameManager.Instance.tablesEtc.disparosJugador [playerLevel - 1];
             shotPrefab.GetComponent<SpriteRenderer> ().sprite = newDisparosSprite;
         }
         catch
-        {
-            Debug.Log ("El jugador sube de nivel pero no se ha asignado un Sprite para la nueva nave.");
-        }
+        { }
         AudioManager.Instance.PlayAudioClip (GameManager.Instance.tablesSounds.shipUpgrade);
-
     }
 
     private void OnTriggerEnter2D (Collider2D other)

@@ -11,6 +11,19 @@ public enum EnemyBehavior
     Shooter
 }
 
+public enum ScreenPosition
+{
+    TopLeft,
+    TopMid,
+    TopRight,
+    MidLeft,
+    MidMid,
+    MidRight,
+    BotLeft,
+    BotMid,
+    BotRight
+}
+
 [Serializable]
 public struct EnemyModel
 {

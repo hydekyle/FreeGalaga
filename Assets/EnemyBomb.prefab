@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5701874950152590247
+--- !u!1 &39109363010216197
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,38 +8,38 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2617405579277009737}
-  - component: {fileID: 4799134614331140447}
-  - component: {fileID: 1905526440080624513}
-  - component: {fileID: 6496239817529995696}
+  - component: {fileID: 39109363010216201}
+  - component: {fileID: 39109363010216200}
+  - component: {fileID: 39109363010216203}
+  - component: {fileID: 39109363010216202}
   m_Layer: 0
-  m_Name: Enemy 1B
-  m_TagString: Enemy
+  m_Name: EnemyBomb
+  m_TagString: EnemyShot
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2617405579277009737
+--- !u!4 &39109363010216201
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5701874950152590247}
-  m_LocalRotation: {x: -0, y: -0, z: -0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 1.05, y: 0, z: 0}
-  m_LocalScale: {x: 0.25686, y: 0.25686, z: 0.25686}
+  m_GameObject: {fileID: 39109363010216197}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.0202676, y: 0.059735015, z: -0.6011354}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
---- !u!212 &4799134614331140447
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &39109363010216200
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5701874950152590247}
+  m_GameObject: {fileID: 39109363010216197}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -73,63 +73,61 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -301290188327071341, guid: b066ced6ae40c344189d0d4fc76a597a, type: 3}
+  m_Sprite: {fileID: 9166231769430227554, guid: b553374732947144d8d43aef51b61c43, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.4, y: 1.35}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &1905526440080624513
+--- !u!61 &39109363010216203
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5701874950152590247}
+  m_GameObject: {fileID: 39109363010216197}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.022795618, y: -0.044508412}
+  m_Offset: {x: 0.07488942, y: -0.14145678}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.45, y: 1.75}
-    newSize: {x: 1, y: 1}
+    oldSize: {x: 3.2, y: 3.1}
+    newSize: {x: 1.4, y: 1.35}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.0405693, y: 1.0797359}
+  m_Size: {x: 1.5524373, y: 1.5522906}
   m_EdgeRadius: 0
---- !u!114 &6496239817529995696
-MonoBehaviour:
+--- !u!50 &39109363010216202
+Rigidbody2D:
+  serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5701874950152590247}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f035461c75447ca49be1bcc4862e5c77, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  defaultBehavior: 1
-  stats:
-    health: 1
-    damage: 2
-    movementVelocity: 2
-    shootCooldown: 2
-    shootSpeed: 2
-  activeBehavior: 0
-  playerT: {fileID: 0}
-  alive: 1
-  ID: 1B
+  m_GameObject: {fileID: 39109363010216197}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
