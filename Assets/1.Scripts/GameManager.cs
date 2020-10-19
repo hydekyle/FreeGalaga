@@ -101,7 +101,6 @@ public class GameManager : MonoBehaviour
         player.gameObject.SetActive (false);
         EnemiesManager.Instance.StopEnemies ();
         gameIsActive = false;
-        LoseLives (lives, 0f);
     }
 
     private void Update ()
