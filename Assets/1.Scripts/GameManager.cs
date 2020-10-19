@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
 
     public GameObject bulletEnemyPrefab;
     [HideInInspector]
-    public EZObjectPool enemyBulletsPool;
+    public EZObjectPool enemyBulletsPoolGreen, enemyBulletsPoolRed, enemyBulletsPoolFire;
 
     public float minPosX = -3.8f, maxPosX = 3.8f, minPosY = -4.5f, maxPosY = -2f;
 
@@ -35,7 +35,9 @@ public class GameManager : MonoBehaviour
 
     void Initialize ()
     {
-        enemyBulletsPool = EZObjectPool.CreateObjectPool (bulletEnemyPrefab, "Bullets Enemy", 9, true, true, true);
+        enemyBulletsPoolGreen = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [0], "Bullets Enemy Green", 9, false, true, true);
+        enemyBulletsPoolRed = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [1], "Bullets Enemy Red", 9, false, true, true);
+        enemyBulletsPoolFire = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [2], "Bullets Enemy Fire", 9, false, true, true);
     }
 
     public void StartGame ()

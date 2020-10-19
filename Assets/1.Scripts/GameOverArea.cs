@@ -6,6 +6,6 @@ public class GameOverArea : MonoBehaviour
 {
     private void OnTriggerEnter2D (Collider2D other)
     {
-        if (other.CompareTag ("Enemy")) GameManager.Instance.GameOver ();
+        if (other.CompareTag ("Enemy")) EnemiesManager.Instance.EnemyTouchBottom ();
     }
 }

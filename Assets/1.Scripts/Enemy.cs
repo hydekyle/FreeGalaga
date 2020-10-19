@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using EZObjectPools;
 
 public class Enemy : MonoBehaviour
 {
     public EnemyBehavior defaultBehavior = EnemyBehavior.Kamikaze;
+    public BulletType bulletType = BulletType.GreenBullet;
+    public bool shootAtStart = false;
     public Stats stats;
 
     [HideInInspector]
@@ -18,11 +21,18 @@ public class Enemy : MonoBehaviour
     float lastTimeShot;
     SpriteRenderer spriteRenderer;
 
+    EZObjectPool myBulletPool;
+
     public string ID;
 
     private void Start ()
     {
         Initialize ();
+        if (shootAtStart)
+        {
+            lastTimeShot = Time.time + Random.Range (0.1f, 18f) / stats.shootCooldown;
+            activeBehavior = EnemyBehavior.Shooter;
+        }
     }
 
     void Initialize ()
@@ -30,6 +40,19 @@ public class Enemy : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer> ();
         playerT = GameManager.Instance.player.transform;
         ID = transform.name.Split (' ') [1].Substring (0, 2);
+
+        switch (bulletType)
+        {
+            case BulletType.FireBullet:
+                myBulletPool = GameManager.Instance.enemyBulletsPoolFire;
+                break;
+            case BulletType.RedBullet:
+                myBulletPool = GameManager.Instance.enemyBulletsPoolRed;
+                break;
+            default:
+                myBulletPool = GameManager.Instance.enemyBulletsPoolGreen;
+                break;
+        }
     }
 
     private void Update ()
@@ -38,27 +61,28 @@ public class Enemy : MonoBehaviour
         {
             if (activeBehavior == EnemyBehavior.Kamikaze) ChasePlayer ();
             else if (activeBehavior == EnemyBehavior.PointAndShoot) PointAndShot ();
+            else if (activeBehavior == EnemyBehavior.Shooter && IsShootAvailable ()) Shoot ();
         }
     }
 
     void Shoot ()
     {
-        if (GameManager.Instance.enemyBulletsPool.TryGetNextObject (transform.position, Quaternion.identity, out GameObject bullet))
+        if (myBulletPool.TryGetNextObject (transform.position, Quaternion.identity, out GameObject bullet))
         {
-            bullet.GetComponent<Rigidbody2D> ().velocity = Vector3.down * stats.damage;
-            lastTimeShot = Time.time;
+            bullet.GetComponent<Rigidbody2D> ().velocity = Vector3.down * stats.shootSpeed;
+            lastTimeShot = Time.time + Random.Range (9f, 18f) / stats.shootCooldown;
         }
     }
 
-    bool isShootAvailable ()
+    bool IsShootAvailable ()
     {
-        return Time.time > lastTimeShot + Random.Range (2.8f, 6.66f) / stats.shootCooldown;
+        return Time.time > lastTimeShot;
     }
 
     void PointAndShot ()
     {
         var distanceToTarget = Vector3.Distance (transform.position, targetPos);
-        if (Mathf.Approximately (distanceToTarget, 0f) && isShootAvailable ())
+        if (Mathf.Approximately (distanceToTarget, 0f) && IsShootAvailable ())
         {
             Shoot ();
         }
@@ -132,19 +156,20 @@ public class Enemy : MonoBehaviour
 
     public void BehaviorPointAndShoot ()
     {
-        targetPos = playerT.position + Vector3.up * Random.Range (0f, 4f) + Vector3.right * Random.Range (-1.5f, 1.5f);
+        targetPos = playerT.position + Vector3.up * Random.Range (1.5f, 5f) + Vector3.right * Random.Range (-1.5f, 1.5f);
         targetPos = new Vector3 (
             Mathf.Clamp (targetPos.x, GameManager.Instance.minPosX, GameManager.Instance.maxPosX),
             Mathf.Clamp (targetPos.y, playerT.position.y + 1, transform.position.y),
             0
         );
         activeBehavior = EnemyBehavior.PointAndShoot;
+        lastTimeShot = 0f;
         Unparent ();
     }
 
     public void BehaviorShooter ()
     {
-
+        activeBehavior = EnemyBehavior.Shooter;
     }
 
     private void OnTriggerEnter2D (Collider2D other)

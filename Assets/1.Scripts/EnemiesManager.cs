@@ -47,6 +47,19 @@ public class EnemiesManager : MonoBehaviour
         SetAnimationSpeed (GetLevelSpeed (GameManager.Instance.activeLevelNumber));
     }
 
+    public void EnemyTouchBottom ()
+    {
+        RestartPositions ();
+        GameManager.Instance.LoseLives (1);
+    }
+
+    public void RestartPositions ()
+    {
+        StopEnemies ();
+        Reset ();
+        ReloadEnemies ();
+    }
+
     public void ClearAllEnemies ()
     {
         if (enemiesT.childCount > 0)
@@ -74,7 +87,26 @@ public class EnemiesManager : MonoBehaviour
         List<Enemy> newEnemiesList = new List<Enemy> ();
         foreach (Transform t in go.transform) newEnemiesList.Add (t.GetComponent<Enemy> ());
         enemiesList = newEnemiesList;
+    }
 
+    void ReloadEnemies ()
+    {
+        var levelNumber = GameManager.Instance.activeLevelNumber;
+        var go = Instantiate (GetLevelPrefab (levelNumber), Vector3.zero, Quaternion.identity, enemiesT);
+        var kills = go.transform.childCount - enemiesleft;
+        kills++;
+        for (var x = 0; x < kills; x++) go.transform.GetChild (x).gameObject.SetActive (false); // Remove killed ones
+        go.transform.localPosition = Vector3.zero;
+        enemiesAnimator.Play ("Enemies");
+        enemiesAnimator.enabled = true;
+        SetAnimationSpeed (animationSpeed);
+        GameManager.Instance.gameIsActive = true;
+        List<Enemy> newEnemiesList = new List<Enemy> ();
+        foreach (Transform t in go.transform)
+        {
+            if (t.gameObject.activeSelf) newEnemiesList.Add (t.GetComponent<Enemy> ());
+        }
+        enemiesList = newEnemiesList;
     }
 
     GameObject GetLevelPrefab (int levelNumber)

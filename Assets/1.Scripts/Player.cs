@@ -30,9 +30,9 @@ public class Player : MonoBehaviour
 
     void SetBulletsPool (int level)
     {
+        if (level > GameManager.Instance.tablesEtc.disparosJugador.Count) return;
         playerShots?.ClearPool ();
-        var newShotPrefab = shotPrefab;
-        newShotPrefab.GetComponent<SpriteRenderer> ().sprite = GameManager.Instance.tablesEtc.disparosJugador [level];
+        var newShotPrefab = GameManager.Instance.tablesEtc.disparosJugador [level];
         playerShots = EZObjectPool.CreateObjectPool (newShotPrefab, "PlayerShots" + level, 4, true, true, true);
     }
 
@@ -95,26 +95,21 @@ public class Player : MonoBehaviour
 
     public void LevelUp ()
     {
+        AudioManager.Instance.PlayAudioClip (GameManager.Instance.tablesSounds.shipUpgrade);
         playerLevel++;
         stats.movementVelocity += 1;
         stats.shootSpeed += 1;
         stats.shootCooldown += 1;
 
+        SetBulletsPool (playerLevel - 1);
+
         try
         {
             GetComponent<SpriteRenderer> ().sprite = GameManager.Instance.tablesEtc.navesJugador [playerLevel - 1];
-            SetBulletsPool (playerLevel - 1);
+
         }
         catch
         { }
-        try
-        {
-            Sprite newDisparosSprite = GameManager.Instance.tablesEtc.disparosJugador [playerLevel - 1];
-            shotPrefab.GetComponent<SpriteRenderer> ().sprite = newDisparosSprite;
-        }
-        catch
-        { }
-        AudioManager.Instance.PlayAudioClip (GameManager.Instance.tablesSounds.shipUpgrade);
     }
 
     private void OnTriggerEnter2D (Collider2D other)

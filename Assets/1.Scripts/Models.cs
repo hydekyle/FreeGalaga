@@ -24,6 +24,13 @@ public enum ScreenPosition
     BotRight
 }
 
+public enum BulletType
+{
+    GreenBullet,
+    RedBullet,
+    FireBullet
+}
+
 [Serializable]
 public struct EnemyModel
 {

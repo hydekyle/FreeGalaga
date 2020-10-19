@@ -62,9 +62,17 @@ public class Boss1 : MonoBehaviour
         nextTimeMoved = Time.time + Random.Range (4f, 9f);
     }
 
+    int lastCannonUsed = -1;
+
     Vector3 GetRandomCannonPos ()
     {
-        return cannons [Random.Range (0, cannons.Count)].position;
+        var randomCannon = Random.Range (0, cannons.Count);
+        if (randomCannon == lastCannonUsed)
+        {
+            randomCannon = randomCannon == cannons.Count - 1 ? 0 : randomCannon + 1;
+        }
+        lastCannonUsed = randomCannon;
+        return cannons [randomCannon].position;
     }
 
     Vector3 GetScreenPos (ScreenPosition screenPos)
