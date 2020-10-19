@@ -30,9 +30,14 @@ public class Enemy : MonoBehaviour
         Initialize ();
         if (shootAtStart)
         {
-            lastTimeShot = Time.time + Random.Range (0.1f, 18f) / stats.shootCooldown;
+            lastTimeShot = Time.time + GetRandomCooldown ();
             activeBehavior = EnemyBehavior.Shooter;
         }
+    }
+
+    float GetRandomCooldown ()
+    {
+        return Random.Range (1f / stats.shootCooldown, Mathf.Clamp (10 - stats.shootSpeed, 1.1f, 10f));
     }
 
     void Initialize ()
@@ -70,7 +75,7 @@ public class Enemy : MonoBehaviour
         if (myBulletPool.TryGetNextObject (transform.position, Quaternion.identity, out GameObject bullet))
         {
             bullet.GetComponent<Rigidbody2D> ().velocity = Vector3.down * stats.shootSpeed;
-            lastTimeShot = Time.time + Random.Range (9f, 18f) / stats.shootCooldown;
+            lastTimeShot = Time.time + GetRandomCooldown ();
         }
     }
 
