@@ -10,6 +10,7 @@ public class GameOverArea : MonoBehaviour
     {
         if (other.CompareTag ("Enemy") && Time.time > lastTimeEntered + 1)
         {
+            if (other.GetComponent<Enemy> ().ID == "4C") return;
             EnemiesManager.Instance.EnemyTouchBottom ();
             lastTimeEntered = Time.time;
         }

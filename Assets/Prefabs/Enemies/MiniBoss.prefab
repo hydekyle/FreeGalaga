@@ -129,10 +129,10 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   stats:
-    health: 100
+    health: 1500
     damage: 11
-    movementVelocity: 2
+    movementVelocity: 1
     shootCooldown: 11
     shootSpeed: 11
-  leftPos: {x: -3.5, y: 0, z: 3.5}
-  rightPos: {x: 0, y: 0, z: 0}
+  leftPos: {x: -2, y: 2, z: 0}
+  rightPos: {x: 2, y: 2, z: 0}

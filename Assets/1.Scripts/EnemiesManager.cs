@@ -225,7 +225,8 @@ public class EnemiesManager : MonoBehaviour
         // Esta parte solo es para el nivel 4
         if (GameManager.Instance.activeLevelNumber == 4 && crazyEnemiesTotal % 2 == 0)
         {
-            enemiesList.FindAll (leader => leader.defaultBehavior == EnemyBehavior.Leader)?.FindAll (alive => alive.alive).Find (isShooter => isShooter.activeBehavior == EnemyBehavior.Shooter)?.SetBehavior (EnemyBehavior.Leader);
+            var laLista = enemiesList.FindAll (leader => leader.defaultBehavior == EnemyBehavior.Leader)?.FindAll (alive => alive.alive)?.FindAll (isShooter => isShooter.activeBehavior == EnemyBehavior.Shooter);
+            if (laLista.Count > 0) laLista [Random.Range (0, laLista.Count)].SetBehavior (EnemyBehavior.Leader);
         }
         crazyEnemiesTotal++;
     }

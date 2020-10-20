@@ -8,18 +8,46 @@ public class MiniBoss : MonoBehaviour
     public List<Enemy> minions = new List<Enemy> ();
     public Stats stats;
     public Vector3 leftPos, rightPos;
+    SpriteRenderer spriteRenderer;
+    Vector3 targetPos = Vector3.up;
 
     bool vulnerable = false;
     float startPingPongTime;
+    float nextTimePosChange;
+
+    private void Start ()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer> ();
+    }
 
     private void FixedUpdate ()
     {
         if (!vulnerable && IsAllMinionsDead ()) LoseVulnerability ();
     }
 
+    void SwitchTargetPos ()
+    {
+        targetPos = targetPos == leftPos ? rightPos : leftPos;
+        nextTimePosChange = Time.time + Random.Range (2.5f, 5f);
+    }
+
     private void Update ()
     {
-        if (vulnerable) transform.position = Vector3.Lerp (transform.position, Vector3.zero, Time.deltaTime * stats.movementVelocity);
+        spriteRenderer.color = Color.Lerp (spriteRenderer.color, Color.white, Time.deltaTime * 15);
+        if (vulnerable)
+        {
+            if (nextTimePosChange < Time.time) SwitchTargetPos ();
+            transform.position = Vector3.Lerp (transform.position, targetPos, Time.deltaTime * stats.movementVelocity);
+        }
+    }
+
+    void ThrowBomb ()
+    {
+        if (GameManager.Instance.enemyBombs.TryGetNextObject (transform.position, Quaternion.identity, out GameObject enemyBomb))
+        {
+            Vector2 bombDirection = Vector2.up * 4 + Vector2.right * Random.Range (-1.8f, 1.8f);
+            enemyBomb.GetComponent<Rigidbody2D> ().AddForce (bombDirection, ForceMode2D.Impulse);
+        }
     }
 
     bool IsAllMinionsDead ()
@@ -33,9 +61,11 @@ public class MiniBoss : MonoBehaviour
 
     void LoseVulnerability ()
     {
-        vulnerable = true;
         EnemiesManager.Instance.StopEnemies ();
-        GetComponent<Animator> ().StopPlayback ();
+        GetComponent<Animator> ().enabled = false;
+        transform.SetParent (null);
+        vulnerable = true;
+        //StartCoroutine (MyRoutine ());
     }
 
     void Die ()
@@ -50,6 +80,7 @@ public class MiniBoss : MonoBehaviour
     {
         stats.health -= strikeDamage;
         if (stats.health <= 0) Die ();
+        else spriteRenderer.color = Color.red;
     }
 
     private void OnTriggerEnter2D (Collider2D other)
@@ -58,6 +89,7 @@ public class MiniBoss : MonoBehaviour
         {
             other.gameObject.SetActive (false);
             if (vulnerable) GetStrike (GameManager.Instance.player.stats.damage);
+            ThrowBomb ();
         }
     }
 

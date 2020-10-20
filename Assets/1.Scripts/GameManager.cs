@@ -14,10 +14,10 @@ public class GameManager : MonoBehaviour
     public ScriptableLevels tablesLevels;
     public ScriptableSounds tablesSounds;
     public int lives = 3;
+    public GameObject bulletEnemyPrefab, bombPrefab;
 
-    public GameObject bulletEnemyPrefab;
     [HideInInspector]
-    public EZObjectPool enemyBulletsPoolGreen, enemyBulletsPoolRed, enemyBulletsPoolFire;
+    public EZObjectPool enemyBulletsPoolGreen, enemyBulletsPoolRed, enemyBulletsPoolFire, enemyBombs;
 
     public float minPosX = -3.8f, maxPosX = 3.8f, minPosY = -4.5f, maxPosY = -2f;
 
@@ -35,9 +35,10 @@ public class GameManager : MonoBehaviour
 
     void Initialize ()
     {
-        enemyBulletsPoolGreen = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [0], "Bullets Enemy Green", 15, false, true, true);
-        enemyBulletsPoolRed = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [1], "Bullets Enemy Red", 15, false, true, true);
-        enemyBulletsPoolFire = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [2], "Bullets Enemy Fire", 15, false, true, true);
+        enemyBulletsPoolGreen = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [0], "Bullets Enemy Green", 12, false, true, true);
+        enemyBulletsPoolRed = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [1], "Bullets Enemy Red", 12, false, true, true);
+        enemyBulletsPoolFire = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [2], "Bullets Enemy Fire", 12, false, true, true);
+        enemyBombs = EZObjectPool.CreateObjectPool (bombPrefab, "Bombs Boss", 9, false, true, true);
     }
 
     public void StartGame ()
@@ -168,6 +169,11 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds (time);
         go.SetActive (false);
+    }
+
+    public void GameFinished ()
+    {
+
     }
 
 }

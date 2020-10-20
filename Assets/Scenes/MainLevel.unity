@@ -1198,7 +1198,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 911732563}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.1185263, y: -2.66, z: -2.2990236}
+  m_LocalPosition: {x: -0.03, y: -4.02, z: -2.2990236}
   m_LocalScale: {x: 0.24578701, y: 0.24578701, z: 0.24578701}
   m_Children:
   - {fileID: 1663861746}
@@ -1220,10 +1220,11 @@ MonoBehaviour:
   shotPrefab: {fileID: 4674503822870743029, guid: 6ba947c1be3d00e498fca6406bdad386, type: 3}
   stats:
     health: 11
-    damage: 2
-    movementVelocity: 4
-    shootCooldown: 4
-    shootSpeed: 4
+    damage: 1
+    movementVelocity: 3
+    shootCooldown: 2
+    shootSpeed: 2
+  myCollider: {fileID: 0}
   playerLevel: 1
 --- !u!61 &911732567
 BoxCollider2D:
@@ -2022,9 +2023,11 @@ MonoBehaviour:
   tablesSounds: {fileID: 11400000, guid: ea939c3f0f44fe541b678c53ad879eb7, type: 2}
   lives: 3
   bulletEnemyPrefab: {fileID: 9046098202265018596, guid: 981529d06ddcab140b6579cf96f57e66, type: 3}
+  bombPrefab: {fileID: 39109363010216197, guid: 22f371b866b4df044a29e148f9cab387, type: 3}
   enemyBulletsPoolGreen: {fileID: 0}
   enemyBulletsPoolRed: {fileID: 0}
   enemyBulletsPoolFire: {fileID: 0}
+  enemyBombs: {fileID: 0}
   minPosX: -3.8
   maxPosX: 3.8
   minPosY: -4.5

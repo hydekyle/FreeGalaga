@@ -101,11 +101,11 @@ MonoBehaviour:
   bulletType: 0
   shootAtStart: 1
   stats:
-    health: 60
+    health: 80
     damage: 2
     movementVelocity: 2
-    shootCooldown: 9
-    shootSpeed: 5
+    shootCooldown: 8
+    shootSpeed: 6
   activeBehavior: 0
   playerT: {fileID: 0}
   alive: 1

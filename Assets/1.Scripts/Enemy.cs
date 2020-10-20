@@ -63,6 +63,7 @@ public class Enemy : MonoBehaviour
 
     private void Update ()
     {
+        spriteRenderer.color = Color.Lerp (spriteRenderer.color, Color.white, Time.deltaTime * 20);
         if (GameManager.Instance.gameIsActive && EnemiesManager.Instance.animationSpeed > 0)
         {
             if (activeBehavior == EnemyBehavior.Kamikaze) ChasePlayer ();
@@ -117,6 +118,7 @@ public class Enemy : MonoBehaviour
     {
         stats.health -= strikeForce;
         if (stats.health <= 0) Die ();
+        else spriteRenderer.color = Color.red;
     }
 
     public void Die ()
@@ -129,11 +131,14 @@ public class Enemy : MonoBehaviour
     {
         if (defaultBehavior == EnemyBehavior.Leader)
         {
+            List<Enemy> tempList = new List<Enemy> ();
             foreach (Transform t in transform)
             {
-                if (!t.gameObject.activeSelf) return;
-                var enemy = t.GetComponent<Enemy> ();
-                t.SetParent (null);
+                if (t.gameObject.activeSelf) tempList.Add (t.GetComponent<Enemy> ());
+            }
+            foreach (Enemy enemy in tempList)
+            {
+                enemy.transform.SetParent (null);
                 enemy.SetBehavior (enemy.defaultBehavior);
                 EnemiesManager.Instance.AddEnemy (enemy);
             }
@@ -191,7 +196,7 @@ public class Enemy : MonoBehaviour
         targetPos = playerT.position + Vector3.up * Random.Range (1.5f, 5f) + Vector3.right * Random.Range (-1.5f, 1.5f);
         targetPos = new Vector3 (
             Mathf.Clamp (targetPos.x, GameManager.Instance.minPosX, GameManager.Instance.maxPosX),
-            Mathf.Clamp (targetPos.y, playerT.position.y + 1, transform.position.y),
+            Mathf.Clamp (targetPos.y + 1.5f, playerT.position.y + 5f, transform.position.y),
             0
         );
         activeBehavior = EnemyBehavior.PointAndShoot;

@@ -218,14 +218,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats:
-    health: 111
+    health: 3000
     damage: 2
     movementVelocity: 2
     shootCooldown: 2
-    shootSpeed: 2
+    shootSpeed: 3
   playerT: {fileID: 0}
-  bulletPrefab: {fileID: 9046098202265018596, guid: 981529d06ddcab140b6579cf96f57e66, type: 3}
-  bombPrefab: {fileID: 39109363010216197, guid: 22f371b866b4df044a29e148f9cab387, type: 3}
 --- !u!1 &6890242981878603114
 GameObject:
   m_ObjectHideFlags: 0
