@@ -96,11 +96,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f035461c75447ca49be1bcc4862e5c77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  points: 100
   defaultBehavior: 3
   bulletType: 0
   shootAtStart: 1
   stats:
-    health: 10
+    health: 60
     damage: 2
     movementVelocity: 2
     shootCooldown: 9

@@ -122,15 +122,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f035461c75447ca49be1bcc4862e5c77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultBehavior: 1
+  points: 300
+  defaultBehavior: 4
   bulletType: 2
   shootAtStart: 1
   stats:
-    health: 7
+    health: 20
     damage: 2
-    movementVelocity: 2
-    shootCooldown: 9
-    shootSpeed: 3
+    movementVelocity: 1
+    shootCooldown: 6
+    shootSpeed: 4
   activeBehavior: 0
   playerT: {fileID: 0}
   alive: 1

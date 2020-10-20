@@ -32,6 +32,17 @@ public class EnemiesManager : MonoBehaviour
         Initialize ();
     }
 
+    public void AddEnemy (Enemy enemy)
+    {
+        enemiesList.Add (enemy);
+        enemiesleft++;
+    }
+
+    public void ReloadShootCooldown ()
+    {
+        foreach (var enemy in enemiesList) enemy?.GetShootOnCooldown ();
+    }
+
     void Initialize ()
     {
         defaultPosEnemies = enemiesT.localPosition;
@@ -63,9 +74,9 @@ public class EnemiesManager : MonoBehaviour
     public void ClearAllEnemies ()
     {
         if (enemiesT.childCount > 0)
-            foreach (Transform t in enemiesT) Destroy (t.gameObject);
+            foreach (Transform t in enemiesT) Destroy (t.gameObject); // Destruye cualquier nivel activo
 
-        foreach (Enemy enemy in enemiesList) Destroy (enemy.gameObject);
+        foreach (Enemy enemy in enemiesList) Destroy (enemy.gameObject); // Destruye cada enemigo
     }
 
     public void LoadEnemies ()
@@ -80,13 +91,16 @@ public class EnemiesManager : MonoBehaviour
         var go = Instantiate (GetLevelPrefab (levelNumber), Vector3.zero, Quaternion.identity, enemiesT);
         go.transform.localPosition = Vector3.zero;
         enemiesleft = go.transform.childCount;
-        enemiesAnimator.Play ("Enemies");
+        enemiesAnimator.Play (GetAnimationName ());
         enemiesAnimator.enabled = true;
         SetAnimationSpeed (animationSpeed);
-        GameManager.Instance.gameIsActive = true;
         List<Enemy> newEnemiesList = new List<Enemy> ();
-        foreach (Transform t in go.transform) newEnemiesList.Add (t.GetComponent<Enemy> ());
+        foreach (Transform t in go.transform)
+        {
+            if (t.TryGetComponent (out Enemy newEnemy)) newEnemiesList.Add (newEnemy);
+        }
         enemiesList = newEnemiesList;
+        GameManager.Instance.gameIsActive = true;
     }
 
     void ReloadEnemies ()
@@ -102,6 +116,7 @@ public class EnemiesManager : MonoBehaviour
 
         foreach (Enemy enemy in enemiesAlive)
         {
+            if (enemy.ID == "4C") return;
             var newEnemyT = go.transform.Find (enemy.transform.name);
             newEnemyT.gameObject.SetActive (true); // Activar sólo los que quedaron vivos
             newEnemies.Add (newEnemyT.GetComponent<Enemy> ());
@@ -114,7 +129,7 @@ public class EnemiesManager : MonoBehaviour
         enemiesList = newEnemies;
 
         go.transform.localPosition = Vector3.zero;
-        enemiesAnimator.Play ("Enemies");
+        enemiesAnimator.Play (GetAnimationName ());
         enemiesAnimator.enabled = true;
         SetAnimationSpeed (animationSpeed);
         GameManager.Instance.gameIsActive = true;
@@ -197,13 +212,22 @@ public class EnemiesManager : MonoBehaviour
         StopAllCoroutines ();
     }
 
+    int crazyEnemiesTotal = 0;
     public void MakeCrazyEnemy ()
     {
         var lista = enemiesList.FindAll (e => e.alive == true);
+        lista = lista.FindAll (e => e.activeBehavior == EnemyBehavior.None);
         if (lista.Count == 0) return;
 
         var enemy = lista [Random.Range (0, lista.Count)];
         enemy.SetBehavior (enemy.defaultBehavior);
+
+        // Esta parte solo es para el nivel 4
+        if (GameManager.Instance.activeLevelNumber == 4 && crazyEnemiesTotal % 2 == 0)
+        {
+            enemiesList.FindAll (leader => leader.defaultBehavior == EnemyBehavior.Leader)?.FindAll (alive => alive.alive).Find (isShooter => isShooter.activeBehavior == EnemyBehavior.Shooter)?.SetBehavior (EnemyBehavior.Leader);
+        }
+        crazyEnemiesTotal++;
     }
 
     public void SetAnimationSpeed (float speed)
@@ -233,6 +257,13 @@ public class EnemiesManager : MonoBehaviour
             if (enemiesleft == 0) GameManager.Instance.LevelCompleted ();
             else if (enemiesleft == 1) SetAnimationSpeed (animationSpeed * 2);
         }
+    }
+
+    string GetAnimationName ()
+    {
+        var level = GameManager.Instance.activeLevelNumber;
+        string animName = level != 3 ? "Enemies" : "EnemiesVariant";
+        return animName;
     }
 
 }

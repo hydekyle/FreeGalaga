@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &8139834042933946037
+--- !u!1 &4499734147094159455
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,38 +8,38 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1983196134147896923}
-  - component: {fileID: 9029344934548970573}
-  - component: {fileID: 2713019456629538451}
-  - component: {fileID: 7345398840098358434}
+  - component: {fileID: 4903240752552338976}
+  - component: {fileID: 6819114335909200119}
+  - component: {fileID: 733656815681059536}
+  - component: {fileID: 4113446767807288923}
   m_Layer: 0
-  m_Name: Enemy 1A
+  m_Name: MiniBoss
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1983196134147896923
+--- !u!4 &4903240752552338976
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8139834042933946037}
-  m_LocalRotation: {x: -0, y: -0, z: -0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.25686, y: 0.25686, z: 0.25686}
+  m_GameObject: {fileID: 4499734147094159455}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.01, y: 2.0799997, z: 0}
+  m_LocalScale: {x: 0.198489, y: 0.198489, z: 0.21815638}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
---- !u!212 &9029344934548970573
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &6819114335909200119
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8139834042933946037}
+  m_GameObject: {fileID: 4499734147094159455}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -73,7 +73,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -3737660375136226851, guid: b066ced6ae40c344189d0d4fc76a597a, type: 3}
+  m_Sprite: {fileID: 4806984379177889943, guid: 20be347966ea6aa4681f245e9f38bf1c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -84,55 +84,55 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &2713019456629538451
+--- !u!61 &733656815681059536
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8139834042933946037}
+  m_GameObject: {fileID: 4499734147094159455}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.022795618, y: -0.044508412}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.35, y: 1.85}
+    oldSize: {x: 5.575, y: 4.875}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.0405693, y: 1.0797359}
+  m_Size: {x: 5.575, y: 4.875}
   m_EdgeRadius: 0
---- !u!114 &7345398840098358434
+--- !u!114 &4113446767807288923
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8139834042933946037}
+  m_GameObject: {fileID: 4499734147094159455}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f035461c75447ca49be1bcc4862e5c77, type: 3}
+  m_Script: {fileID: 11500000, guid: 01c3876a80c70024997e8aab84c0b677, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  points: 15
-  defaultBehavior: 1
-  bulletType: 0
-  shootAtStart: 0
+  boss: {fileID: 0}
+  minions:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   stats:
-    health: 1
-    damage: 2
+    health: 100
+    damage: 11
     movementVelocity: 2
-    shootCooldown: 2
-    shootSpeed: 2
-  activeBehavior: 0
-  playerT: {fileID: 0}
-  alive: 1
-  ID: 1A
+    shootCooldown: 11
+    shootSpeed: 11
+  leftPos: {x: -3.5, y: 0, z: 3.5}
+  rightPos: {x: 0, y: 0, z: 0}

@@ -5,6 +5,7 @@ using EZObjectPools;
 
 public class Enemy : MonoBehaviour
 {
+    public int points = 100;
     public EnemyBehavior defaultBehavior = EnemyBehavior.Kamikaze;
     public BulletType bulletType = BulletType.GreenBullet;
     public bool shootAtStart = false;
@@ -30,14 +31,14 @@ public class Enemy : MonoBehaviour
         Initialize ();
         if (shootAtStart)
         {
-            lastTimeShot = Time.time + GetRandomCooldown ();
+            GetShootOnCooldown ();
             activeBehavior = EnemyBehavior.Shooter;
         }
     }
 
     float GetRandomCooldown ()
     {
-        return Random.Range (1f / stats.shootCooldown, Mathf.Clamp (10 - stats.shootSpeed, 1.1f, 10f));
+        return Random.Range (2f / stats.shootCooldown, Mathf.Clamp (10 - stats.shootSpeed, 1.1f, 10f));
     }
 
     void Initialize ()
@@ -67,7 +68,13 @@ public class Enemy : MonoBehaviour
             if (activeBehavior == EnemyBehavior.Kamikaze) ChasePlayer ();
             else if (activeBehavior == EnemyBehavior.PointAndShoot) PointAndShot ();
             else if (activeBehavior == EnemyBehavior.Shooter && IsShootAvailable ()) Shoot ();
+            else if (activeBehavior == EnemyBehavior.Leader) ChasePlayer ();
         }
+    }
+
+    public void GetShootOnCooldown ()
+    {
+        lastTimeShot = Time.time + GetRandomCooldown ();
     }
 
     void Shoot ()
@@ -75,7 +82,7 @@ public class Enemy : MonoBehaviour
         if (myBulletPool.TryGetNextObject (transform.position, Quaternion.identity, out GameObject bullet))
         {
             bullet.GetComponent<Rigidbody2D> ().velocity = Vector3.down * stats.shootSpeed;
-            lastTimeShot = Time.time + GetRandomCooldown ();
+            GetShootOnCooldown ();
         }
     }
 
@@ -114,12 +121,23 @@ public class Enemy : MonoBehaviour
 
     public void Die ()
     {
-        CanvasManager.Instance.AddScore (100);
+        CanvasManager.Instance.AddScore (points);
         Erase ();
     }
 
     public void Erase ()
     {
+        if (defaultBehavior == EnemyBehavior.Leader)
+        {
+            foreach (Transform t in transform)
+            {
+                if (!t.gameObject.activeSelf) return;
+                var enemy = t.GetComponent<Enemy> ();
+                t.SetParent (null);
+                enemy.SetBehavior (enemy.defaultBehavior);
+                EnemiesManager.Instance.AddEnemy (enemy);
+            }
+        }
         alive = false;
         gameObject.SetActive (false);
         EnemiesManager.Instance.EnemyDestroyed (this);
@@ -129,6 +147,9 @@ public class Enemy : MonoBehaviour
     {
         switch (enemyBehavior)
         {
+            case EnemyBehavior.Leader:
+                BehaviorLead ();
+                break;
             case EnemyBehavior.Shooter:
                 BehaviorShooter ();
                 break;
@@ -148,6 +169,12 @@ public class Enemy : MonoBehaviour
     {
         transform.parent = null;
         spriteRenderer.sortingOrder = 1;
+    }
+
+    void BehaviorLead ()
+    {
+        transform.SetParent (null);
+        activeBehavior = EnemyBehavior.Leader;
     }
 
     void BehaviorChasePlayer ()

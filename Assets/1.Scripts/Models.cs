@@ -8,7 +8,8 @@ public enum EnemyBehavior
     None,
     Kamikaze,
     PointAndShoot,
-    Shooter
+    Shooter,
+    Leader
 }
 
 public enum ScreenPosition

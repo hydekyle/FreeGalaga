@@ -94,6 +94,7 @@ public class Player : MonoBehaviour
         stats.movementVelocity += 1;
         stats.shootSpeed += 1;
         stats.shootCooldown += 1;
+        stats.damage += 1;
 
         SetBulletsPool (playerLevel - 1);
 
@@ -117,6 +118,7 @@ public class Player : MonoBehaviour
         {
             other.gameObject.SetActive (false);
             GetStrike ();
+            EnemiesManager.Instance.ReloadShootCooldown ();
         }
     }
 

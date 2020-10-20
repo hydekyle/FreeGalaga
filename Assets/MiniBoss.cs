@@ -4,15 +4,22 @@ using UnityEngine;
 
 public class MiniBoss : MonoBehaviour
 {
-    public GameObject bossPrefab;
+    public Transform boss;
     public List<Enemy> minions = new List<Enemy> ();
     public Stats stats;
+    public Vector3 leftPos, rightPos;
 
     bool vulnerable = false;
+    float startPingPongTime;
 
     private void FixedUpdate ()
     {
         if (!vulnerable && IsAllMinionsDead ()) LoseVulnerability ();
+    }
+
+    private void Update ()
+    {
+        if (vulnerable) transform.position = Vector3.Lerp (transform.position, Vector3.zero, Time.deltaTime * stats.movementVelocity);
     }
 
     bool IsAllMinionsDead ()
@@ -27,12 +34,15 @@ public class MiniBoss : MonoBehaviour
     void LoseVulnerability ()
     {
         vulnerable = true;
+        EnemiesManager.Instance.StopEnemies ();
+        GetComponent<Animator> ().StopPlayback ();
     }
 
     void Die ()
     {
         CanvasManager.Instance.AddScore (1000);
-        bossPrefab.SetActive (true);
+        boss.gameObject.SetActive (true);
+        StopAllCoroutines ();
         gameObject.SetActive (false);
     }
 
