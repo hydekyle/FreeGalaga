@@ -35,7 +35,6 @@ public class EnemiesManager : MonoBehaviour
     public void AddEnemy (Enemy enemy)
     {
         enemiesList.Add (enemy);
-        enemiesleft++;
     }
 
     public void ReloadShootCooldown ()
@@ -99,6 +98,7 @@ public class EnemiesManager : MonoBehaviour
         {
             if (t.TryGetComponent (out Enemy newEnemy)) newEnemiesList.Add (newEnemy);
         }
+        enemiesleft += newEnemiesList.FindAll (e => e.defaultBehavior == EnemyBehavior.Leader).Count * 4;
         enemiesList = newEnemiesList;
         GameManager.Instance.gameIsActive = true;
     }

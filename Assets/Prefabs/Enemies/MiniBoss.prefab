@@ -129,7 +129,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   stats:
-    health: 1500
+    health: 1000
     damage: 11
     movementVelocity: 1
     shootCooldown: 11

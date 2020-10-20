@@ -127,10 +127,10 @@ MonoBehaviour:
   bulletType: 0
   shootAtStart: 0
   stats:
-    health: 4
+    health: 3
     damage: 2
     movementVelocity: 3
-    shootCooldown: 4
+    shootCooldown: 3
     shootSpeed: 3
   activeBehavior: 0
   playerT: {fileID: 0}

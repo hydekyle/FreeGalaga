@@ -245,10 +245,10 @@ TextureImporter:
       name: Level3_5
       rect:
         serializedVersion: 2
-        x: 659
-        y: 363
-        width: 74
-        height: 116
+        x: 681
+        y: 393
+        width: 29
+        height: 86
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

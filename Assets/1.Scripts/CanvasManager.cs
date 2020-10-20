@@ -17,6 +17,11 @@ public class CanvasManager : MonoBehaviour
         Instance = this;
     }
 
+    private void Start ()
+    {
+        SetLivesNumber (GameManager.Instance.lives);
+    }
+
     public void AddScore (int value)
     {
         score += value;
