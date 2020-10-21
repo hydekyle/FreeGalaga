@@ -218,7 +218,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats:
-    health: 2400
+    health: 1800
     damage: 2
     movementVelocity: 2
     shootCooldown: 2

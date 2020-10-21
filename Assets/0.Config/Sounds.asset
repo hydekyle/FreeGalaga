@@ -14,10 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainTheme: {fileID: 8300000, guid: 21c55f67ecf462f459f9e48aa2a36fad, type: 3}
   basicShot: {fileID: 8300000, guid: e93ed19488473e847b4b1fefaa201504, type: 3}
-  specialShot: {fileID: 0}
+  enemyShot: {fileID: 8300000, guid: 23753c0a10044b94c9c8600c31bf7e39, type: 3}
+  enemyShot2: {fileID: 8300000, guid: bfa78d1e0e6c72248b8fb2ef32df2940, type: 3}
+  enemyShotFire: {fileID: 8300000, guid: 44c3820e452879a4b8cc099018759f68, type: 3}
+  enemyDamaged: {fileID: 8300000, guid: 340682b6f14560248919865e367b6a25, type: 3}
+  enemyDamagedLow: {fileID: 8300000, guid: 4f6f331165f98eb45a6e9a1efbc75113, type: 3}
+  bossDamaged: {fileID: 8300000, guid: 340682b6f14560248919865e367b6a25, type: 3}
+  lifeUp: {fileID: 8300000, guid: 312095727cdde0c46adcd57ce8ece265, type: 3}
+  shieldImpact: {fileID: 8300000, guid: 05166912464b1164abb3e2e0b78f329f, type: 3}
   playerDestroyed: {fileID: 8300000, guid: 75a9c31013edc284e8724889805ade6a, type: 3}
   explosionLow: {fileID: 8300000, guid: 2eb14ae4fa1ddb44eab841b1e1c5891e, type: 3}
   explosionBig: {fileID: 0}
-  shieldBuff: {fileID: 8300000, guid: 2ecfaf1179e2d75468b030be57beaed6, type: 3}
   shipUpgrade: {fileID: 8300000, guid: b5682408b5afe9440b2d883ed5cdebb2, type: 3}
   gameOverSFX: {fileID: 8300000, guid: d500b4ba427678a49880e6fdd06abfb0, type: 3}

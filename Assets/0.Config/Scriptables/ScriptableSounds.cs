@@ -10,9 +10,12 @@ public class ScriptableSounds : ScriptableObject
 
     [Header ("Sonidos")]
     public AudioClip basicShot;
-    public AudioClip specialShot;
+    public AudioClip enemyShot, enemyShot2, enemyShotFire;
+    public AudioClip enemyDamaged, enemyDamagedLow, bossDamaged;
+    public AudioClip lifeUp;
+    public AudioClip shieldImpact;
     public AudioClip playerDestroyed;
     public AudioClip explosionLow, explosionBig;
-    public AudioClip shieldBuff, shipUpgrade;
+    public AudioClip shipUpgrade;
     public AudioClip gameOverSFX;
 }

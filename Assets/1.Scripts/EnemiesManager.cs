@@ -248,7 +248,7 @@ public class EnemiesManager : MonoBehaviour
         {
             GameManager.Instance.DesactivateOnTime (explosionGO, 0.06f);
         }
-        AudioManager.Instance.PlayAudioClip (GameManager.Instance.tablesSounds.explosionLow);
+        AudioManager.Instance.PlayEnemyExplosionLow ();
 
         if (!IsFinalLevel ())
         {

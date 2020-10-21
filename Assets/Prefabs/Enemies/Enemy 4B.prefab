@@ -130,7 +130,7 @@ MonoBehaviour:
     health: 15
     damage: 2
     movementVelocity: 1
-    shootCooldown: 1
+    shootCooldown: 4
     shootSpeed: 4
   activeBehavior: 0
   playerT: {fileID: 0}

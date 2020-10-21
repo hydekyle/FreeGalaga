@@ -33,6 +33,11 @@ public class CanvasManager : MonoBehaviour
         levelBackground.sprite = sprite;
     }
 
+    public void SetColorTextUI (Color color)
+    {
+        foreach (Transform t in levelText.transform.parent) t.GetComponent<Text> ().color = color;
+    }
+
     public void SetLevelNumber (int levelNumber)
     {
         levelText.text = levelNumber.ToString ();

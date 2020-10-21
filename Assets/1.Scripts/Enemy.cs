@@ -26,6 +26,8 @@ public class Enemy : MonoBehaviour
 
     public string ID;
 
+    public bool isLittleOne;
+
     private void Start ()
     {
         Initialize ();
@@ -82,6 +84,18 @@ public class Enemy : MonoBehaviour
     {
         if (myBulletPool.TryGetNextObject (transform.position, Quaternion.identity, out GameObject bullet))
         {
+            switch (bulletType)
+            {
+                case BulletType.GreenBullet:
+                    AudioManager.Instance.PlayEnemyShotSlow ();
+                    break;
+                case BulletType.RedBullet:
+                    AudioManager.Instance.PlayEnemyShot ();
+                    break;
+                case BulletType.FireBullet:
+                    AudioManager.Instance.PlayEnemyShotFire ();
+                    break;
+            }
             bullet.GetComponent<Rigidbody2D> ().velocity = Vector3.down * stats.shootSpeed;
             GetShootOnCooldown ();
         }
@@ -118,7 +132,13 @@ public class Enemy : MonoBehaviour
     {
         stats.health -= strikeForce;
         if (stats.health <= 0) Die ();
-        else spriteRenderer.color = Color.red;
+        else
+        {
+            spriteRenderer.color = Color.red;
+            if (isLittleOne) AudioManager.Instance.PlayEnemyDamagedLow ();
+            else AudioManager.Instance.PlayEnemyDamaged ();
+
+        }
     }
 
     public void Die ()

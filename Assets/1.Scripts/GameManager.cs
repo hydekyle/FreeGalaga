@@ -35,10 +35,10 @@ public class GameManager : MonoBehaviour
 
     void Initialize ()
     {
-        enemyBulletsPoolGreen = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [0], "Bullets Enemy Green", 8, false, true, true);
-        enemyBulletsPoolRed = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [1], "Bullets Enemy Red", 8, false, true, true);
-        enemyBulletsPoolFire = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [2], "Bullets Enemy Fire", 8, false, true, true);
-        enemyBombs = EZObjectPool.CreateObjectPool (bombPrefab, "Bombs Boss", 9, false, true, true);
+        enemyBulletsPoolGreen = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [0], "Bullets Enemy Green", 7, false, true, true);
+        enemyBulletsPoolRed = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [1], "Bullets Enemy Red", 7, false, true, true);
+        enemyBulletsPoolFire = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [2], "Bullets Enemy Fire", 7, false, true, true);
+        enemyBombs = EZObjectPool.CreateObjectPool (bombPrefab, "Bombs Boss", 8, false, true, true);
     }
 
     public void StartGame ()
@@ -57,31 +57,43 @@ public class GameManager : MonoBehaviour
     {
         Sprite background;
         float animationSpeed;
+        Color colorTextUI;
 
         switch (levelNumber)
         {
             case 1:
                 background = tablesLevels.backgroundLevel1;
                 animationSpeed = tablesLevels.animSpeed1;
+                colorTextUI = Color.black;
                 break;
             case 2:
                 background = tablesLevels.backgroundLevel2;
                 animationSpeed = tablesLevels.animSpeed2;
+                colorTextUI = Color.white;
                 break;
             case 3:
                 background = tablesLevels.backgroundLevel3;
                 animationSpeed = tablesLevels.animSpeed3;
+                colorTextUI = Color.black;
+                break;
+            case 4:
+                background = tablesLevels.backgroundLevel3;
+                animationSpeed = tablesLevels.animSpeed3;
+                colorTextUI = Color.white;
                 break;
             default:
                 background = tablesLevels.backgroundLevelFinal;
                 animationSpeed = tablesLevels.animSpeedFinal;
+                colorTextUI = Color.yellow;
                 break;
         }
+        EnemiesManager.Instance.LoadEnemies ();
 
         CanvasManager.Instance.SetBackground (background);
-        EnemiesManager.Instance.LoadEnemies ();
         CanvasManager.Instance.SetLevelNumber (levelNumber);
+        CanvasManager.Instance.SetColorTextUI (colorTextUI);
         CanvasManager.Instance.SetBarColor (GetColorByLevel (levelNumber));
+
     }
 
     public void LevelCompleted ()
@@ -106,9 +118,7 @@ public class GameManager : MonoBehaviour
 
     private void Update ()
     {
-        if (Input.GetKey (KeyCode.Mouse0) && gameIsActive) player.Disparar ();
-        if (Input.GetKeyDown (KeyCode.Mouse0) && lives == 0) SceneManager.LoadScene (0);
-        //if (Input.GetKeyDown (KeyCode.Mouse1)) EnemiesManager.Instance.MakeCrazyEnemy ();
+        Controles ();
     }
 
     public void RestartLevel ()
@@ -119,7 +129,7 @@ public class GameManager : MonoBehaviour
 
     public void LoseLives (int livesLost, float inmuneTime)
     {
-        AudioManager.Instance.PlayAudioClip (GameManager.Instance.tablesSounds.playerDestroyed);
+        AudioManager.Instance.PlayPlayerDestroyed ();
         lives -= livesLost;
         CanvasManager.Instance.SetLivesNumber (lives);
         if (lives > 0)
@@ -174,6 +184,13 @@ public class GameManager : MonoBehaviour
     public void GameFinished ()
     {
 
+    }
+
+    public void Controles ()
+    {
+        if (Input.GetKey (KeyCode.Space) || Input.GetKey (KeyCode.Mouse0) && gameIsActive) player.Shoot ();
+        if (lives == 0)
+            if (Input.GetKeyDown (KeyCode.Space) || Input.GetKeyDown (KeyCode.Mouse0)) SceneManager.LoadScene (0);
     }
 
 }

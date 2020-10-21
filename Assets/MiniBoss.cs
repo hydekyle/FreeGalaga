@@ -45,6 +45,7 @@ public class MiniBoss : MonoBehaviour
     {
         if (GameManager.Instance.enemyBombs.TryGetNextObject (transform.position, Quaternion.identity, out GameObject enemyBomb))
         {
+            AudioManager.Instance.PlayEnemyShieldImpact ();
             Vector2 bombDirection = Vector2.up * 4 + Vector2.right * Random.Range (-1.8f, 1.8f);
             enemyBomb.GetComponent<Rigidbody2D> ().AddForce (bombDirection, ForceMode2D.Impulse);
         }
@@ -80,15 +81,20 @@ public class MiniBoss : MonoBehaviour
     {
         stats.health -= strikeDamage;
         if (stats.health <= 0) Die ();
-        else spriteRenderer.color = Color.red;
+        else
+        {
+            AudioManager.Instance.PlayBossDamaged ();
+            spriteRenderer.color = Color.red;
+        }
     }
 
     private void OnTriggerEnter2D (Collider2D other)
     {
         if (other.CompareTag ("PlayerShot"))
         {
-            other.gameObject.SetActive (false);
             if (vulnerable) GetStrike (GameManager.Instance.player.stats.damage);
+
+            other.gameObject.SetActive (false);
             ThrowBomb ();
         }
     }

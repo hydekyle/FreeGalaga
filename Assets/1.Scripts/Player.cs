@@ -14,6 +14,7 @@ public class Player : MonoBehaviour
     Transform gunPoint;
     public BoxCollider2D myCollider;
     public int playerLevel = 1;
+    SpriteRenderer spriteRenderer;
 
     private void Start ()
     {
@@ -22,6 +23,7 @@ public class Player : MonoBehaviour
 
     void Initialize ()
     {
+        spriteRenderer = GetComponent<SpriteRenderer> ();
         myCollider = GetComponent<BoxCollider2D> ();
         gunPoint = transform.Find ("GunPoint");
         shotAudioClip = AudioManager.Instance.scriptableSounds.basicShot;
@@ -42,13 +44,13 @@ public class Player : MonoBehaviour
         transform.position = new Vector3 (Mathf.Clamp (transform.position.x, minPosX, maxPosX), Mathf.Clamp (transform.position.y, minPosY, maxPosY), 0);
     }
 
-    public void Disparar ()
+    public void Shoot ()
     {
         if (isShootAvailable () && playerShots.TryGetNextObject (GetGunPosition (), Quaternion.identity, out GameObject go))
         {
             go.GetComponent<Rigidbody2D> ().velocity = Vector2.up * stats.shootSpeed * 10;
             lastTimeShot = Time.time;
-            AudioManager.Instance.PlayAudioClip (shotAudioClip);
+            AudioManager.Instance.PlayPlayerShot ();
         }
     }
 
@@ -70,26 +72,41 @@ public class Player : MonoBehaviour
 
     void GetStrike ()
     {
-        GameManager.Instance.LoseLives (1, 2f);
+        GameManager.Instance.LoseLives (1, 1.5f);
     }
 
-    public IEnumerator InmuneTime (float time)
+    public IEnumerator InmuneTime (float inmuneTime)
     {
         var lastLevel = GameManager.Instance.activeLevelNumber;
         var lastSpeed = EnemiesManager.Instance.animationSpeed;
-        EnemiesManager.Instance.SetAnimationSpeed (0);
-        lastTimeShot = Time.time + time;
-        var spriteRenderer = GetComponent<SpriteRenderer> ();
-        spriteRenderer.color = Color.yellow;
-        yield return new WaitForSeconds (time);
-        spriteRenderer.color = Color.white;
-        if (lastLevel == GameManager.Instance.activeLevelNumber) EnemiesManager.Instance.SetAnimationSpeed (lastSpeed);
-        myCollider.enabled = true;
+
+        StartCoroutine (BlinkTime (inmuneTime));
+        yield return new WaitForSeconds (inmuneTime);
+
+        myCollider.enabled = true; // El collider se desactiva antes de entrar en la Corutina para evitar múltiples hits.
+
+    }
+
+    public IEnumerator BlinkTime (float blinkTime)
+    {
+        //var startTime = Time.time;
+        var endTime = Time.time + blinkTime;
+        var defaultColor = spriteRenderer.color;
+        var invisibleColor = defaultColor;
+        invisibleColor.a = 0f;
+
+        while (Time.time < endTime)
+        {
+            spriteRenderer.color = spriteRenderer.color == invisibleColor ? defaultColor : invisibleColor;
+            yield return new WaitForSeconds (0.12f);
+        }
+        spriteRenderer.color = defaultColor;
     }
 
     public void LevelUp ()
     {
-        AudioManager.Instance.PlayAudioClip (GameManager.Instance.tablesSounds.shipUpgrade);
+        if (GameManager.Instance.lives == 0) return;
+        AudioManager.Instance.PlayPlayerLevelUp ();
         playerLevel++;
         stats.movementVelocity += 1;
         stats.shootSpeed += 1;

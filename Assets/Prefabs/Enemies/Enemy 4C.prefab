@@ -129,10 +129,11 @@ MonoBehaviour:
   stats:
     health: 3
     damage: 2
-    movementVelocity: 3
+    movementVelocity: 2
     shootCooldown: 3
     shootSpeed: 3
   activeBehavior: 0
   playerT: {fileID: 0}
   alive: 1
   ID: 4C
+  isLittleOne: 1

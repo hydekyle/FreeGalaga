@@ -79,7 +79,11 @@ public class Boss1 : MonoBehaviour
     {
         stats.health -= damage;
         if (stats.health <= 0) Die ();
-        else spriteRenderer.color = Color.red;
+        else
+        {
+            AudioManager.Instance.PlayBossDamaged ();
+            spriteRenderer.color = Color.red;
+        }
     }
 
     void Die ()
