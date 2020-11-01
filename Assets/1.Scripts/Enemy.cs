@@ -5,6 +5,7 @@ using EZObjectPools;
 
 public class Enemy : MonoBehaviour
 {
+    public BoostType powerUp = BoostType.None;
     public int points = 100;
     public EnemyBehavior defaultBehavior = EnemyBehavior.Kamikaze;
     public BulletType bulletType = BulletType.GreenBullet;
@@ -143,6 +144,7 @@ public class Enemy : MonoBehaviour
 
     public void Die ()
     {
+        GameManager.Instance.DropPowerUp (transform.position, powerUp);
         CanvasManager.Instance.AddScore (points);
         Erase ();
     }

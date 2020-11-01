@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     public BoxCollider2D myCollider;
     public int playerLevel = 1;
     SpriteRenderer spriteRenderer;
+    public Shield shield;
 
     private void Start ()
     {
@@ -83,7 +84,7 @@ public class Player : MonoBehaviour
         StartCoroutine (BlinkTime (inmuneTime));
         yield return new WaitForSeconds (inmuneTime);
 
-        myCollider.enabled = true; // El collider se desactiva antes de entrar en la Corutina para evitar múltiples hits.
+        vulnerable = true; // El collider se desactiva antes de entrar en la Corutina para evitar múltiples hits.
 
     }
 
@@ -91,7 +92,7 @@ public class Player : MonoBehaviour
     {
         //var startTime = Time.time;
         var endTime = Time.time + blinkTime;
-        var defaultColor = spriteRenderer.color;
+        var defaultColor = Color.white;
         var invisibleColor = defaultColor;
         invisibleColor.a = 0f;
 
@@ -100,7 +101,7 @@ public class Player : MonoBehaviour
             spriteRenderer.color = spriteRenderer.color == invisibleColor ? defaultColor : invisibleColor;
             yield return new WaitForSeconds (0.12f);
         }
-        spriteRenderer.color = defaultColor;
+        spriteRenderer.color = Color.white;
     }
 
     public void LevelUp ()
@@ -124,18 +125,66 @@ public class Player : MonoBehaviour
         { }
     }
 
+    void GetShield ()
+    {
+        AudioManager.Instance.PlayAudioPlayer (GameManager.Instance.tablesSounds.lifeUp);
+        shield.ActivateShield ();
+    }
+
+    void GetPoints ()
+    {
+        AudioManager.Instance.PlayAudioPlayer (GameManager.Instance.tablesSounds.lifeUp);
+        CanvasManager.Instance.AddScore (1000);
+    }
+
+    void GetHealth ()
+    {
+        AudioManager.Instance.PlayAudioPlayer (GameManager.Instance.tablesSounds.lifeUp);
+        GameManager.Instance.GainLives (1);
+    }
+
+    void GetAttackSpeed ()
+    {
+        AudioManager.Instance.PlayAudioPlayer (GameManager.Instance.tablesSounds.lifeUp);
+        stats.shootCooldown++;
+    }
+
+    public bool vulnerable = true;
+
     private void OnTriggerEnter2D (Collider2D other)
     {
         if (other.CompareTag ("Enemy"))
         {
+            if (!vulnerable) return;
             other.GetComponent<Enemy> ().Erase ();
             GetStrike ();
         }
         else if (other.CompareTag ("EnemyShot"))
         {
+            if (!vulnerable) return;
             other.gameObject.SetActive (false);
             GetStrike ();
             EnemiesManager.Instance.ReloadShootCooldown ();
+        }
+        else if (other.CompareTag ("PowerUp"))
+        {
+            var boostType = other.GetComponent<PowerUp> ().boostType;
+            switch (boostType)
+            {
+                case BoostType.Shield:
+                    GetShield ();
+                    break;
+                case BoostType.Points:
+                    GetPoints ();
+                    break;
+                case BoostType.AttackSpeed:
+                    GetAttackSpeed ();
+                    break;
+                case BoostType.Health:
+                    GetHealth ();
+                    break;
+            }
+            Destroy (other.gameObject);
         }
     }
 

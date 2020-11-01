@@ -3,6 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+public enum BoostType
+{
+    None,
+    Shield,
+    Health,
+    Points,
+    AttackSpeed
+}
+
 public enum EnemyBehavior
 {
     None,
@@ -35,6 +44,7 @@ public enum BulletType
 [Serializable]
 public struct EnemyModel
 {
+    public BoostType powerupDrop;
     public Sprite sprite;
     public string name;
     public Stats stats;

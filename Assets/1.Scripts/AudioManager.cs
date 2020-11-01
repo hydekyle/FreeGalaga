@@ -20,12 +20,17 @@ public class AudioManager : MonoBehaviour
         musicSource.Play ();
     }
 
-    void PlayAudioPlayer (AudioClip clip)
+    public void StopMusic ()
+    {
+        musicSource.Stop ();
+    }
+
+    public void PlayAudioPlayer (AudioClip clip)
     {
         playerSource.PlayOneShot (clip);
     }
 
-    void PlayAudioEnemy (AudioClip clip)
+    public void PlayAudioEnemy (AudioClip clip)
     {
         enemySource.PlayOneShot (clip);
     }

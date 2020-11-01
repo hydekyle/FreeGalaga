@@ -129,7 +129,7 @@ MonoBehaviour:
   stats:
     health: 5
     damage: 2
-    movementVelocity: 2
+    movementVelocity: 1
     shootCooldown: 2
     shootSpeed: 2
   activeBehavior: 0

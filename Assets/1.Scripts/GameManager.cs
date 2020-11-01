@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using EZObjectPools;
 using UnityEngine;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,11 +16,79 @@ public class GameManager : MonoBehaviour
     public ScriptableSounds tablesSounds;
     public int lives = 3;
     public GameObject bulletEnemyPrefab, bombPrefab;
+    public GameObject boostShield, boostHealth, boostPoints, boostAttackspeed;
 
     [HideInInspector]
     public EZObjectPool enemyBulletsPoolGreen, enemyBulletsPoolRed, enemyBulletsPoolFire, enemyBombs;
 
     public float minPosX = -3.8f, maxPosX = 3.8f, minPosY = -4.5f, maxPosY = -2f;
+    public GameObject bigExplosion;
+
+    public void AddRandomPowerUps (List<Enemy> enemyList)
+    {
+        enemyList.Sort ((a, b) => 1 - 2 * Random.Range (0, 2));
+        enemyList [0].powerUp = BoostType.Shield;
+        enemyList [1].powerUp = BoostType.AttackSpeed;
+        enemyList [2].powerUp = BoostType.Points;
+    }
+
+    float lastTimePowerUpDropped;
+    public void DropPowerUp (Vector3 dropPosition, BoostType boostType)
+    {
+        if (boostType == BoostType.None) return;
+        bool hacePoco = lastTimePowerUpDropped + 1.3f > Time.time;
+        float gravity = hacePoco ? 0.1f : 0.25f;
+        gravity += Random.Range (0f, 0.2f);
+        GameObject powerUp;
+        switch (boostType)
+        {
+            case BoostType.Points:
+                powerUp = Instantiate (boostPoints, dropPosition, Quaternion.identity);
+                powerUp.GetComponent<Rigidbody2D> ().gravityScale = gravity;
+                break;
+            case BoostType.Health:
+                powerUp = Instantiate (boostHealth, dropPosition, Quaternion.identity);
+                powerUp.GetComponent<Rigidbody2D> ().gravityScale = gravity;
+                break;
+            case BoostType.AttackSpeed:
+                powerUp = Instantiate (boostAttackspeed, dropPosition, Quaternion.identity);
+                powerUp.GetComponent<Rigidbody2D> ().gravityScale = gravity;
+                break;
+            case BoostType.Shield:
+                powerUp = Instantiate (boostShield, dropPosition, Quaternion.identity);
+                powerUp.GetComponent<Rigidbody2D> ().gravityScale = gravity;
+                break;
+        }
+
+        lastTimePowerUpDropped = Time.time;
+    }
+
+    public void ExplosionBigAtPosition (Vector3 explosionPosition, Color explosionColor)
+    {
+        AudioManager.Instance.PlayAudioEnemy (tablesSounds.explosionBig);
+        var explosion = Instantiate (bigExplosion, explosionPosition, Quaternion.identity);
+        explosion.GetComponent<SpriteRenderer> ().color = explosionColor;
+    }
+
+    public void FinalBossKilled (Vector3 explosionPosition)
+    {
+        StartCoroutine (FinalBossExplosionRoutine (explosionPosition));
+    }
+
+    IEnumerator FinalBossExplosionRoutine (Vector3 explosionPosition)
+    {
+        AudioManager.Instance.PlayAudioEnemy (tablesSounds.explosionBig);
+        Instantiate (bigExplosion, explosionPosition, Quaternion.identity);
+        yield return new WaitForSeconds (0.3f);
+        for (var x = 0; x < 10; x++)
+        {
+            Vector3 randomPos = new Vector3 (Random.Range (-2f, 2f), Random.Range (-2f, 2f), 0);
+            AudioManager.Instance.PlayAudioEnemy (tablesSounds.explosionBig);
+            Instantiate (bigExplosion, explosionPosition + randomPos, Quaternion.identity);
+            yield return new WaitForSeconds (0.3f);
+        }
+        GameFinished ();
+    }
 
     private void Awake ()
     {
@@ -134,10 +203,16 @@ public class GameManager : MonoBehaviour
         CanvasManager.Instance.SetLivesNumber (lives);
         if (lives > 0)
         {
-            player.myCollider.enabled = false;
+            player.vulnerable = false;
             StartCoroutine (player.InmuneTime (inmuneTime));
         }
         else GameOver ();
+    }
+
+    public void GainLives (int newLives)
+    {
+        lives += newLives;
+        CanvasManager.Instance.SetLivesNumber (lives);
     }
 
     public int GetLevelNumber ()
@@ -188,9 +263,15 @@ public class GameManager : MonoBehaviour
 
     public void Controles ()
     {
-        if (Input.GetKey (KeyCode.Space) || Input.GetKey (KeyCode.Mouse0) && gameIsActive) player.Shoot ();
-        if (lives == 0)
-            if (Input.GetKeyDown (KeyCode.Space) || Input.GetKeyDown (KeyCode.Mouse0)) SceneManager.LoadScene (0);
+        if (Input.GetButtonDown ("Shoot"))
+        {
+            if (lives == 0) SceneManager.LoadScene (0);
+        }
+
+        if (Input.GetButton ("Shoot"))
+        {
+            if (gameIsActive && lives > 0) player.Shoot ();
+        }
     }
 
 }

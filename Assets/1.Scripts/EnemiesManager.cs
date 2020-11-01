@@ -100,6 +100,7 @@ public class EnemiesManager : MonoBehaviour
         }
         enemiesleft += newEnemiesList.FindAll (e => e.defaultBehavior == EnemyBehavior.Leader).Count * 4;
         enemiesList = newEnemiesList;
+        GameManager.Instance.AddRandomPowerUps (enemiesList);
         GameManager.Instance.gameIsActive = true;
     }
 

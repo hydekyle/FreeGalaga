@@ -74,7 +74,9 @@ public class MiniBoss : MonoBehaviour
         CanvasManager.Instance.AddScore (1000);
         boss.gameObject.SetActive (true);
         StopAllCoroutines ();
+        GameManager.Instance.ExplosionBigAtPosition (transform.position, Color.magenta);
         gameObject.SetActive (false);
+        GameManager.Instance.DropPowerUp (transform.position, BoostType.Health);
     }
 
     public void GetStrike (int strikeDamage)

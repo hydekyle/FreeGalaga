@@ -24,7 +24,7 @@ public class Boss1 : MonoBehaviour
         playerT = GameManager.Instance.player.transform;
         targetPos = GetScreenPos (ScreenPosition.BotMid);
         foreach (Transform t in transform.Find ("Cannons")) cannons.Add (t);
-        nextTimeBomb = Time.time + 2f;
+        nextTimeShoot = nextTimeBomb = Time.time + 2f;
 
     }
 
@@ -89,8 +89,8 @@ public class Boss1 : MonoBehaviour
     void Die ()
     {
         CanvasManager.Instance.AddScore (10000);
+        GameManager.Instance.FinalBossKilled (transform.position);
         gameObject.SetActive (false);
-        GameManager.Instance.GameFinished ();
     }
 
     private void OnTriggerEnter2D (Collider2D other)

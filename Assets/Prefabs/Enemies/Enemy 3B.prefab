@@ -122,12 +122,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f035461c75447ca49be1bcc4862e5c77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  powerUp: 0
   points: 120
   defaultBehavior: 1
   bulletType: 1
   shootAtStart: 1
   stats:
-    health: 8
+    health: 12
     damage: 2
     movementVelocity: 1
     shootCooldown: 1
@@ -136,3 +137,4 @@ MonoBehaviour:
   playerT: {fileID: 0}
   alive: 1
   ID: 3B
+  isLittleOne: 0
