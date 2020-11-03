@@ -19,8 +19,9 @@ public class NetworkManager
             yield return webRequest.SendWebRequest ();
             if (!webRequest.isNetworkError)
             {
-                Debug.LogFormat (webRequest.downloadHandler.text);
-                onEnded (true);
+                Debug.Log (webRequest.downloadHandler.text);
+                bool isNewRecord = webRequest.downloadHandler.text == "1" ? true : false;
+                onEnded (isNewRecord);
             }
         }
     }

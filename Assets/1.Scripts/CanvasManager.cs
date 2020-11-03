@@ -11,11 +11,13 @@ public class CanvasManager : MonoBehaviour
     public Image levelBackground;
     public Image barImage;
     public Transform highScoresWindow;
+    public int testScore;
 
     public void SendScore (string username, int points)
     {
         StartCoroutine (NetworkManager.SetHighScore (username, points, onEnded =>
         {
+            print (onEnded);
             if (onEnded) ShowHighScores ();
         }));
     }
@@ -46,7 +48,7 @@ public class CanvasManager : MonoBehaviour
     private void Start ()
     {
         SetLivesNumber (GameManager.Instance.lives);
-        SendScore ("hydekyle", 666666);
+        SendScore ("hydekyle", testScore);
     }
 
     public void AddScore (int value)
