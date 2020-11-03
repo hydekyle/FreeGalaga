@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+[System.Serializable]
+public struct User
+{
+    public string username, points;
+}
+
 public enum BoostType
 {
     None,

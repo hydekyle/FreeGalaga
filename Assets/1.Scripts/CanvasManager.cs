@@ -10,6 +10,32 @@ public class CanvasManager : MonoBehaviour
     public Text scoreText, livesText, levelText;
     public Image levelBackground;
     public Image barImage;
+    public Transform highScoresWindow;
+
+    public void SendScore (string username, int points)
+    {
+        StartCoroutine (NetworkManager.SetHighScore (username, points, onEnded =>
+        {
+            if (onEnded) ShowHighScores ();
+        }));
+    }
+
+    public void ShowHighScores ()
+    {
+        StartCoroutine (NetworkManager.GetHighScores (topUsers =>
+        {
+            Transform content = highScoresWindow.Find ("Scroll View").Find ("Viewport").Find ("Content");
+            for (var x = 0; x < topUsers.Count; x++)
+            {
+                var userSlot = content.GetChild (x);
+                userSlot.Find ("Username").GetComponent<Text> ().text = topUsers [x].username;
+                userSlot.Find ("Points").GetComponent<Text> ().text = topUsers [x].points;
+                //userSlot.gameObject.SetActive(true);
+
+            }
+            highScoresWindow.gameObject.SetActive (true);
+        }));
+    }
 
     private void Awake ()
     {
@@ -20,6 +46,7 @@ public class CanvasManager : MonoBehaviour
     private void Start ()
     {
         SetLivesNumber (GameManager.Instance.lives);
+        SendScore ("hydekyle", 666666);
     }
 
     public void AddScore (int value)

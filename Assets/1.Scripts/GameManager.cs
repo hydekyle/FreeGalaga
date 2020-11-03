@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using EZObjectPools;
 using UnityEngine;
+using UnityEngine.Networking;
 using System.Linq;
 
 public class GameManager : MonoBehaviour
@@ -79,12 +80,14 @@ public class GameManager : MonoBehaviour
     {
         AudioManager.Instance.PlayAudioEnemy (tablesSounds.explosionBig);
         Instantiate (bigExplosion, explosionPosition, Quaternion.identity);
+        DropPowerUp (explosionPosition, BoostType.Points);
         yield return new WaitForSeconds (0.3f);
         for (var x = 0; x < 10; x++)
         {
             Vector3 randomPos = new Vector3 (Random.Range (-2f, 2f), Random.Range (-2f, 2f), 0);
             AudioManager.Instance.PlayAudioEnemy (tablesSounds.explosionBig);
             Instantiate (bigExplosion, explosionPosition + randomPos, Quaternion.identity);
+            DropPowerUp (explosionPosition, BoostType.Points);
             yield return new WaitForSeconds (0.3f);
         }
         GameFinished ();
@@ -263,12 +266,12 @@ public class GameManager : MonoBehaviour
 
     public void Controles ()
     {
-        if (Input.GetButtonDown ("Shoot"))
+        if (Input.GetButtonDown ("Shoot") || Input.GetButtonDown ("ShootPad"))
         {
             if (lives == 0) SceneManager.LoadScene (0);
         }
 
-        if (Input.GetButton ("Shoot"))
+        if (Input.GetButton ("Shoot") || Input.GetButton ("ShootPad"))
         {
             if (gameIsActive && lives > 0) player.Shoot ();
         }
