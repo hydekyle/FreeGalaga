@@ -18,6 +18,9 @@ public class GameManager : MonoBehaviour
     public int lives = 3;
     public GameObject bulletEnemyPrefab, bombPrefab;
     public GameObject boostShield, boostHealth, boostPoints, boostAttackspeed;
+    public bool retryAvailable = false;
+
+    public string username = "BetaTester";
 
     [HideInInspector]
     public EZObjectPool enemyBulletsPoolGreen, enemyBulletsPoolRed, enemyBulletsPoolFire, enemyBombs;
@@ -31,6 +34,11 @@ public class GameManager : MonoBehaviour
         enemyList [0].powerUp = BoostType.Shield;
         enemyList [1].powerUp = BoostType.AttackSpeed;
         enemyList [2].powerUp = BoostType.Points;
+    }
+
+    public void SetUsername (string newUsername)
+    {
+        username = newUsername;
     }
 
     float lastTimePowerUpDropped;
@@ -186,6 +194,7 @@ public class GameManager : MonoBehaviour
         player.gameObject.SetActive (false);
         EnemiesManager.Instance.StopEnemies ();
         gameIsActive = false;
+        CanvasManager.Instance.SendScore (username, CanvasManager.Instance.score);
     }
 
     private void Update ()
@@ -264,12 +273,14 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public void ReloadScene ()
+    {
+        SceneManager.LoadScene (0);
+    }
+
     public void Controles ()
     {
-        if (Input.GetButtonDown ("Shoot") || Input.GetButtonDown ("ShootPad"))
-        {
-            if (lives == 0) SceneManager.LoadScene (0);
-        }
+        if (Input.GetButtonDown ("Reset")) ReloadScene ();
 
         if (Input.GetButton ("Shoot") || Input.GetButton ("ShootPad"))
         {

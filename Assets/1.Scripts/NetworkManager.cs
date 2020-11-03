@@ -14,8 +14,6 @@ public class NetworkManager
         string sendScoreFinalURL = String.Concat (sendScoreURL, String.Format ("/?username={0}&points={1}", username, points));
         using (UnityWebRequest webRequest = UnityWebRequest.Get (sendScoreFinalURL))
         {
-            webRequest.SetRequestHeader ("username", username);
-            webRequest.SetRequestHeader ("points", points.ToString ());
             yield return webRequest.SendWebRequest ();
             if (!webRequest.isNetworkError)
             {

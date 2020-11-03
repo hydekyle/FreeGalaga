@@ -11,14 +11,12 @@ public class CanvasManager : MonoBehaviour
     public Image levelBackground;
     public Image barImage;
     public Transform highScoresWindow;
-    public int testScore;
 
     public void SendScore (string username, int points)
     {
         StartCoroutine (NetworkManager.SetHighScore (username, points, onEnded =>
         {
-            print (onEnded);
-            if (onEnded) ShowHighScores ();
+            ShowHighScores ();
         }));
     }
 
@@ -32,11 +30,18 @@ public class CanvasManager : MonoBehaviour
                 var userSlot = content.GetChild (x);
                 userSlot.Find ("Username").GetComponent<Text> ().text = topUsers [x].username;
                 userSlot.Find ("Points").GetComponent<Text> ().text = topUsers [x].points;
+                if (topUsers [x].username == GameManager.Instance.username) userSlot.Find ("Username").GetComponent<Text> ().color = Color.yellow;
                 //userSlot.gameObject.SetActive(true);
 
             }
             highScoresWindow.gameObject.SetActive (true);
+            Invoke ("MakeRetryAvailable", 1f);
         }));
+    }
+
+    private void MakeRetryAvailable ()
+    {
+        GameManager.Instance.retryAvailable = true;
     }
 
     private void Awake ()
@@ -48,7 +53,6 @@ public class CanvasManager : MonoBehaviour
     private void Start ()
     {
         SetLivesNumber (GameManager.Instance.lives);
-        SendScore ("hydekyle", testScore);
     }
 
     public void AddScore (int value)
