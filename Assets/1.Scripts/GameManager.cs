@@ -5,6 +5,7 @@ using EZObjectPools;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,13 +21,47 @@ public class GameManager : MonoBehaviour
     public GameObject boostShield, boostHealth, boostPoints, boostAttackspeed;
     public bool retryAvailable = false;
 
-    public string username = "BetaTester";
+    [DllImport ("__Internal")]
+    private static extern void Hello ();
+
+    [DllImport ("__Internal")]
+    private static extern void AskUsername ();
 
     [HideInInspector]
     public EZObjectPool enemyBulletsPoolGreen, enemyBulletsPoolRed, enemyBulletsPoolFire, enemyBombs;
 
     public float minPosX = -3.8f, maxPosX = 3.8f, minPosY = -4.5f, maxPosY = -2f;
     public GameObject bigExplosion;
+
+    private void Awake ()
+    {
+        if (Instance) Destroy (this.gameObject);
+        Instance = this;
+        Initialize ();
+    }
+
+    private void Start ()
+    {
+        if (!Application.isEditor) CheckUsername ();
+        else
+        {
+            DataManager.Instance.username = "UnityPlayer";
+            StartGame ();
+        }
+    }
+
+    void CheckUsername ()
+    {
+        if (DataManager.Instance.username == "")
+        {
+            AskUsername ();
+            WebGLInput.captureAllKeyboardInput = false;
+        }
+        else
+        {
+            StartGame ();
+        }
+    }
 
     public void AddRandomPowerUps (List<Enemy> enemyList)
     {
@@ -38,7 +73,8 @@ public class GameManager : MonoBehaviour
 
     public void SetUsername (string newUsername)
     {
-        username = newUsername;
+        DataManager.Instance.username = newUsername;
+        StartGame ();
     }
 
     float lastTimePowerUpDropped;
@@ -101,18 +137,6 @@ public class GameManager : MonoBehaviour
         GameFinished ();
     }
 
-    private void Awake ()
-    {
-        if (Instance) Destroy (this.gameObject);
-        Instance = this;
-    }
-
-    private void Start ()
-    {
-        Initialize ();
-        StartGame ();
-    }
-
     void Initialize ()
     {
         enemyBulletsPoolGreen = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [0], "Bullets Enemy Green", 7, false, true, true);
@@ -123,6 +147,8 @@ public class GameManager : MonoBehaviour
 
     public void StartGame ()
     {
+        if (!Application.isEditor) WebGLInput.captureAllKeyboardInput = true;
+        CanvasManager.Instance.usernameText.text = DataManager.Instance.username;
         AudioManager.Instance.StartMusic ();
         LoadLevel (++activeLevelNumber);
     }
@@ -194,7 +220,7 @@ public class GameManager : MonoBehaviour
         player.gameObject.SetActive (false);
         EnemiesManager.Instance.StopEnemies ();
         gameIsActive = false;
-        CanvasManager.Instance.SendScore (username, CanvasManager.Instance.score);
+        CanvasManager.Instance.SendScore (DataManager.Instance.username, CanvasManager.Instance.score);
     }
 
     private void Update ()
@@ -215,7 +241,6 @@ public class GameManager : MonoBehaviour
         CanvasManager.Instance.SetLivesNumber (lives);
         if (lives > 0)
         {
-            player.vulnerable = false;
             StartCoroutine (player.InmuneTime (inmuneTime));
         }
         else GameOver ();
@@ -270,12 +295,17 @@ public class GameManager : MonoBehaviour
 
     public void GameFinished ()
     {
-
+        CanvasManager.Instance.SendScore (DataManager.Instance.username, CanvasManager.Instance.score);
     }
 
     public void ReloadScene ()
     {
         SceneManager.LoadScene (0);
+    }
+
+    public void RequestUsername ()
+    {
+
     }
 
     public void Controles ()

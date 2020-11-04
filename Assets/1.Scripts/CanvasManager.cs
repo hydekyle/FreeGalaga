@@ -7,7 +7,7 @@ public class CanvasManager : MonoBehaviour
 {
     public static CanvasManager Instance;
     public int score = 0;
-    public Text scoreText, livesText, levelText;
+    public Text scoreText, livesText, levelText, usernameText;
     public Image levelBackground;
     public Image barImage;
     public Transform highScoresWindow;
@@ -30,7 +30,7 @@ public class CanvasManager : MonoBehaviour
                 var userSlot = content.GetChild (x);
                 userSlot.Find ("Username").GetComponent<Text> ().text = topUsers [x].username;
                 userSlot.Find ("Points").GetComponent<Text> ().text = topUsers [x].points;
-                if (topUsers [x].username == GameManager.Instance.username) userSlot.Find ("Username").GetComponent<Text> ().color = Color.yellow;
+                if (topUsers [x].username == DataManager.Instance.username) userSlot.Find ("Username").GetComponent<Text> ().color = Color.yellow;
                 //userSlot.gameObject.SetActive(true);
 
             }
@@ -68,6 +68,7 @@ public class CanvasManager : MonoBehaviour
 
     public void SetColorTextUI (Color color)
     {
+        usernameText.color = color;
         foreach (Transform t in levelText.transform.parent) t.GetComponent<Text> ().color = color;
     }
 

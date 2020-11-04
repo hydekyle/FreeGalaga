@@ -73,6 +73,7 @@ public class Player : MonoBehaviour
 
     void GetStrike ()
     {
+        vulnerable = false;
         GameManager.Instance.LoseLives (1, 1.5f);
     }
 
@@ -151,13 +152,15 @@ public class Player : MonoBehaviour
 
     public bool vulnerable = true;
 
-    private void OnTriggerEnter2D (Collider2D other)
+    private void OnTriggerStay2D (Collider2D other)
     {
         if (other.CompareTag ("Enemy"))
         {
-            if (!vulnerable) return;
-            other.GetComponent<Enemy> ().Erase ();
-            GetStrike ();
+            if (vulnerable)
+            {
+                other.GetComponent<Enemy> ().Erase ();
+                GetStrike ();
+            }
         }
         else if (other.CompareTag ("EnemyShot"))
         {

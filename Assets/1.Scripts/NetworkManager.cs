@@ -6,8 +6,8 @@ using System;
 
 public class NetworkManager
 {
-    public static string highScoresURL = "hydekyle.ga/pinga.php";
-    public static string sendScoreURL = "http://hydekyle.ga/savepinga.php";
+    public static string highScoresURL = "https://hydekyle.ga/scores.php";
+    public static string sendScoreURL = "https://hydekyle.ga/updatescore.php";
 
     public static IEnumerator SetHighScore (string username, int points, Action<bool> onEnded)
     {
