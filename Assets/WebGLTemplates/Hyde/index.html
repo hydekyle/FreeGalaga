@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | FreeGalaga</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  
+  <body style="text-align: center">
+
+    <div class="container">
+      <div class="left-container">
+        <div id="login_form" class="hidden">
+          <h2 id="display_username">Introduce tu nickname:</h2>
+          <input type="text" value="" class="input-username" id="input-username" onkeydown="if (event.keyCode == 13) SetUsername()" />
+          <button onclick="SetUsername()" class="button">Play</button>
+        </div>
+        <div class="spacer">
+
+        </div>
+        <div id="unity-footer">
+          <div id="unity-webgl-logo"></div>
+          <button id="unity-fullscreen-button" class="button">Full Screen</button>
+        </div>
+      </div>
+
+      <div class="right-container">
+        <canvas id="unity-canvas" style="width: 500px; height: 600px; background: #231F20"></canvas>
+      </div>
+    </div>
+
+    <script src="%UNITY_WEBGL_LOADER_URL%"></script>
+
+    <script>
+        var container = document.querySelector("#unity-container");
+        var canvas = document.querySelector("#unity-canvas");
+        var loadingBar = document.querySelector("#unity-loading-bar");
+        var progressBarFull = document.querySelector("#unity-progress-bar-full");
+        var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+          container.className = "unity-mobile";
+          config.devicePixelRatio = 1;
+        } else {
+          canvas.style.width = "500px";
+          canvas.style.height = "600px";
+        }
+
+        var buildUrl = "Build";
+        var loaderUrl = "%UNITY_WEBGL_LOADER_URL%";
+        let unityInstance = UnityLoader.instantiate(document.querySelector("#unity-canvas"), "%UNITY_WEBGL_BUILD_URL%");
+          
+        fullscreenButton.onclick = () => {
+            unityInstance?.SetFullscreen(1);
+          };
+
+        function ShowLogin () {
+          document.getElementById("login_form").className = ""
+        }
+        function SetUsername () {
+          let inputField = document.getElementById("input-username")
+          let name = inputField.value
+          if (name === "") inputField.className = "red-bordered"
+          else {
+            document.getElementById("login_form").className = "hidden"
+            unityInstance?.SendMessage('[GameManager]', 'SetUsername', name)
+          }
+        }
+    </script>
+  </body>
+</html>

@@ -11,6 +11,7 @@ public class CanvasManager : MonoBehaviour
     public Image levelBackground;
     public Image barImage;
     public Transform highScoresWindow;
+    public Transform androidControls;
 
     public void SendScore (string username, int points)
     {
@@ -34,6 +35,7 @@ public class CanvasManager : MonoBehaviour
                 //userSlot.gameObject.SetActive(true);
 
             }
+            GameManager.Instance.SetAndroidControles (false);
             highScoresWindow.gameObject.SetActive (true);
             Invoke ("MakeRetryAvailable", 1f);
         }));

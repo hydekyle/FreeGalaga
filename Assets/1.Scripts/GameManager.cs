@@ -50,6 +50,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void SetAndroidControles (bool status)
+    {
+        CanvasManager.Instance.androidControls.gameObject.SetActive (status);
+    }
+
     void CheckUsername ()
     {
         if (DataManager.Instance.username == "")
@@ -295,17 +300,18 @@ public class GameManager : MonoBehaviour
 
     public void GameFinished ()
     {
+        Invoke ("EndGame", 6.6f);
+    }
+
+    void EndGame ()
+    {
+        gameIsActive = false;
         CanvasManager.Instance.SendScore (DataManager.Instance.username, CanvasManager.Instance.score);
     }
 
     public void ReloadScene ()
     {
         SceneManager.LoadScene (0);
-    }
-
-    public void RequestUsername ()
-    {
-
     }
 
     public void Controles ()

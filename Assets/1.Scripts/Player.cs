@@ -41,7 +41,8 @@ public class Player : MonoBehaviour
 
     void Update ()
     {
-        transform.position += new Vector3 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical"), 0) * Time.deltaTime * stats.movementVelocity;
+        Vector3 deltaPosition = new Vector3 (Mathf.Clamp (Input.GetAxis ("Horizontal"), -1f, 1f), Mathf.Clamp (Input.GetAxis ("Vertical"), -1f, 1f), 0);
+        transform.position += deltaPosition * Time.deltaTime * stats.movementVelocity;
         transform.position = new Vector3 (Mathf.Clamp (transform.position.x, minPosX, maxPosX), Mathf.Clamp (transform.position.y, minPosY, maxPosY), 0);
     }
 
