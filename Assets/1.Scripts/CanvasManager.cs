@@ -25,7 +25,7 @@ public class CanvasManager : MonoBehaviour
     {
         StartCoroutine (NetworkManager.GetHighScores (topUsers =>
         {
-            Transform content = highScoresWindow.Find ("Scroll View").Find ("Viewport").Find ("Content");
+            Transform content = highScoresWindow.Find ("Leader Board").Find ("Scroll View").Find ("Viewport").Find ("Content");
             for (var x = 0; x < topUsers.Count; x++)
             {
                 var userSlot = content.GetChild (x);
