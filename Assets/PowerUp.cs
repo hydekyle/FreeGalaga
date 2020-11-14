@@ -16,8 +16,8 @@ public class PowerUp : MonoBehaviour
 
     private void Start ()
     {
-        minX = GameManager.Instance.minPosX;
-        maxX = GameManager.Instance.maxPosX;
+        minX = GameManager.Instance.minPosX - 0.3f;
+        maxX = GameManager.Instance.maxPosX + 0.3f;
         minY = GameManager.Instance.minPosY;
     }
 
@@ -43,7 +43,7 @@ public class PowerUp : MonoBehaviour
 
     private void OnEnable ()
     {
-        Vector2 forceDirection = Vector2.up * 2 + Vector2.right * Random.Range (-1.2f, 1.2f);
+        Vector2 forceDirection = Vector2.up * 2 + Vector2.right * Input.GetAxis ("Horizontal");
         myRB.AddForce (forceDirection, ForceMode2D.Impulse);
         horizontalBounce = verticalBounce = true;
     }

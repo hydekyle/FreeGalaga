@@ -131,6 +131,7 @@ public class Enemy : MonoBehaviour
 
     void GetStrike (int strikeForce)
     {
+        if (!alive) return;
         stats.health -= strikeForce;
         if (stats.health <= 0) Die ();
         else

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3799489637616491957
+--- !u!1 &9046098202265018596
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,38 +8,38 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6902252683492396379}
-  - component: {fileID: 4108036293795948365}
-  - component: {fileID: 7055615098592511379}
-  - component: {fileID: 2430845443706208162}
+  - component: {fileID: 5667953102613921641}
+  - component: {fileID: 4185244035708058226}
+  - component: {fileID: 2790761804229517832}
+  - component: {fileID: 3951573657412947678}
   m_Layer: 0
-  m_Name: Enemy 2A
-  m_TagString: Enemy
+  m_Name: BulletBoss
+  m_TagString: EnemyShot
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6902252683492396379
+--- !u!4 &5667953102613921641
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3799489637616491957}
-  m_LocalRotation: {x: -0, y: -0, z: -0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 2.581, y: 0.624, z: 0}
-  m_LocalScale: {x: 0.37953913, y: 0.37953913, z: 0.37953913}
+  m_GameObject: {fileID: 9046098202265018596}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.0020997, y: 0.26836, z: 0}
+  m_LocalScale: {x: 0.26675725, y: 0.6036652, z: 0.29333097}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
---- !u!212 &4108036293795948365
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &4185244035708058226
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3799489637616491957}
+  m_GameObject: {fileID: 9046098202265018596}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -73,10 +73,10 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1721019896616348300, guid: 1a112f4a173160f4abfebd63e7cf1104, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7d49ceca2d1b9b64ca4b145d40091643, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
-  m_FlipY: 0
+  m_FlipY: 1
   m_DrawMode: 0
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
@@ -84,57 +84,50 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &7055615098592511379
+--- !u!61 &2790761804229517832
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3799489637616491957}
+  m_GameObject: {fileID: 9046098202265018596}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.022795618, y: -0.044508368}
+  m_Offset: {x: -0.0056772977, y: -0.004386425}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.475, y: 2.025}
+    oldSize: {x: 0.225, y: 0.825}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.0405693, y: 1.4818506}
+  m_Size: {x: 0.38481644, y: 0.84396064}
   m_EdgeRadius: 0
---- !u!114 &2430845443706208162
-MonoBehaviour:
+--- !u!50 &3951573657412947678
+Rigidbody2D:
+  serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3799489637616491957}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f035461c75447ca49be1bcc4862e5c77, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  powerUp: 0
-  points: 60
-  defaultBehavior: 1
-  bulletType: 0
-  shootAtStart: 0
-  stats:
-    health: 6
-    damage: 2
-    movementVelocity: 1
-    shootCooldown: 2
-    shootSpeed: 2
-  activeBehavior: 0
-  playerT: {fileID: 0}
-  alive: 1
-  ID: 2A
-  isLittleOne: 1
+  m_GameObject: {fileID: 9046098202265018596}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

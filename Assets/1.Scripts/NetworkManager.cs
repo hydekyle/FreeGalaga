@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System;
 
-public class NetworkManager
+public static class NetworkManager
 {
     public static string highScoresURL = "https://hydekyle.ga/scores.php";
     public static string sendScoreURL = "https://hydekyle.ga/updatescore.php";
@@ -17,7 +17,6 @@ public class NetworkManager
             yield return webRequest.SendWebRequest ();
             if (!webRequest.isNetworkError)
             {
-                Debug.Log (webRequest.downloadHandler.text);
                 bool isNewRecord = webRequest.downloadHandler.text == "1" ? true : false;
                 onEnded (isNewRecord);
             }
@@ -47,7 +46,7 @@ public class NetworkManager
                 }
                 topUsers (users);
             }
-            else Debug.Log ("Feo: " + webRequest.error);
+            else Debug.LogWarning ("Error GetHighScore: " + webRequest.error);
         }
     }
 

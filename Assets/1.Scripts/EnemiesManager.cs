@@ -46,7 +46,7 @@ public class EnemiesManager : MonoBehaviour
     {
         defaultPosEnemies = enemiesT.localPosition;
         enemiesAnimator = enemiesT.parent.GetComponent<Animator> ();
-        explosionsPool = EZObjectPool.CreateObjectPool (explosionPrefab, "Explosiones", 4, true, true, true);
+        explosionsPool = EZObjectPool.CreateObjectPool (explosionPrefab, "Explosiones", 12, true, true, true);
     }
 
     public void Reset ()
@@ -226,7 +226,7 @@ public class EnemiesManager : MonoBehaviour
         // Esta parte solo es para el nivel 4
         if (GameManager.Instance.activeLevelNumber == 4 && crazyEnemiesTotal % 2 == 0)
         {
-            var laLista = enemiesList.FindAll (leader => leader.defaultBehavior == EnemyBehavior.Leader)?.FindAll (alive => alive.alive)?.FindAll (isShooter => isShooter.activeBehavior == EnemyBehavior.Shooter);
+            var laLista = enemiesList.FindAll (leader => leader.defaultBehavior == EnemyBehavior.Leader)?.FindAll (alive => alive.alive)?.FindAll (leader => leader.activeBehavior == EnemyBehavior.Shooter);
             if (laLista.Count > 0) laLista [Random.Range (0, laLista.Count)].SetBehavior (EnemyBehavior.Leader);
         }
         crazyEnemiesTotal++;

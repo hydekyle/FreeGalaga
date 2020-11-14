@@ -40,6 +40,14 @@ public class GameManager : MonoBehaviour
         Initialize ();
     }
 
+    void Initialize ()
+    {
+        enemyBulletsPoolGreen = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [0], "Bullets Enemy Green", 6, false, true, true);
+        enemyBulletsPoolRed = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [1], "Bullets Enemy Red", 7, false, true, true);
+        enemyBulletsPoolFire = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [2], "Bullets Enemy Fire", 5, false, true, true);
+        enemyBombs = EZObjectPool.CreateObjectPool (bombPrefab, "Bombs Boss", 6, false, true, true);
+    }
+
     private void Start ()
     {
         if (!Application.isEditor) CheckUsername ();
@@ -78,6 +86,7 @@ public class GameManager : MonoBehaviour
 
     public void SetUsername (string newUsername)
     {
+        if (DataManager.Instance.username != "") return;
         DataManager.Instance.username = newUsername;
         StartGame ();
     }
@@ -139,15 +148,7 @@ public class GameManager : MonoBehaviour
             DropPowerUp (explosionPosition, BoostType.Points);
             yield return new WaitForSeconds (0.3f);
         }
-        GameFinished ();
-    }
-
-    void Initialize ()
-    {
-        enemyBulletsPoolGreen = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [0], "Bullets Enemy Green", 7, false, true, true);
-        enemyBulletsPoolRed = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [1], "Bullets Enemy Red", 7, false, true, true);
-        enemyBulletsPoolFire = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [2], "Bullets Enemy Fire", 7, false, true, true);
-        enemyBombs = EZObjectPool.CreateObjectPool (bombPrefab, "Bombs Boss", 8, false, true, true);
+        if (lives > 0) GameFinished ();
     }
 
     public void StartGame ()
@@ -300,13 +301,33 @@ public class GameManager : MonoBehaviour
 
     public void GameFinished ()
     {
+        AddScoreByTime ();
         Invoke ("EndGame", 6.6f);
+    }
+
+    void AddScoreByTime ()
+    {
+        var score = 300f - Time.timeSinceLevelLoad;
+        CanvasManager.Instance.AddScore ((int) score);
+    }
+
+    IEnumerator ChangeLivesByPoints ()
+    {
+        var totalLives = lives;
+        for (var x = 0; x < totalLives; x++)
+        {
+            AudioManager.Instance.PlayAudioPlayer (tablesSounds.lifeUp);
+            CanvasManager.Instance.SetLivesNumber (--lives);
+            CanvasManager.Instance.AddScore (1000);
+            yield return new WaitForSeconds (1f);
+        }
+        CanvasManager.Instance.SendScore (DataManager.Instance.username, CanvasManager.Instance.score);
     }
 
     void EndGame ()
     {
         gameIsActive = false;
-        CanvasManager.Instance.SendScore (DataManager.Instance.username, CanvasManager.Instance.score);
+        StartCoroutine (ChangeLivesByPoints ());
     }
 
     public void ReloadScene ()

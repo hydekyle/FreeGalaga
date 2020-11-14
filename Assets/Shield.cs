@@ -16,7 +16,6 @@ public class Shield : MonoBehaviour
 
     private void Update ()
     {
-        transform.position = Vector3.MoveTowards (transform.position, player.transform.position - Vector3.up * 0.5f, Time.deltaTime * 9f);
         spriteRenderer.color = Color.Lerp (spriteRenderer.color, Color.white, Time.deltaTime * 6.66f);
         if (gameObject.activeSelf && Time.time > nextTimeShutDownShield) DesactivateShield ();
     }
@@ -24,19 +23,18 @@ public class Shield : MonoBehaviour
     public void ActivateShield ()
     {
         gameObject.SetActive (true);
-        nextTimeShutDownShield = Time.time + 16f;
+        nextTimeShutDownShield = Time.time + 15f;
     }
 
     public void DesactivateShield ()
     {
         gameObject.SetActive (false);
-        transform.position = new Vector3 (0, -6, 0);
     }
 
     void GetStrike ()
     {
         spriteRenderer.color = Color.red;
-        nextTimeShutDownShield -= 2f;
+        nextTimeShutDownShield -= 1.5f;
     }
 
     private void OnTriggerEnter2D (Collider2D other)

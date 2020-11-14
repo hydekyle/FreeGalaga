@@ -1861,9 +1861,9 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
-  - component: {fileID: 519420030}
   - component: {fileID: 519420034}
   - component: {fileID: 519420033}
+  - component: {fileID: 519420030}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1893,8 +1893,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cam: {fileID: 519420031}
   height: 10
-  width: 8.333333
-  keepBottomPos: 0
+  width: 26.858006
+  keepBottomPos: 1
   thisTransform: {fileID: 519420032}
 --- !u!20 &519420031
 Camera:
@@ -1932,7 +1932,7 @@ Camera:
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 0
-  m_HDR: 1
+  m_HDR: 0
   m_AllowMSAA: 0
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
@@ -3906,7 +3906,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1976712108960348, guid: a4f56e5a78e284f4a8f6aeac97ff2d77, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114179251583348072, guid: a4f56e5a78e284f4a8f6aeac97ff2d77, type: 3}
       propertyPath: m_Color.a
@@ -3918,35 +3918,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114683065625397926, guid: a4f56e5a78e284f4a8f6aeac97ff2d77, type: 3}
       propertyPath: AnchoredAreaBounds.m_Center.x
-      value: 611.54596
+      value: 413.6676
       objectReference: {fileID: 0}
     - target: {fileID: 114683065625397926, guid: a4f56e5a78e284f4a8f6aeac97ff2d77, type: 3}
       propertyPath: AnchoredAreaBounds.m_Extent.x
-      value: 702.23773
+      value: 3400.1948
       objectReference: {fileID: 0}
     - target: {fileID: 114683065625397926, guid: a4f56e5a78e284f4a8f6aeac97ff2d77, type: 3}
       propertyPath: NormalizedAnchoredAreaBounds.m_Center.x
-      value: 0.42383108
+      value: 0.25670037
       objectReference: {fileID: 0}
     - target: {fileID: 114683065625397926, guid: a4f56e5a78e284f4a8f6aeac97ff2d77, type: 3}
       propertyPath: NormalizedAnchoredAreaBounds.m_Extent.x
-      value: 0.48668486
+      value: 1.8943801
       objectReference: {fileID: 0}
     - target: {fileID: 114683065625397926, guid: a4f56e5a78e284f4a8f6aeac97ff2d77, type: 3}
       propertyPath: AnchoredAreaBounds.m_Center.y
-      value: 172.73288
+      value: 733.87524
       objectReference: {fileID: 0}
     - target: {fileID: 114683065625397926, guid: a4f56e5a78e284f4a8f6aeac97ff2d77, type: 3}
       propertyPath: NormalizedAnchoredAreaBounds.m_Center.y
-      value: 0.28788814
+      value: 1.3238324
       objectReference: {fileID: 0}
     - target: {fileID: 114683065625397926, guid: a4f56e5a78e284f4a8f6aeac97ff2d77, type: 3}
       propertyPath: AnchoredAreaBounds.m_Extent.y
-      value: 310.77954
+      value: 1858.9486
       objectReference: {fileID: 0}
     - target: {fileID: 114683065625397926, guid: a4f56e5a78e284f4a8f6aeac97ff2d77, type: 3}
       propertyPath: NormalizedAnchoredAreaBounds.m_Extent.y
-      value: 0.5179659
+      value: 3.0982478
       objectReference: {fileID: 0}
     - target: {fileID: 114683065625397926, guid: a4f56e5a78e284f4a8f6aeac97ff2d77, type: 3}
       propertyPath: knobBackgroundFollowKnob

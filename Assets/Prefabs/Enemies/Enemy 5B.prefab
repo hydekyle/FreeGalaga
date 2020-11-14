@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 5804345133264645842}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 4.04, y: 0.7, z: 0}
-  m_LocalScale: {x: 0.198489, y: 0.198489, z: 0.21815638}
+  m_LocalScale: {x: 0.105016276, y: 0.105016276, z: 0.11542187}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -99,10 +99,10 @@ MonoBehaviour:
   powerUp: 0
   points: 100
   defaultBehavior: 3
-  bulletType: 0
+  bulletType: 2
   shootAtStart: 1
   stats:
-    health: 100
+    health: 90
     damage: 2
     movementVelocity: 2
     shootCooldown: 8

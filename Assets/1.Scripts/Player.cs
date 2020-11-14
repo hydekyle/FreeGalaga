@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
     public Stats stats;
     EZObjectPool playerShots;
     float lastTimeShot;
-    float minPosX = -3.8f, maxPosX = 3.8f, minPosY = -4.5f, maxPosY = -2f;
+    float minPosX, maxPosX, minPosY = -5f, maxPosY = -2f;
     AudioClip shotAudioClip;
     Transform gunPoint;
     public BoxCollider2D myCollider;
@@ -24,6 +24,8 @@ public class Player : MonoBehaviour
 
     void Initialize ()
     {
+        minPosX = GameManager.Instance.minPosX;
+        maxPosX = GameManager.Instance.maxPosX;
         spriteRenderer = GetComponent<SpriteRenderer> ();
         myCollider = GetComponent<BoxCollider2D> ();
         gunPoint = transform.Find ("GunPoint");
@@ -36,7 +38,7 @@ public class Player : MonoBehaviour
         if (level > GameManager.Instance.tablesEtc.disparosJugador.Count) return;
         playerShots?.ClearPool ();
         var newShotPrefab = GameManager.Instance.tablesEtc.disparosJugador [level];
-        playerShots = EZObjectPool.CreateObjectPool (newShotPrefab, "PlayerShots" + level, 4, true, true, true);
+        playerShots = EZObjectPool.CreateObjectPool (newShotPrefab, "PlayerShots" + level, 15, true, true, true);
     }
 
     void Update ()
