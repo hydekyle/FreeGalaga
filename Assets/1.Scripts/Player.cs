@@ -16,6 +16,8 @@ public class Player : MonoBehaviour
     public int playerLevel = 1;
     SpriteRenderer spriteRenderer;
     public Shield shield;
+    public float lastTimeAttackBoosted = -10f;
+    public bool vulnerable = true;
 
     private void Start ()
     {
@@ -46,6 +48,7 @@ public class Player : MonoBehaviour
         Vector3 deltaPosition = new Vector3 (Mathf.Clamp (Input.GetAxis ("Horizontal"), -1f, 1f), Mathf.Clamp (Input.GetAxis ("Vertical"), -1f, 1f), 0);
         transform.position += deltaPosition * Time.deltaTime * stats.movementVelocity;
         transform.position = new Vector3 (Mathf.Clamp (transform.position.x, minPosX, maxPosX), Mathf.Clamp (transform.position.y, minPosY, maxPosY), 0);
+        if (isAttackBoosted && Time.time > lastTimeAttackBoosted + 6.66f) DesactivateAttackBoost ();
     }
 
     public void Shoot ()
@@ -89,7 +92,6 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds (inmuneTime);
 
         vulnerable = true; // El collider se desactiva antes de entrar en la Corutina para evitar múltiples hits.
-
     }
 
     public IEnumerator BlinkTime (float blinkTime)
@@ -147,13 +149,29 @@ public class Player : MonoBehaviour
         GameManager.Instance.GainLives (1);
     }
 
-    void GetAttackSpeed ()
+    public Material bulletMaterial;
+
+    void GetAttackBoost ()
     {
         AudioManager.Instance.PlayAudioPlayer (GameManager.Instance.tablesSounds.lifeUp);
-        stats.shootCooldown++;
+        //stats.shootCooldown++;
+        lastTimeAttackBoosted = Time.time;
+        isAttackBoosted = true;
+        bulletMaterial.color = Color.red;
     }
 
-    public bool vulnerable = true;
+    void DesactivateAttackBoost ()
+    {
+        isAttackBoosted = false;
+        bulletMaterial.color = Color.white;
+    }
+
+    public bool isAttackBoosted = false;
+
+    // public bool IsAttackBoosted ()
+    // {
+    //     return Time.time < lastTimeAttackBoosted + 6.66f;
+    // }
 
     private void OnTriggerStay2D (Collider2D other)
     {
@@ -184,7 +202,7 @@ public class Player : MonoBehaviour
                     GetPoints ();
                     break;
                 case BoostType.AttackSpeed:
-                    GetAttackSpeed ();
+                    GetAttackBoost ();
                     break;
                 case BoostType.Health:
                     GetHealth ();

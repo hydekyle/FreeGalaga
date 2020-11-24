@@ -10,7 +10,9 @@ using System.Runtime.InteropServices;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+    public GameObject settings;
     public Player player;
+    public Material playerBulletMaterial;
     public bool gameIsActive = false;
     public int activeLevelNumber = 0;
     public ScriptableEtc tablesEtc;
@@ -214,6 +216,7 @@ public class GameManager : MonoBehaviour
         EnemiesManager.Instance.ClearAllEnemies ();
         Invoke ("PlayerLevelUp", 1.2f);
         Invoke ("LoadNextLevel", 2.6f);
+        player.lastTimeAttackBoosted += 2.6f; // Para evitar desperdiciar el power-up entre escenas.
     }
 
     public void PlayerLevelUp ()
@@ -335,8 +338,20 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene (0);
     }
 
+    void OpenSettings ()
+    {
+        if (!settings.activeSelf)
+        {
+            settings.SetActive (true);
+            Time.timeScale = 0f;
+        }
+
+    }
+
     public void Controles ()
     {
+        if (Input.GetKeyDown (KeyCode.Escape)) OpenSettings ();
+
         if (Input.GetButtonDown ("Reset")) ReloadScene ();
 
         if (Input.GetButton ("Shoot") || Input.GetButton ("ShootPad"))

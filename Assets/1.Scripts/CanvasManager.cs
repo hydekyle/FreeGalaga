@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
+using System;
 
 public class CanvasManager : MonoBehaviour
 {
@@ -31,14 +33,26 @@ public class CanvasManager : MonoBehaviour
                 var userSlot = content.GetChild (x);
                 userSlot.Find ("Username").GetComponent<Text> ().text = topUsers [x].username;
                 userSlot.Find ("Points").GetComponent<Text> ().text = topUsers [x].points;
+                if (topUsers [x].avatar != "") StartCoroutine (GetAvatarTexture (topUsers [x].avatar, userSlot.Find ("Avatar").GetComponent<Image> ()));
                 if (topUsers [x].username == DataManager.Instance.username) userSlot.Find ("Username").GetComponent<Text> ().color = Color.yellow;
                 //userSlot.gameObject.SetActive(true);
 
+                GameManager.Instance.SetAndroidControles (false);
+                highScoresWindow.gameObject.SetActive (true);
+                Invoke ("MakeRetryAvailable", 1f);
             }
-            GameManager.Instance.SetAndroidControles (false);
-            highScoresWindow.gameObject.SetActive (true);
-            Invoke ("MakeRetryAvailable", 1f);
         }));
+    }
+
+    IEnumerator GetAvatarTexture (string avatarURL, Image imagePlaceHolder)
+    {
+        print (avatarURL);
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture (avatarURL);
+        yield return www.SendWebRequest ();
+
+        Texture2D texture = DownloadHandlerTexture.GetContent (www);
+
+        imagePlaceHolder.sprite = Sprite.Create (texture, new Rect (0, 0, texture.width, texture.height), Vector2.zero);
     }
 
     private void MakeRetryAvailable ()

@@ -6,7 +6,7 @@ using System;
 [System.Serializable]
 public struct User
 {
-    public string username, points;
+    public string username, points, avatar;
 }
 
 public enum BoostType
