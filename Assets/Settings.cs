@@ -14,13 +14,14 @@ public class Settings : MonoBehaviour
 
     bool music, sound, touchpad;
 
-    private void OnEnable ()
+    private void Start ()
     {
         if (PlayerPrefs.HasKey ("Music")) music = PlayerPrefs.GetInt ("Music") == 1 ? true : false;
         if (PlayerPrefs.HasKey ("Sound")) sound = PlayerPrefs.GetInt ("Sound") == 1 ? true : false;
         if (PlayerPrefs.HasKey ("Touchpad")) touchpad = PlayerPrefs.GetInt ("Touchpad") == 1 ? true : false;
 
         SetValues ();
+        DontDestroyOnLoad (this.gameObject);
     }
 
     void SetValues ()
@@ -71,7 +72,7 @@ public class Settings : MonoBehaviour
 
     void Quit ()
     {
-        gameObject.SetActive (false);
+        transform.GetChild (0).gameObject.SetActive (false);
         Time.timeScale = 1f;
     }
 
@@ -88,6 +89,21 @@ public class Settings : MonoBehaviour
     public void TouchpadSetActive (bool active)
     {
         touchpadGO.SetActive (active);
+    }
+
+    void OpenSettings ()
+    {
+        var settings = transform.GetChild (0).gameObject;
+        if (!settings.activeSelf)
+        {
+            settings.SetActive (true);
+            Time.timeScale = 0f;
+        }
+    }
+
+    private void Update ()
+    {
+        if (Input.GetKeyDown (KeyCode.Escape)) OpenSettings ();
     }
 
 }

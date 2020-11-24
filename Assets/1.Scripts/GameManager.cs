@@ -335,22 +335,11 @@ public class GameManager : MonoBehaviour
 
     public void ReloadScene ()
     {
-        SceneManager.LoadScene (0);
-    }
-
-    void OpenSettings ()
-    {
-        if (!settings.activeSelf)
-        {
-            settings.SetActive (true);
-            Time.timeScale = 0f;
-        }
-
+        SceneManager.LoadScene ("MainLevel");
     }
 
     public void Controles ()
     {
-        if (Input.GetKeyDown (KeyCode.Escape)) OpenSettings ();
 
         if (Input.GetButtonDown ("Reset")) ReloadScene ();
 

@@ -26,6 +26,7 @@ public class Player : MonoBehaviour
 
     void Initialize ()
     {
+        bulletMaterial.color = Color.white;
         minPosX = GameManager.Instance.minPosX;
         maxPosX = GameManager.Instance.maxPosX;
         spriteRenderer = GetComponent<SpriteRenderer> ();
@@ -74,7 +75,7 @@ public class Player : MonoBehaviour
 
     bool isShootAvailable ()
     {
-        return Time.time > lastTimeShot + 0.4f / stats.shootCooldown;
+        return Time.time > lastTimeShot + 0.4f / stats.shootCooldown / (isAttackBoosted ? 2 : 1);
     }
 
     void GetStrike ()

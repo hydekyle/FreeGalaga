@@ -10,7 +10,7 @@ public class Boss1 : MonoBehaviour
     Vector3 targetPos;
     List<Transform> cannons = new List<Transform> ();
 
-    float nextTimeShoot, nextTimeBomb, nextTimeMoved;
+    float nextTimeShoot, nextTimeBomb, nextTimeMoved, nextTimeDropBoost;
     SpriteRenderer spriteRenderer;
 
     private void Awake ()
@@ -20,12 +20,17 @@ public class Boss1 : MonoBehaviour
 
     void Initialize ()
     {
+        nextTimeDropBoost = Time.time + 7f;
         spriteRenderer = GetComponent<SpriteRenderer> ();
         playerT = GameManager.Instance.player.transform;
         targetPos = GetScreenPos (ScreenPosition.BotMid);
         foreach (Transform t in transform.Find ("Cannons")) cannons.Add (t);
         nextTimeShoot = nextTimeBomb = Time.time + 2f;
+    }
 
+    void DropBoost ()
+    {
+        GameManager.Instance.DropPowerUp (transform.position, BoostType.AttackSpeed);
     }
 
     private void Update ()
@@ -33,6 +38,7 @@ public class Boss1 : MonoBehaviour
         spriteRenderer.color = Color.Lerp (spriteRenderer.color, Color.white, Time.deltaTime * 15);
         transform.position = Vector3.Lerp (transform.position, targetPos, Time.deltaTime * stats.movementVelocity);
         if (Time.time > nextTimeShoot) Shoot ();
+        else if (Time.time > nextTimeDropBoost) DropBoost ();
         else if (Time.time > nextTimeBomb) ThrowBomb ();
         else if (Time.time > nextTimeMoved) MoveToNewPosition ();
     }

@@ -236,7 +236,7 @@ public class Enemy : MonoBehaviour
     {
         if (other.CompareTag ("PlayerShot"))
         {
-            if (!GameManager.Instance.player.isAttackBoosted) other.gameObject.SetActive (false);
+            other.gameObject.SetActive (false);
             GetStrike (GameManager.Instance.player.stats.damage);
         }
     }
