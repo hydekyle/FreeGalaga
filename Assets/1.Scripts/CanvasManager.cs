@@ -46,7 +46,6 @@ public class CanvasManager : MonoBehaviour
 
     IEnumerator GetAvatarTexture (string avatarURL, Image imagePlaceHolder)
     {
-        print (avatarURL);
         UnityWebRequest www = UnityWebRequestTexture.GetTexture (avatarURL);
         yield return www.SendWebRequest ();
 

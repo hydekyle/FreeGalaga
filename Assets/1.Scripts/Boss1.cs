@@ -31,6 +31,7 @@ public class Boss1 : MonoBehaviour
     void DropBoost ()
     {
         GameManager.Instance.DropPowerUp (transform.position, BoostType.AttackSpeed);
+        nextTimeDropBoost = Time.time + 9f;
     }
 
     private void Update ()

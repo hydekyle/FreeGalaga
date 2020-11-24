@@ -35,12 +35,12 @@ public static class NetworkManager
                 {
                     try
                     {
-                        var storedUserValues = rawUser.Split(':');
+                        var storedUserValues = rawUser.Split ('·');
                         users.Add (new User
                         {
                             username = storedUserValues [0],
-                            points = storedUserValues [1],
-                            avatar = storedUserValues [2]
+                                points = storedUserValues [1],
+                                avatar = storedUserValues [2]
                         });
                     }
                     catch
