@@ -12,6 +12,8 @@ public class Settings : MonoBehaviour
     public Image musicIMG, soundIMG, touchpadIMG;
     public Sprite musicON, musicOFF, soundON, soundOFF, touchpadON, touchpadOFF;
 
+    public Text debugText;
+
     bool music, sound, touchpad;
 
     private void Start ()
@@ -20,11 +22,11 @@ public class Settings : MonoBehaviour
         if (PlayerPrefs.HasKey ("Sound")) sound = PlayerPrefs.GetInt ("Sound") == 1 ? true : false;
         if (PlayerPrefs.HasKey ("Touchpad")) touchpad = PlayerPrefs.GetInt ("Touchpad") == 1 ? true : false;
 
-        SetValues ();
-        DontDestroyOnLoad (this.gameObject);
+        ResolveValues ();
+        //DontDestroyOnLoad (this.gameObject);
     }
 
-    void SetValues ()
+    void ResolveValues ()
     {
         if (music) musicIMG.sprite = musicON;
         else musicIMG.sprite = musicOFF;
@@ -41,19 +43,19 @@ public class Settings : MonoBehaviour
     public void BTN_Music ()
     {
         music = !music;
-        SetValues ();
+        ResolveValues ();
     }
 
     public void BTN_Sound ()
     {
         sound = !sound;
-        SetValues ();
+        ResolveValues ();
     }
 
     public void BTN_Touchpad ()
     {
         touchpad = !touchpad;
-        SetValues ();
+        ResolveValues ();
     }
 
     public void BTN_Accept ()
@@ -93,17 +95,24 @@ public class Settings : MonoBehaviour
 
     void OpenSettings ()
     {
+
         var settings = transform.GetChild (0).gameObject;
         if (!settings.activeSelf)
         {
             settings.SetActive (true);
             Time.timeScale = 0f;
         }
+        ReadCookie ();
     }
 
     private void Update ()
     {
         if (Input.GetKeyDown (KeyCode.Escape)) OpenSettings ();
+    }
+
+    public void ReadCookie ()
+    {
+        debugText.text = HttpCookie.GetCookie ("hydecookie");
     }
 
 }

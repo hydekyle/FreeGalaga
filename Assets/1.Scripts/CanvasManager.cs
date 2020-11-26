@@ -17,7 +17,7 @@ public class CanvasManager : MonoBehaviour
 
     public void SendScore (string username, int points)
     {
-        StartCoroutine (NetworkManager.SetHighScore (username, points, onEnded =>
+        StartCoroutine (NetworkManager.SendHighScore (username, points, onEnded =>
         {
             ShowHighScores ();
         }));

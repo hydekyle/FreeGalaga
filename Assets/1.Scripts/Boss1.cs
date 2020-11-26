@@ -20,7 +20,7 @@ public class Boss1 : MonoBehaviour
 
     void Initialize ()
     {
-        nextTimeDropBoost = Time.time + 7f;
+        nextTimeDropBoost = Time.time + 6f;
         spriteRenderer = GetComponent<SpriteRenderer> ();
         playerT = GameManager.Instance.player.transform;
         targetPos = GetScreenPos (ScreenPosition.BotMid);
@@ -31,7 +31,7 @@ public class Boss1 : MonoBehaviour
     void DropBoost ()
     {
         GameManager.Instance.DropPowerUp (transform.position, BoostType.AttackSpeed);
-        nextTimeDropBoost = Time.time + 9f;
+        nextTimeDropBoost = Time.time + 12f;
     }
 
     private void Update ()

@@ -35,6 +35,8 @@ public class GameManager : MonoBehaviour
     public float minPosX = -3.8f, maxPosX = 3.8f, minPosY = -4.5f, maxPosY = -2f;
     public GameObject bigExplosion;
 
+    public GameConfig gameData;
+
     private void Awake ()
     {
         if (Instance) Destroy (this.gameObject);
@@ -50,14 +52,32 @@ public class GameManager : MonoBehaviour
         enemyBombs = EZObjectPool.CreateObjectPool (bombPrefab, "Bombs Boss", 6, false, true, true);
     }
 
+    void LoadGameData ()
+    {
+        StartCoroutine (NetworkManager.GetGameConfig (config =>
+        {
+            gameData = config;
+            StartGame ();
+        }));
+    }
+
     private void Start ()
     {
         if (!Application.isEditor) CheckUsername ();
         else
         {
             DataManager.Instance.username = "UnityPlayer";
-            StartGame ();
+            LoadGameData ();
         }
+    }
+
+    public void StartGame ()
+    {
+        SetLives (gameData.lives_per_credit);
+        if (!Application.isEditor) WebGLInput.captureAllKeyboardInput = true;
+        CanvasManager.Instance.usernameText.text = DataManager.Instance.username;
+        AudioManager.Instance.StartMusic ();
+        LoadLevel (++activeLevelNumber);
     }
 
     public void SetAndroidControles (bool status)
@@ -74,7 +94,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            StartGame ();
+            LoadGameData ();
         }
     }
 
@@ -90,7 +110,7 @@ public class GameManager : MonoBehaviour
     {
         if (DataManager.Instance.username != "") return;
         DataManager.Instance.username = newUsername;
-        StartGame ();
+        LoadGameData ();
     }
 
     float lastTimePowerUpDropped;
@@ -151,14 +171,6 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds (0.3f);
         }
         if (lives > 0) GameFinished ();
-    }
-
-    public void StartGame ()
-    {
-        if (!Application.isEditor) WebGLInput.captureAllKeyboardInput = true;
-        CanvasManager.Instance.usernameText.text = DataManager.Instance.username;
-        AudioManager.Instance.StartMusic ();
-        LoadLevel (++activeLevelNumber);
     }
 
     public void LoadNextLevel ()
@@ -241,6 +253,12 @@ public class GameManager : MonoBehaviour
     {
         player.gameObject.SetActive (true);
         EnemiesManager.Instance.Reset ();
+    }
+
+    void SetLives (int livesAmount)
+    {
+        CanvasManager.Instance.SetLivesNumber (livesAmount);
+        lives = livesAmount;
     }
 
     public void LoseLives (int livesLost, float inmuneTime)

@@ -61,3 +61,13 @@ public struct Stats
 {
     public int health, damage, movementVelocity, shootCooldown, shootSpeed;
 }
+
+[Serializable]
+public struct GameConfig
+{
+    public string highScoresURL;
+    public string sendScoreURL;
+
+    public int credits_per_player;
+    public int lives_per_credit;
+}
