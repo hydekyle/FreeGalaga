@@ -15,9 +15,9 @@ public class CanvasManager : MonoBehaviour
     public Transform highScoresWindow;
     public Transform androidControls;
 
-    public void SendScore (string username, int points)
+    public void SendScore (string alias, int score)
     {
-        StartCoroutine (NetworkManager.SendHighScore (username, points, onEnded =>
+        StartCoroutine (NetworkManager.SendHighScore (alias, score, onEnded =>
         {
             ShowHighScores ();
         }));
@@ -31,13 +31,13 @@ public class CanvasManager : MonoBehaviour
             for (var x = 0; x < topUsers.Count; x++)
             {
                 var userSlot = content.GetChild (x);
-                userSlot.Find ("Username").GetComponent<Text> ().text = topUsers [x].username;
-                userSlot.Find ("Points").GetComponent<Text> ().text = topUsers [x].points;
-                if (topUsers [x].avatar != "") StartCoroutine (GetAvatarTexture (topUsers [x].avatar, userSlot.Find ("Avatar").GetComponent<Image> ()));
-                if (topUsers [x].username == DataManager.Instance.username) userSlot.Find ("Username").GetComponent<Text> ().color = Color.yellow;
+                userSlot.Find ("Username").GetComponent<Text> ().text = topUsers [x].alias;
+                userSlot.Find ("Points").GetComponent<Text> ().text = topUsers [x].score;
+                //if (topUsers [x].avatar != "") StartCoroutine (GetAvatarTexture (topUsers [x].avatar, userSlot.Find ("Avatar").GetComponent<Image> ()));
+                if (topUsers [x].alias == GameManager.Instance.gameData.userAlias) userSlot.Find ("Username").GetComponent<Text> ().color = Color.yellow;
                 //userSlot.gameObject.SetActive(true);
 
-                GameManager.Instance.SetAndroidControles (false);
+                GameManager.Instance.SetAndroidControls (false);
                 highScoresWindow.gameObject.SetActive (true);
                 Invoke ("MakeRetryAvailable", 1f);
             }
@@ -100,6 +100,19 @@ public class CanvasManager : MonoBehaviour
     public void SetBarColor (Color color)
     {
         barImage.color = color;
+    }
+
+    public void ShowPlayAvailable (string alias, int intentos)
+    {
+        StartCoroutine (NetworkManager.ConsumeIntento (alias, --intentos, () =>
+        {
+            GameManager.Instance.StartGame ();
+        }));
+    }
+
+    public void ShowPlayUnavailable ()
+    {
+        print ("unlucky no intentos");
     }
 
 }

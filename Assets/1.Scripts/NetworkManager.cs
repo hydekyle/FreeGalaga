@@ -6,9 +6,8 @@ using System;
 
 public static class NetworkManager
 {
-    public static IEnumerator GetGameConfig (Action<GameConfig> gameConfig)
+    public static IEnumerator GetGameConfig (string gameConfigURL, Action<GameConfig> gameConfig)
     {
-        var gameConfigURL = "http://hydekyle.ga/galaga/gameconfig.json";
         using (UnityWebRequest webRequest = UnityWebRequest.Get (gameConfigURL))
         {
             yield return webRequest.SendWebRequest ();
@@ -20,21 +19,19 @@ public static class NetworkManager
             else
             {
                 Debug.LogWarning ("Error al leer el json de configuración, cargando default");
-                gameConfig (new GameConfig ()
+                var newGameConfig = new GameConfig ()
                 {
-                    credits_per_player = 3,
-                        lives_per_credit = 3,
-                        highScoresURL = "",
-                        sendScoreURL = ""
-                });
+                    lives_per_credit = 3
+                };
+                gameConfig (newGameConfig);
             }
         }
     }
 
-    public static IEnumerator SendHighScore (string username, int points, Action<bool> onEnded)
+    public static IEnumerator SendHighScore (string alias, int score, Action<bool> onEnded)
     {
         var sendScoreURL = GameManager.Instance.gameData.sendScoreURL;
-        string sendScoreFinalURL = String.Concat (sendScoreURL, String.Format ("/?username={0}&points={1}", username, points));
+        string sendScoreFinalURL = String.Concat (sendScoreURL, String.Format ("/?alias={0}&score={1}", alias, score));
         using (UnityWebRequest webRequest = UnityWebRequest.Get (sendScoreFinalURL))
         {
             yield return webRequest.SendWebRequest ();
@@ -46,9 +43,55 @@ public static class NetworkManager
         }
     }
 
+    public static IEnumerator ConsumeIntento (string alias, int intentos, Action onConsumed)
+    {
+        var consumeIntentoURL = GameManager.Instance.gameData.consumeIntentosURL + "?alias=" + alias + "&intentos=" + intentos.ToString ();
+        using (UnityWebRequest webRequest = UnityWebRequest.Get (consumeIntentoURL))
+        {
+            yield return webRequest.SendWebRequest ();
+            if (!webRequest.isNetworkError)
+            {
+                if (webRequest.downloadHandler.text == "OK")
+                {
+                    onConsumed ();
+                }
+            }
+        }
+    }
+
+    public static IEnumerator GetUserData (string alias, Action<User> userData)
+    {
+        var getUserDataURL = GameManager.Instance.gameData.getUserDataURL + "?alias=" + alias;
+        using (UnityWebRequest webRequest = UnityWebRequest.Get (getUserDataURL))
+        {
+            User user = new User ();
+            yield return webRequest.SendWebRequest ();
+            if (!webRequest.isNetworkError)
+            {
+                foreach (var rawUser in webRequest.downloadHandler.text.Split ('|'))
+                {
+                    try
+                    {
+                        var storedUserValues = rawUser.Split ('·');
+                        user = new User
+                        {
+                            alias = storedUserValues [0],
+                            score = storedUserValues [1],
+                            avatar = storedUserValues [2],
+                            intentos = storedUserValues [3]
+                        };
+                    }
+                    catch
+                    { }
+                }
+            }
+            userData (user);
+        }
+    }
+
     public static IEnumerator GetHighScores (Action<List<User>> topUsers)
     {
-        var highScoresURL = GameManager.Instance.gameData.highScoresURL;
+        var highScoresURL = GameManager.Instance.gameData.getHighScoresURL;
         using (UnityWebRequest webRequest = UnityWebRequest.Get (highScoresURL))
         {
             List<User> users = new List<User> ();
@@ -60,12 +103,13 @@ public static class NetworkManager
                     try
                     {
                         var storedUserValues = rawUser.Split ('·');
-                        users.Add (new User
+                        var newUser = new User
                         {
-                            username = storedUserValues [0],
-                                points = storedUserValues [1],
-                                avatar = storedUserValues [2]
-                        });
+                            alias = storedUserValues [0],
+                            score = storedUserValues [1],
+                            avatar = storedUserValues [2]
+                        };
+                        users.Add (newUser);
                     }
                     catch
                     { }

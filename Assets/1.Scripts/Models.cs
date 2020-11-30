@@ -6,7 +6,7 @@ using System;
 [System.Serializable]
 public struct User
 {
-    public string username, points, avatar;
+    public string alias, score, avatar, intentos;
 }
 
 public enum BoostType
@@ -63,11 +63,18 @@ public struct Stats
 }
 
 [Serializable]
+public struct GameData
+{
+    public string userAlias;
+
+    public string getHighScoresURL;
+    public string sendScoreURL;
+    public string getUserDataURL;
+    public string consumeIntentosURL;
+}
+
+[Serializable]
 public struct GameConfig
 {
-    public string highScoresURL;
-    public string sendScoreURL;
-
-    public int credits_per_player;
     public int lives_per_credit;
 }

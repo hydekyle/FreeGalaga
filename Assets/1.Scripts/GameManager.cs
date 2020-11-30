@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using EZObjectPools;
 using UnityEngine;
-using UnityEngine.Networking;
-using System.Linq;
-using System.Runtime.InteropServices;
 
 public class GameManager : MonoBehaviour
 {
@@ -23,11 +20,8 @@ public class GameManager : MonoBehaviour
     public GameObject boostShield, boostHealth, boostPoints, boostAttackspeed;
     public bool retryAvailable = false;
 
-    [DllImport ("__Internal")]
-    private static extern void Hello ();
-
-    [DllImport ("__Internal")]
-    private static extern void AskUsername ();
+    // [DllImport ("__Internal")]
+    // private static extern string GetGameURL (); // return document.location.href
 
     [HideInInspector]
     public EZObjectPool enemyBulletsPoolGreen, enemyBulletsPoolRed, enemyBulletsPoolFire, enemyBombs;
@@ -35,7 +29,8 @@ public class GameManager : MonoBehaviour
     public float minPosX = -3.8f, maxPosX = 3.8f, minPosY = -4.5f, maxPosY = -2f;
     public GameObject bigExplosion;
 
-    public GameConfig gameData;
+    public GameData gameData = new GameData ();
+    public GameConfig gameConfig = new GameConfig ();
 
     private void Awake ()
     {
@@ -52,50 +47,76 @@ public class GameManager : MonoBehaviour
         enemyBombs = EZObjectPool.CreateObjectPool (bombPrefab, "Bombs Boss", 6, false, true, true);
     }
 
-    void LoadGameData ()
-    {
-        StartCoroutine (NetworkManager.GetGameConfig (config =>
-        {
-            gameData = config;
-            StartGame ();
-        }));
-    }
-
     private void Start ()
     {
-        if (!Application.isEditor) CheckUsername ();
+        LoadGameConfig ();
+    }
+
+    private void LoadGameConfig ()
+    {
+        if (!Application.isEditor)
+        {
+            var baseURL = Application.absoluteURL;
+            Debug.Log (baseURL);
+            //var gameConfigURL = baseURL + "gameconfig.json";
+
+            gameConfig = new GameConfig ()
+            {
+                lives_per_credit = 3
+            };
+            gameData.getHighScoresURL = baseURL + "scores.php";
+            gameData.getUserDataURL = baseURL + "userdata.php";
+            gameData.sendScoreURL = baseURL + "updatescore.php";
+            gameData.consumeIntentosURL = baseURL + "consumeintentos.php";
+            Debug.Log (gameData.consumeIntentosURL);
+        }
+        else // JUST FOR UNITY EDITOR
+        {
+            gameData.getHighScoresURL = "https://hydekyle.ga/galaga/scores.php";
+            gameData.sendScoreURL = "https://hydekyle.ga/galaga/updatescore.php";
+            gameData.getUserDataURL = "https://hydekyle.ga/galaga/userdata.php";
+            gameData.consumeIntentosURL = "https://hydekyle.ga/galaga/consumeintentos.php";
+            gameConfig = new GameConfig ()
+            {
+                lives_per_credit = 3
+            };
+        }
+        GetUserData ();
+    }
+
+    private void GetUserData ()
+    {
+        var alias = "";
+        if (Application.isEditor) alias = "hydekyle";
+        else alias = HttpCookie.GetCookie ("ALIAS");
+        if (alias != "")
+        {
+            StartCoroutine (NetworkManager.GetUserData (alias, userData =>
+            {
+                gameData.userAlias = userData.alias;
+                var intentos = int.Parse (userData.intentos);
+                if (intentos > 0) CanvasManager.Instance.ShowPlayAvailable (alias, intentos);
+                else CanvasManager.Instance.ShowPlayUnavailable ();
+            }));
+        }
         else
         {
-            DataManager.Instance.username = "UnityPlayer";
-            LoadGameData ();
+            Debug.LogWarning ("No cookie ALIAS founded!");
         }
     }
 
     public void StartGame ()
     {
-        SetLives (gameData.lives_per_credit);
+        SetLives (gameConfig.lives_per_credit);
         if (!Application.isEditor) WebGLInput.captureAllKeyboardInput = true;
-        CanvasManager.Instance.usernameText.text = DataManager.Instance.username;
+        CanvasManager.Instance.usernameText.text = gameData.userAlias;
         AudioManager.Instance.StartMusic ();
         LoadLevel (++activeLevelNumber);
     }
 
-    public void SetAndroidControles (bool status)
+    public void SetAndroidControls (bool status)
     {
         CanvasManager.Instance.androidControls.gameObject.SetActive (status);
-    }
-
-    void CheckUsername ()
-    {
-        if (DataManager.Instance.username == "")
-        {
-            AskUsername ();
-            WebGLInput.captureAllKeyboardInput = false;
-        }
-        else
-        {
-            LoadGameData ();
-        }
     }
 
     public void AddRandomPowerUps (List<Enemy> enemyList)
@@ -104,13 +125,6 @@ public class GameManager : MonoBehaviour
         enemyList [0].powerUp = BoostType.Shield;
         enemyList [1].powerUp = BoostType.AttackSpeed;
         enemyList [2].powerUp = BoostType.Points;
-    }
-
-    public void SetUsername (string newUsername)
-    {
-        if (DataManager.Instance.username != "") return;
-        DataManager.Instance.username = newUsername;
-        LoadGameData ();
     }
 
     float lastTimePowerUpDropped;
@@ -241,7 +255,7 @@ public class GameManager : MonoBehaviour
         player.gameObject.SetActive (false);
         EnemiesManager.Instance.StopEnemies ();
         gameIsActive = false;
-        CanvasManager.Instance.SendScore (DataManager.Instance.username, CanvasManager.Instance.score);
+        CanvasManager.Instance.SendScore (gameData.userAlias, CanvasManager.Instance.score);
     }
 
     private void Update ()
@@ -342,7 +356,7 @@ public class GameManager : MonoBehaviour
             CanvasManager.Instance.AddScore (1000);
             yield return new WaitForSeconds (1f);
         }
-        CanvasManager.Instance.SendScore (DataManager.Instance.username, CanvasManager.Instance.score);
+        GameOver ();
     }
 
     void EndGame ()
