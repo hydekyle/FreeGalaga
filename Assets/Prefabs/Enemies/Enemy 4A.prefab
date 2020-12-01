@@ -128,7 +128,7 @@ MonoBehaviour:
   bulletType: 1
   shootAtStart: 0
   stats:
-    health: 17
+    health: 16
     damage: 2
     movementVelocity: 2
     shootCooldown: 1

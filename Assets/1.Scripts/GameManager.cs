@@ -41,9 +41,9 @@ public class GameManager : MonoBehaviour
 
     void Initialize ()
     {
-        enemyBulletsPoolGreen = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [0], "Bullets Enemy Green", 5, false, true, true);
+        enemyBulletsPoolGreen = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [0], "Bullets Enemy Green", 4, false, true, true);
         enemyBulletsPoolRed = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [1], "Bullets Enemy Red", 5, false, true, true);
-        enemyBulletsPoolFire = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [2], "Bullets Enemy Fire", 5, false, true, true);
+        enemyBulletsPoolFire = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [2], "Bullets Enemy Fire", 4, false, true, true);
         enemyBombs = EZObjectPool.CreateObjectPool (bombPrefab, "Bombs Boss", 6, false, true, true);
     }
 
@@ -342,8 +342,8 @@ public class GameManager : MonoBehaviour
 
     void AddScoreByTime ()
     {
-        var score = 300f - Time.timeSinceLevelLoad;
-        CanvasManager.Instance.AddScore ((int) score);
+        var score = (int) (300f - Time.timeSinceLevelLoad);
+        CanvasManager.Instance.AddScore (score);
     }
 
     IEnumerator ChangeLivesByPoints ()

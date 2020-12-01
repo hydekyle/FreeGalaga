@@ -102,7 +102,7 @@ public class Settings : MonoBehaviour
             settings.SetActive (true);
             Time.timeScale = 0f;
         }
-        ReadCookie ();
+        //ReadCookie ();
     }
 
     private void Update ()

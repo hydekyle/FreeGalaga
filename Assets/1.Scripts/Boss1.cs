@@ -10,8 +10,10 @@ public class Boss1 : MonoBehaviour
     Vector3 targetPos;
     List<Transform> cannons = new List<Transform> ();
 
-    float nextTimeShoot, nextTimeBomb, nextTimeMoved, nextTimeDropBoost;
+    float nextTimeShoot, nextTimeShootFire, nextTimeBomb, nextTimeMoved, nextTimeDropBoost;
     SpriteRenderer spriteRenderer;
+    int nextHealthToDropPoints;
+    int nextHealthToDropShield;
 
     private void Awake ()
     {
@@ -20,12 +22,14 @@ public class Boss1 : MonoBehaviour
 
     void Initialize ()
     {
+        nextHealthToDropPoints = stats.health - 400;
+        nextHealthToDropShield = stats.health / 2;
         nextTimeDropBoost = Time.time + 7f;
         spriteRenderer = GetComponent<SpriteRenderer> ();
         playerT = GameManager.Instance.player.transform;
         targetPos = GetScreenPos (ScreenPosition.BotMid);
         foreach (Transform t in transform.Find ("Cannons")) cannons.Add (t);
-        nextTimeShoot = nextTimeBomb = Time.time + 2f;
+        nextTimeShoot = nextTimeShootFire = nextTimeBomb = Time.time + 3f;
     }
 
     void DropBoost ()
@@ -34,23 +38,35 @@ public class Boss1 : MonoBehaviour
         nextTimeDropBoost = Time.time + 13f;
     }
 
+    void DropShield ()
+    {
+        GameManager.Instance.DropPowerUp (transform.position, BoostType.Shield);
+        nextHealthToDropShield = -1;
+    }
+
+    void DropPoints ()
+    {
+        GameManager.Instance.DropPowerUp (transform.position, BoostType.Points);
+        nextHealthToDropPoints -= 400;
+    }
+
     private void Update ()
     {
         spriteRenderer.color = Color.Lerp (spriteRenderer.color, Color.white, Time.deltaTime * 15);
         transform.position = Vector3.Lerp (transform.position, targetPos, Time.deltaTime * stats.movementVelocity);
         if (Time.time > nextTimeShoot) Shoot ();
         else if (Time.time > nextTimeDropBoost) DropBoost ();
-        else if (Time.time > nextTimeBomb && stats.health < 1200) ThrowBomb ();
         else if (Time.time > nextTimeMoved) MoveToNewPosition ();
+        //else if (Time.time > nextTimeBomb && stats.health < 2000) ThrowBomb ();
     }
 
     void Shoot ()
     {
-        if (GameManager.Instance.enemyBulletsPoolGreen.TryGetNextObject (GetRandomCannonPos (), Quaternion.identity, out GameObject enemyBullet))
+        if (GameManager.Instance.enemyBulletsPoolRed.TryGetNextObject (GetRandomCannonPos (), Quaternion.identity, out GameObject enemyBullet))
         {
             enemyBullet.GetComponent<Rigidbody2D> ().velocity = Vector2.down * stats.shootSpeed;
-            nextTimeShoot = Time.time + Random.Range (0.1f, 1f);
-            if (Random.Range (0, 10) > 7) ShootFire ();
+            nextTimeShoot = Time.time + Random.Range (0.13f, 0.66f);
+            if (Time.time > nextTimeShootFire) ShootFire ();
         }
     }
 
@@ -58,20 +74,24 @@ public class Boss1 : MonoBehaviour
     {
         if (GameManager.Instance.enemyBulletsPoolFire.TryGetNextObject (cannons [4].transform.position, Quaternion.identity, out GameObject enemyFire))
         {
-            var forceDirection = (GameManager.Instance.player.transform.position - transform.position).normalized;
+            var punteriaDesafinada = new Vector3 (Random.Range (-1.3f, 1.3f), Random.Range (-1f, 1f));
+            var forceDirection = ((GameManager.Instance.player.transform.position + punteriaDesafinada) - cannons [4].transform.position).normalized;
             var rot_z = Mathf.Atan2 (forceDirection.y, forceDirection.x) * Mathf.Rad2Deg;
             enemyFire.transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90 * 3);
-            enemyFire.GetComponent<Rigidbody2D> ().velocity = forceDirection * stats.shootSpeed * 1.5f;
+            enemyFire.GetComponent<Rigidbody2D> ().velocity = forceDirection * stats.shootSpeed * 1.25f;
+            nextTimeShootFire = Time.time + Random.Range (0.66f, stats.health > 1000 ? 1.5f : 0.99f);
         }
     }
 
     void ThrowBomb ()
     {
-        if (GameManager.Instance.enemyBombs.TryGetNextObject (transform.position, Quaternion.identity, out GameObject enemyBomb))
+        if (GameManager.Instance.enemyBombs.TryGetNextObject (cannons [4].transform.position, Quaternion.identity, out GameObject enemyBomb))
         {
-            Vector2 bombDirection = Vector2.up * 4 + Vector2.right * Random.Range (-1.6f, 1.6f);
-            enemyBomb.GetComponent<Rigidbody2D> ().AddForce (bombDirection, ForceMode2D.Impulse);
-            nextTimeBomb = Time.time + Random.Range (0.2f, 0.9f);
+            Vector2 bombDirection = Vector2.up * 3 + Vector2.right * Random.Range (-1.75f, 1.75f);
+            var bombRB = enemyBomb.GetComponent<Rigidbody2D> ();
+            bombRB.AddForce (bombDirection, ForceMode2D.Impulse);
+            if (stats.health < 999) bombRB.gravityScale = 2;
+            nextTimeBomb = Time.time + Random.Range (0.66f, 0.99f);
         }
     }
 
@@ -102,6 +122,9 @@ public class Boss1 : MonoBehaviour
         {
             AudioManager.Instance.PlayBossDamaged ();
             spriteRenderer.color = Color.red;
+            if (stats.health < nextHealthToDropPoints) DropPoints ();
+            if (stats.health < nextHealthToDropShield) DropShield ();
+            if (stats.health < 2000 && Time.time > nextTimeBomb) ThrowBomb ();
         }
     }
 
