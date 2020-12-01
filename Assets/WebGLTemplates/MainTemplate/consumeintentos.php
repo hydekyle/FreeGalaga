@@ -11,16 +11,26 @@
     $column_intentos = "reg_intentos";
     
     $alias = $_GET["alias"];
-    $intentos = $_GET["intentos"];
-
-    $update_intentos_query = "UPDATE $table_name SET $column_intentos = $intentos WHERE $column_alias = '$alias'";
+    
+    $get_user_query = "SELECT * FROM $table_name WHERE $column_alias = '$alias'";
 
     $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
-    if ($mysqli->connect_errno) exit ("Error de conexión");
+    if ($mysqli->connect_errno) exit("Error de conexión");
 
-    if (!$resultado = $mysqli->query($update_intentos_query)) die ("Error de consulta");
+    if (!$resultado = $mysqli->query($get_user_query)) die("Error de consulta");
 
-    die("OK");
+    if ($resultado->num_rows === 0) die("No se encontró al usuario");
+    else {
+        $storedUser = $resultado->fetch_array();
+        if ($storedUser[$column_intentos] >= 0) {
+            $intentosUpdated = $storedUser[$column_intentos] - 1;
+            $update_intentos_query = "UPDATE $table_name SET $column_intentos = $intentosUpdated WHERE $column_alias = '$alias'";
+            if ($updated_user = $mysqli->query($update_intentos_query)) die ("OK");
+        } else {
+            die("Intentos agotados.");
+        }
+
+    }
     
 ?>

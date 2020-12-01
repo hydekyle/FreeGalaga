@@ -639,7 +639,9 @@ PlayerSettings:
     daydream:
       daydreamIconForeground: {fileID: 0}
       daydreamIconBackground: {fileID: 0}
-  cloudServicesEnabled: {}
+  cloudServicesEnabled:
+    Analytics: 0
+    Collab: 0
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 

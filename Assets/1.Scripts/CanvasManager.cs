@@ -104,7 +104,7 @@ public class CanvasManager : MonoBehaviour
 
     public void ShowPlayAvailable (string alias, int intentos)
     {
-        StartCoroutine (NetworkManager.ConsumeIntento (alias, --intentos, () =>
+        StartCoroutine (NetworkManager.ConsumeIntento (alias, () =>
         {
             GameManager.Instance.StartGame ();
         }));

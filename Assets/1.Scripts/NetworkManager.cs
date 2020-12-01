@@ -43,9 +43,9 @@ public static class NetworkManager
         }
     }
 
-    public static IEnumerator ConsumeIntento (string alias, int intentos, Action onConsumed)
+    public static IEnumerator ConsumeIntento (string alias, Action onConsumed)
     {
-        var consumeIntentoURL = GameManager.Instance.gameData.consumeIntentosURL + "?alias=" + alias + "&intentos=" + intentos.ToString ();
+        var consumeIntentoURL = GameManager.Instance.gameData.consumeIntentosURL + "?alias=" + alias;
         using (UnityWebRequest webRequest = UnityWebRequest.Get (consumeIntentoURL))
         {
             yield return webRequest.SendWebRequest ();
