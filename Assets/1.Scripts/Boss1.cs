@@ -20,7 +20,7 @@ public class Boss1 : MonoBehaviour
 
     void Initialize ()
     {
-        nextTimeDropBoost = Time.time + 6f;
+        nextTimeDropBoost = Time.time + 7f;
         spriteRenderer = GetComponent<SpriteRenderer> ();
         playerT = GameManager.Instance.player.transform;
         targetPos = GetScreenPos (ScreenPosition.BotMid);
@@ -31,7 +31,7 @@ public class Boss1 : MonoBehaviour
     void DropBoost ()
     {
         GameManager.Instance.DropPowerUp (transform.position, BoostType.AttackSpeed);
-        nextTimeDropBoost = Time.time + 12f;
+        nextTimeDropBoost = Time.time + 13f;
     }
 
     private void Update ()
@@ -40,7 +40,7 @@ public class Boss1 : MonoBehaviour
         transform.position = Vector3.Lerp (transform.position, targetPos, Time.deltaTime * stats.movementVelocity);
         if (Time.time > nextTimeShoot) Shoot ();
         else if (Time.time > nextTimeDropBoost) DropBoost ();
-        else if (Time.time > nextTimeBomb) ThrowBomb ();
+        else if (Time.time > nextTimeBomb && stats.health < 1200) ThrowBomb ();
         else if (Time.time > nextTimeMoved) MoveToNewPosition ();
     }
 
@@ -50,6 +50,18 @@ public class Boss1 : MonoBehaviour
         {
             enemyBullet.GetComponent<Rigidbody2D> ().velocity = Vector2.down * stats.shootSpeed;
             nextTimeShoot = Time.time + Random.Range (0.1f, 1f);
+            if (Random.Range (0, 10) > 7) ShootFire ();
+        }
+    }
+
+    void ShootFire ()
+    {
+        if (GameManager.Instance.enemyBulletsPoolFire.TryGetNextObject (cannons [4].transform.position, Quaternion.identity, out GameObject enemyFire))
+        {
+            var forceDirection = (GameManager.Instance.player.transform.position - transform.position).normalized;
+            var rot_z = Mathf.Atan2 (forceDirection.y, forceDirection.x) * Mathf.Rad2Deg;
+            enemyFire.transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90 * 3);
+            enemyFire.GetComponent<Rigidbody2D> ().velocity = forceDirection * stats.shootSpeed * 1.5f;
         }
     }
 
@@ -73,7 +85,7 @@ public class Boss1 : MonoBehaviour
 
     Vector3 GetRandomCannonPos ()
     {
-        var randomCannon = Random.Range (0, cannons.Count);
+        var randomCannon = Random.Range (0, cannons.Count - 1);
         if (randomCannon == lastCannonUsed)
         {
             randomCannon = randomCannon == cannons.Count - 1 ? 0 : randomCannon + 1;

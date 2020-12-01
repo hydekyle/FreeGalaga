@@ -101,7 +101,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 24.47, y: 19.690702}
+    oldSize: {x: 9.787999, y: 7.876281}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -129,7 +129,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   stats:
-    health: 700
+    health: 666
     damage: 11
     movementVelocity: 1
     shootCooldown: 11
