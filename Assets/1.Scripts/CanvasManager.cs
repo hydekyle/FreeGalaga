@@ -14,6 +14,29 @@ public class CanvasManager : MonoBehaviour
     public Image barImage;
     public Transform highScoresWindow;
     public Transform androidControls;
+    public Image boostIcon, shieldIcon;
+
+    private void Awake ()
+    {
+        if (Instance) Destroy (this.gameObject);
+        Instance = this;
+    }
+
+    private void Start ()
+    {
+        SetLivesNumber (GameManager.Instance.lives);
+    }
+
+    public void SetFillBoostIcon (float fillValue)
+    {
+        boostIcon.fillAmount = Mathf.MoveTowards (boostIcon.fillAmount, fillValue, Time.deltaTime * 3);
+    }
+
+    public void SetFillShieldIcon (float fillValue)
+    {
+        if (fillValue == 0f) shieldIcon.fillAmount = 0f;
+        else shieldIcon.fillAmount = Mathf.MoveTowards (shieldIcon.fillAmount, fillValue, Time.deltaTime * 3);
+    }
 
     public void SendScore (string alias, int score)
     {
@@ -57,17 +80,6 @@ public class CanvasManager : MonoBehaviour
     private void MakeRetryAvailable ()
     {
         GameManager.Instance.retryAvailable = true;
-    }
-
-    private void Awake ()
-    {
-        if (Instance) Destroy (this.gameObject);
-        Instance = this;
-    }
-
-    private void Start ()
-    {
-        SetLivesNumber (GameManager.Instance.lives);
     }
 
     public void AddScore (int value)

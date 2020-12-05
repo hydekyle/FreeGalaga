@@ -18,6 +18,7 @@ public class Player : MonoBehaviour
     public Shield shield;
     public float lastTimeAttackBoosted = -10f;
     public bool vulnerable = true;
+    float attackBoostTime = 7f;
 
     private void Start ()
     {
@@ -49,7 +50,13 @@ public class Player : MonoBehaviour
         Vector3 deltaPosition = new Vector3 (Mathf.Clamp (Input.GetAxis ("Horizontal"), -1f, 1f), Mathf.Clamp (Input.GetAxis ("Vertical"), -1f, 1f), 0);
         transform.position += deltaPosition * Time.deltaTime * stats.movementVelocity;
         transform.position = new Vector3 (Mathf.Clamp (transform.position.x, minPosX, maxPosX), Mathf.Clamp (transform.position.y, minPosY, maxPosY), 0);
-        if (isAttackBoosted && Time.time > lastTimeAttackBoosted + 6.66f) DesactivateAttackBoost ();
+
+        if (isAttackBoosted && Time.time > lastTimeAttackBoosted + attackBoostTime) DesactivateAttackBoost ();
+        else
+        {
+            float fillValue = Mathf.Clamp ((lastTimeAttackBoosted + attackBoostTime - Time.time) * 2 / 10f, 0f, 1f);
+            CanvasManager.Instance.SetFillBoostIcon (fillValue);
+        }
     }
 
     public void Shoot ()
@@ -116,7 +123,7 @@ public class Player : MonoBehaviour
         if (GameManager.Instance.lives == 0) return;
         AudioManager.Instance.PlayPlayerLevelUp ();
         playerLevel++;
-        stats.movementVelocity += 1;
+        stats.movementVelocity += 0.75f;
         stats.shootSpeed += 1;
         stats.shootCooldown += 1;
         stats.damage += 1;

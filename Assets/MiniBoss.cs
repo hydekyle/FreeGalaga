@@ -82,6 +82,7 @@ public class MiniBoss : MonoBehaviour
     public void GetStrike (int strikeDamage)
     {
         stats.health -= strikeDamage;
+        CanvasManager.Instance.AddScore (strikeDamage);
         if (stats.health <= 0) Die ();
         else
         {

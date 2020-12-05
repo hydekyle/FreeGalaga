@@ -207,8 +207,8 @@ public class Enemy : MonoBehaviour
 
     void BehaviorChasePlayer ()
     {
-        int velocity = stats.movementVelocity;
-        velocity = Mathf.Clamp (velocity * (int) EnemiesManager.Instance.animationSpeed, 1, 20);
+        float velocity = stats.movementVelocity;
+        velocity = Mathf.Clamp (velocity * EnemiesManager.Instance.animationSpeed, 1f, 20f);
         stats.movementVelocity = velocity;
         activeBehavior = EnemyBehavior.Kamikaze;
         Unparent ();

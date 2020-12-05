@@ -78,7 +78,7 @@ public class Boss1 : MonoBehaviour
             var forceDirection = ((GameManager.Instance.player.transform.position + punteriaDesafinada) - cannons [4].transform.position).normalized;
             var rot_z = Mathf.Atan2 (forceDirection.y, forceDirection.x) * Mathf.Rad2Deg;
             enemyFire.transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90 * 3);
-            enemyFire.GetComponent<Rigidbody2D> ().velocity = forceDirection * stats.shootSpeed * 1.25f;
+            enemyFire.GetComponent<Rigidbody2D> ().velocity = forceDirection * stats.shootSpeed * 1.50f;
             nextTimeShootFire = Time.time + Random.Range (0.66f, stats.health > 1000 ? 1.5f : 0.99f);
         }
     }
@@ -117,6 +117,7 @@ public class Boss1 : MonoBehaviour
     void GetStrike (int damage)
     {
         stats.health -= damage;
+        CanvasManager.Instance.AddScore (damage);
         if (stats.health <= 0) Die ();
         else
         {

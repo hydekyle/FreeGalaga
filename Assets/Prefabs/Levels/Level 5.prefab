@@ -253,6 +253,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6768246466652972998}
     m_Modifications:
+    - target: {fileID: 156985915722927552, guid: 75c2114b9c84d314984ccfb632013509, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 9c9d73cd4a915d7408f63bd9f6064c3b, type: 3}
     - target: {fileID: 284186988008813536, guid: 75c2114b9c84d314984ccfb632013509, type: 3}
       propertyPath: m_Offset.y
       value: -2.5483527
@@ -268,6 +272,14 @@ PrefabInstance:
     - target: {fileID: 284186988008813536, guid: 75c2114b9c84d314984ccfb632013509, type: 3}
       propertyPath: m_Size.x
       value: 8.864065
+      objectReference: {fileID: 0}
+    - target: {fileID: 284186988008813536, guid: 75c2114b9c84d314984ccfb632013509, type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.x
+      value: 12.235
+      objectReference: {fileID: 0}
+    - target: {fileID: 284186988008813536, guid: 75c2114b9c84d314984ccfb632013509, type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.y
+      value: 9.845351
       objectReference: {fileID: 0}
     - target: {fileID: 1198755256371954433, guid: 75c2114b9c84d314984ccfb632013509, type: 3}
       propertyPath: stats.health
@@ -1012,7 +1024,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 733656815681059536, guid: ae8840e0e2c1a6642af173637fb8aec6, type: 3}
       propertyPath: m_Size.x
-      value: 8.418293
+      value: 7.425242
       objectReference: {fileID: 0}
     - target: {fileID: 733656815681059536, guid: ae8840e0e2c1a6642af173637fb8aec6, type: 3}
       propertyPath: m_Size.y
@@ -1024,7 +1036,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 733656815681059536, guid: ae8840e0e2c1a6642af173637fb8aec6, type: 3}
       propertyPath: m_Offset.x
-      value: -0.035219908
+      value: 0.019949675
       objectReference: {fileID: 0}
     - target: {fileID: 4113446767807288923, guid: ae8840e0e2c1a6642af173637fb8aec6, type: 3}
       propertyPath: minions.Array.size
@@ -1150,6 +1162,10 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: -2
       objectReference: {fileID: 0}
+    - target: {fileID: 6819114335909200119, guid: ae8840e0e2c1a6642af173637fb8aec6, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 1995b07f49e2c504c8369b8bc59ee6dd, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae8840e0e2c1a6642af173637fb8aec6, type: 3}
 --- !u!1 &6630022156475392586 stripped

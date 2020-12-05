@@ -59,7 +59,8 @@ public struct EnemyModel
 [Serializable]
 public struct Stats
 {
-    public int health, damage, movementVelocity, shootCooldown, shootSpeed;
+    public int health, damage, shootCooldown, shootSpeed;
+    public float movementVelocity;
 }
 
 [Serializable]

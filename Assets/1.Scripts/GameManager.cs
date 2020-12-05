@@ -242,7 +242,8 @@ public class GameManager : MonoBehaviour
         EnemiesManager.Instance.ClearAllEnemies ();
         Invoke ("PlayerLevelUp", 1.2f);
         Invoke ("LoadNextLevel", 2.6f);
-        player.lastTimeAttackBoosted += 2.6f; // Para evitar desperdiciar el power-up entre escenas.
+        player.lastTimeAttackBoosted += 2.6f; // Para evitar desperdiciar el power-up entre escenas
+        player.shield.nextTimeShutDownShield += 2.6f;
     }
 
     public void PlayerLevelUp ()

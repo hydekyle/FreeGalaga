@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Shield : MonoBehaviour
 {
-    float nextTimeShutDownShield;
+    public float nextTimeShutDownShield;
     Player player;
     SpriteRenderer spriteRenderer;
 
@@ -18,6 +18,11 @@ public class Shield : MonoBehaviour
     {
         spriteRenderer.color = Color.Lerp (spriteRenderer.color, Color.white, Time.deltaTime * 6.66f);
         if (gameObject.activeSelf && Time.time > nextTimeShutDownShield) DesactivateShield ();
+        else
+        {
+            float fillValue = Mathf.Clamp ((nextTimeShutDownShield - Time.time) * 2 / 10f, 0f, 1f);
+            CanvasManager.Instance.SetFillShieldIcon (fillValue);
+        }
     }
 
     public void ActivateShield ()
@@ -28,6 +33,7 @@ public class Shield : MonoBehaviour
 
     public void DesactivateShield ()
     {
+        CanvasManager.Instance.SetFillShieldIcon (0f);
         gameObject.SetActive (false);
     }
 
