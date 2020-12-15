@@ -5242,7 +5242,7 @@ GameObject:
   - component: {fileID: 1102971623}
   - component: {fileID: 1102971622}
   m_Layer: 5
-  m_Name: Avatar
+  m_Name: AvatarHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7022,6 +7022,30 @@ MonoBehaviour:
   spriteStarON: {fileID: 21300000, guid: 324b0d3e661f8a44e9a66ca2aec65037, type: 3}
   startButton: {fileID: 730171616}
   bar: {fileID: 1016806680}
+  textHighScore: {fileID: 1233806627}
+  textAlias: {fileID: 679713230}
+  avatarHolder: {fileID: 1102971623}
+  spritesAvatar:
+  - {fileID: 21300000, guid: f8544e4fbda3fd24dbc39b78e9c0783e, type: 3}
+  - {fileID: 21300000, guid: f39ed821a5bd72c4b93e454e365c0090, type: 3}
+  - {fileID: 21300000, guid: 41aa65ca96a87464f895ccdb236f730a, type: 3}
+  - {fileID: 21300000, guid: ac9589f3df20a96408ea045e7bb2a345, type: 3}
+  - {fileID: 21300000, guid: 294d78f47291b3e42973e084e91333d7, type: 3}
+  - {fileID: 21300000, guid: ceab8c01084be704c8d9cf84304604f7, type: 3}
+  - {fileID: 21300000, guid: eacac6f857731824ebba3817dde6038a, type: 3}
+  - {fileID: 21300000, guid: 4ef7472db65fa8b44b77e77221a101fb, type: 3}
+  - {fileID: 21300000, guid: 9f19588b7fb64be458f8bd3714a7418f, type: 3}
+  - {fileID: 21300000, guid: 1e7071c01916e8543884099a4835bb37, type: 3}
+  - {fileID: 21300000, guid: 282f8d3227801ab4397d553b54f65b25, type: 3}
+  - {fileID: 21300000, guid: d68f6434d006fbf46ac867a99e18cd48, type: 3}
+  - {fileID: 21300000, guid: 9335ba49f125515468091baca9642a72, type: 3}
+  - {fileID: 21300000, guid: e2721fe4fac8a6845b9ef6f5c9483ee1, type: 3}
+  - {fileID: 21300000, guid: d8a0f292e73e41946acea4c29f26de7d, type: 3}
+  - {fileID: 21300000, guid: 067f4dab24b1d6e4f8c00530aceb542f, type: 3}
+  - {fileID: 21300000, guid: 0348ff9a5e2d9234cac4b4bca617412b, type: 3}
+  - {fileID: 21300000, guid: 6c411c185ee2b474d9616cc7594f54b8, type: 3}
+  - {fileID: 21300000, guid: 6494e0bffbb2e1542b87f4e634f830c9, type: 3}
+  - {fileID: 21300000, guid: b62931e1aea879c4db2efe00f698f8e1, type: 3}
 --- !u!114 &1520833343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7361,7 +7385,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1663861745}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0.105, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 911732565}
@@ -8808,7 +8832,7 @@ MonoBehaviour:
     consumeIntentosURL: 
   gameConfig:
     lives_per_credit: 0
-  alias: 
+  alias: hydekyle
 --- !u!4 &2140480312
 Transform:
   m_ObjectHideFlags: 0

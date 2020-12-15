@@ -89,20 +89,20 @@ public class GameManager : MonoBehaviour
 
     private void GetUserData ()
     {
-        if (Application.isEditor) alias = "hydekyle";
-        else alias = HttpCookie.GetCookie ("ALIAS");
+        if (!Application.isEditor) alias = HttpCookie.GetCookie ("ALIAS");
+
         if (alias != "")
         {
             StartCoroutine (NetworkManager.GetUserData (alias, userData =>
             {
                 gameData.userAlias = userData.alias;
                 var intentos = int.Parse (userData.intentos);
-                CanvasManager.Instance.ShowPlayAvailable (intentos);
+                CanvasManager.Instance.ShowPlayAvailable (userData);
             }));
         }
         else
         {
-            Debug.LogWarning ("No cookie ALIAS founded!");
+            Debug.LogWarning ("No ALIAS founded!");
         }
     }
 

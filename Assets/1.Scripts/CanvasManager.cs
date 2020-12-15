@@ -59,25 +59,14 @@ public class CanvasManager : MonoBehaviour
                 var userSlot = content.GetChild (x);
                 userSlot.Find ("Username").GetComponent<Text> ().text = topUsers [x].alias;
                 userSlot.Find ("Points").GetComponent<Text> ().text = topUsers [x].score;
-                //if (topUsers [x].avatar != "") StartCoroutine (GetAvatarTexture (topUsers [x].avatar, userSlot.Find ("Avatar").GetComponent<Image> ()));
+                userSlot.Find ("Avatar").GetComponent<Image> ().sprite = GetSpriteAvatar (topUsers [x].avatar);
                 if (topUsers [x].alias == GameManager.Instance.gameData.userAlias) userSlot.Find ("Username").GetComponent<Text> ().color = Color.yellow;
-                //userSlot.gameObject.SetActive(true);
 
                 GameManager.Instance.SetAndroidControls (false);
                 highScoresWindow.gameObject.SetActive (true);
                 Invoke ("MakeRetryAvailable", 1f);
             }
         }));
-    }
-
-    IEnumerator GetAvatarTexture (string avatarURL, Image imagePlaceHolder)
-    {
-        UnityWebRequest www = UnityWebRequestTexture.GetTexture (avatarURL);
-        yield return www.SendWebRequest ();
-
-        Texture2D texture = DownloadHandlerTexture.GetContent (www);
-
-        imagePlaceHolder.sprite = Sprite.Create (texture, new Rect (0, 0, texture.width, texture.height), Vector2.zero);
     }
 
     private void MakeRetryAvailable ()
@@ -119,10 +108,42 @@ public class CanvasManager : MonoBehaviour
 
     public Button startButton;
     public GameObject bar;
+    public Text textHighScore;
+    public Text textAlias;
+    public Image avatarHolder;
+    public List<Sprite> spritesAvatar;
 
-    public void ShowPlayAvailable (int intentos)
+    Sprite GetSpriteAvatar (int avatarNumber)
     {
-        SetStars (intentos);
+        var selected = Mathf.Clamp (avatarNumber, 1, spritesAvatar.Count + 1) - 1;
+        return spritesAvatar [selected]; // El avatar 01 se corresponde con la posición 0
+    }
+
+    public Sprite GetSpriteAvatar (string avatarURL)
+    {
+        Sprite sprite = spritesAvatar [0];
+        try
+        {
+            var avatarIndex = avatarURL.Split (new string []
+            {
+                "avatar_player_"
+            }, StringSplitOptions.None) [1].Split ('.') [0];
+            sprite = GetSpriteAvatar (int.Parse (avatarIndex));
+        }
+        catch
+        {
+            Debug.LogWarning ("No se pudo leer el avatar correctamente");
+        }
+        return sprite;
+    }
+
+    public void ShowPlayAvailable (User userData)
+    {
+        SetStars (int.Parse (userData.intentos));
+        SetScore (int.Parse (userData.score));
+        avatarHolder.sprite = GetSpriteAvatar (userData.avatar);
+
+        textAlias.text = userData.alias;
         startMenu.SetActive (true);
     }
 
@@ -136,6 +157,11 @@ public class CanvasManager : MonoBehaviour
         }));
     }
 
+    void SetScore (int amount)
+    {
+        textHighScore.text = amount.ToString ();
+    }
+
     void SetStars (int amount)
     {
         var stars = Mathf.Clamp (amount, 0, 3);
@@ -143,7 +169,7 @@ public class CanvasManager : MonoBehaviour
         {
             starsParent.GetChild (x).GetComponent<Image> ().sprite = spriteStarON;
         }
-        if (stars == 0) startButton.enabled = false;
+        if (stars == 0) startButton.interactable = false;
     }
 
 }
