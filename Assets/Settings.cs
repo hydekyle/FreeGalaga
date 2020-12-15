@@ -12,21 +12,30 @@ public class Settings : MonoBehaviour
     public Image musicIMG, soundIMG, touchpadIMG;
     public Sprite musicON, musicOFF, soundON, soundOFF, touchpadON, touchpadOFF;
 
-    public Text debugText;
-
     bool music, sound, touchpad;
 
     private void Start ()
     {
-        if (PlayerPrefs.HasKey ("Music")) music = PlayerPrefs.GetInt ("Music") == 1 ? true : false;
-        if (PlayerPrefs.HasKey ("Sound")) sound = PlayerPrefs.GetInt ("Sound") == 1 ? true : false;
-        if (PlayerPrefs.HasKey ("Touchpad")) touchpad = PlayerPrefs.GetInt ("Touchpad") == 1 ? true : false;
+        if (PlayerPrefs.HasKey ("Music"))
+        {
+            music = PlayerPrefs.GetInt ("Music") == 1 ? true : false;
+            sound = PlayerPrefs.GetInt ("Sound") == 1 ? true : false;
+            touchpad = PlayerPrefs.GetInt ("Touchpad") == 1 ? true : false;
+        }
+        else
+        {
+            music = sound = touchpad = true;
+        }
 
         ResolveValues ();
-        //DontDestroyOnLoad (this.gameObject);
     }
 
-    void ResolveValues ()
+    private void Update ()
+    {
+        if (Input.GetKeyDown (KeyCode.Escape)) OpenSettings ();
+    }
+
+    private void ResolveValues ()
     {
         if (music) musicIMG.sprite = musicON;
         else musicIMG.sprite = musicOFF;
@@ -72,12 +81,6 @@ public class Settings : MonoBehaviour
         Quit ();
     }
 
-    void Quit ()
-    {
-        transform.GetChild (0).gameObject.SetActive (false);
-        Time.timeScale = 1f;
-    }
-
     public void MusicSetActive (bool active)
     {
         audioMixer.SetFloat ("MusicVolume", active == true ? -25f : -100f);
@@ -93,7 +96,7 @@ public class Settings : MonoBehaviour
         touchpadGO.SetActive (active);
     }
 
-    void OpenSettings ()
+    public void OpenSettings ()
     {
 
         var settings = transform.GetChild (0).gameObject;
@@ -105,14 +108,9 @@ public class Settings : MonoBehaviour
         //ReadCookie ();
     }
 
-    private void Update ()
+    private void Quit ()
     {
-        if (Input.GetKeyDown (KeyCode.Escape)) OpenSettings ();
+        transform.GetChild (0).gameObject.SetActive (false);
+        Time.timeScale = 1f;
     }
-
-    public void ReadCookie ()
-    {
-        debugText.text = HttpCookie.GetCookie ("hydecookie");
-    }
-
 }

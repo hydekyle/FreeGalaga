@@ -49,7 +49,15 @@ public class GameManager : MonoBehaviour
 
     private void Start ()
     {
-        LoadGameConfig ();
+        CheckGameLegality ();
+    }
+
+    private void CheckGameLegality ()
+    {
+        StartCoroutine (NetworkManager.CheckLegality (isLegal =>
+        {
+            if (isLegal) LoadGameConfig ();
+        }));
     }
 
     private void LoadGameConfig ()
@@ -57,18 +65,11 @@ public class GameManager : MonoBehaviour
         if (!Application.isEditor)
         {
             var baseURL = Application.absoluteURL;
-            Debug.Log (baseURL);
-            //var gameConfigURL = baseURL + "gameconfig.json";
-
-            gameConfig = new GameConfig ()
-            {
-                lives_per_credit = 3
-            };
             gameData.getHighScoresURL = baseURL + "scores.php";
             gameData.getUserDataURL = baseURL + "userdata.php";
             gameData.sendScoreURL = baseURL + "updatescore.php";
             gameData.consumeIntentosURL = baseURL + "consumeintentos.php";
-            Debug.Log (gameData.consumeIntentosURL);
+
         }
         else // JUST FOR UNITY EDITOR
         {
@@ -76,17 +77,18 @@ public class GameManager : MonoBehaviour
             gameData.sendScoreURL = "https://hydekyle.ga/galaga/updatescore.php";
             gameData.getUserDataURL = "https://hydekyle.ga/galaga/userdata.php";
             gameData.consumeIntentosURL = "https://hydekyle.ga/galaga/consumeintentos.php";
-            gameConfig = new GameConfig ()
-            {
-                lives_per_credit = 3
-            };
         }
+        gameConfig = new GameConfig () // Cambiar esto si se desea cargar configuración adicional desde fuera del editor
+        {
+            lives_per_credit = 3
+        };
         GetUserData ();
     }
 
+    public string alias = "";
+
     private void GetUserData ()
     {
-        var alias = "";
         if (Application.isEditor) alias = "hydekyle";
         else alias = HttpCookie.GetCookie ("ALIAS");
         if (alias != "")
@@ -95,8 +97,7 @@ public class GameManager : MonoBehaviour
             {
                 gameData.userAlias = userData.alias;
                 var intentos = int.Parse (userData.intentos);
-                if (intentos > 0) CanvasManager.Instance.ShowPlayAvailable (alias, intentos);
-                else CanvasManager.Instance.ShowPlayUnavailable ();
+                CanvasManager.Instance.ShowPlayAvailable (intentos);
             }));
         }
         else

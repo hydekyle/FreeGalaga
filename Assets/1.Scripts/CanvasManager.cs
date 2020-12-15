@@ -15,6 +15,9 @@ public class CanvasManager : MonoBehaviour
     public Transform highScoresWindow;
     public Transform androidControls;
     public Image boostIcon, shieldIcon;
+    public Transform starsParent;
+    public GameObject startMenu;
+    public Sprite spriteStarON;
 
     private void Awake ()
     {
@@ -114,17 +117,33 @@ public class CanvasManager : MonoBehaviour
         barImage.color = color;
     }
 
-    public void ShowPlayAvailable (string alias, int intentos)
+    public Button startButton;
+    public GameObject bar;
+
+    public void ShowPlayAvailable (int intentos)
     {
-        StartCoroutine (NetworkManager.ConsumeIntento (alias, () =>
+        SetStars (intentos);
+        startMenu.SetActive (true);
+    }
+
+    public void BTN_Start ()
+    {
+        StartCoroutine (NetworkManager.ConsumeIntento (GameManager.Instance.alias, () =>
         {
+            startMenu.SetActive (false);
+            bar.SetActive (true);
             GameManager.Instance.StartGame ();
         }));
     }
 
-    public void ShowPlayUnavailable ()
+    void SetStars (int amount)
     {
-        print ("unlucky no intentos");
+        var stars = Mathf.Clamp (amount, 0, 3);
+        for (var x = 0; x < stars; x++)
+        {
+            starsParent.GetChild (x).GetComponent<Image> ().sprite = spriteStarON;
+        }
+        if (stars == 0) startButton.enabled = false;
     }
 
 }
