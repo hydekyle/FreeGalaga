@@ -26,7 +26,7 @@
         $storedUser = $resultado->fetch_array();
         if ($storedUser[$column_intentos] >= 0) {
             $valid_token = strlen($alias) * $storedUser[$column_intentos] + 7;
-            if (intval($token) !== $valid_token) die ("Token no valido " . $valid_token);
+            if (intval($token) !== $valid_token) die ("Token no valido");
             $intentosUpdated = $storedUser[$column_intentos] - 1;
             $update_intentos_query = "UPDATE $table_name SET $column_intentos = $intentosUpdated WHERE $column_alias = '$alias'";
             if ($updated_user = $mysqli->query($update_intentos_query)) die ("OK");

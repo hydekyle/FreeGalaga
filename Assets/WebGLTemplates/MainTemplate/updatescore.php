@@ -17,7 +17,7 @@
     $get_user_query = "SELECT * FROM $table_name WHERE $column_alias = '$alias'";
 
     $valid_token = strlen($alias) * intval($score) + 7;
-    if (intval($token) !== $valid_token) die ("Token no valido " . $valid_token);
+    if (intval($token) !== $valid_token) die ("Token no valido");
 
     $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 

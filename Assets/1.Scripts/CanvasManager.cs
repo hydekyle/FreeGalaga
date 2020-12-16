@@ -72,7 +72,8 @@ public class CanvasManager : MonoBehaviour
                 if (topUsers [x].alias == GameManager.Instance.gameData.userAlias)
                 {
                     userSlot.Find ("Username").GetComponent<Text> ().color = Color.yellow;
-                    myRankPosition = x + 1; // Cachear posición en el ranking
+                    myRankPosition = x + 1; // Recachear si estoy en el top (puntuación puede ser diferente)
+                    myHighScore = int.Parse (topUsers [x].score);
                 }
 
                 GameManager.Instance.SetAndroidControls (false);
