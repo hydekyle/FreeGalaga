@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using EZObjectPools;
 using UnityEngine;
+using System.Runtime.InteropServices;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,8 +21,8 @@ public class GameManager : MonoBehaviour
     public GameObject boostShield, boostHealth, boostPoints, boostAttackspeed;
     public bool retryAvailable = false;
 
-    // [DllImport ("__Internal")]
-    // private static extern string GetGameURL (); // return document.location.href
+    [DllImport ("__Internal")]
+    public static extern void ShareScore (int puesto, int puntos);
 
     [HideInInspector]
     public EZObjectPool enemyBulletsPoolGreen, enemyBulletsPoolRed, enemyBulletsPoolFire, enemyBombs;
@@ -49,16 +50,17 @@ public class GameManager : MonoBehaviour
 
     private void Start ()
     {
-        CheckGameLegality ();
+        //CheckGameLegality ();
+        LoadGameConfig ();
     }
 
-    private void CheckGameLegality ()
-    {
-        StartCoroutine (NetworkManager.CheckLegality (isLegal =>
-        {
-            if (isLegal) LoadGameConfig ();
-        }));
-    }
+    // private void CheckGameLegality ()
+    // {
+    //     StartCoroutine (NetworkManager.CheckLegality (isLegal =>
+    //     {
+    //         if (isLegal) LoadGameConfig ();
+    //     }));
+    // }
 
     private void LoadGameConfig ()
     {
@@ -69,7 +71,6 @@ public class GameManager : MonoBehaviour
             gameData.getUserDataURL = baseURL + "userdata.php";
             gameData.sendScoreURL = baseURL + "updatescore.php";
             gameData.consumeIntentosURL = baseURL + "consumeintentos.php";
-
         }
         else // JUST FOR UNITY EDITOR
         {
@@ -86,6 +87,7 @@ public class GameManager : MonoBehaviour
     }
 
     public string alias = "";
+    public int intentos;
 
     private void GetUserData ()
     {
@@ -96,7 +98,7 @@ public class GameManager : MonoBehaviour
             StartCoroutine (NetworkManager.GetUserData (alias, userData =>
             {
                 gameData.userAlias = userData.alias;
-                var intentos = int.Parse (userData.intentos);
+                intentos = int.Parse (userData.intentos);
                 CanvasManager.Instance.ShowPlayAvailable (userData);
             }));
         }

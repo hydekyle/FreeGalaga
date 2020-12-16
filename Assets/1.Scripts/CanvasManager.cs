@@ -18,6 +18,12 @@ public class CanvasManager : MonoBehaviour
     public Transform starsParent;
     public GameObject startMenu;
     public Sprite spriteStarON;
+    public Button startButton;
+    public GameObject bar;
+    public Text textHighScore;
+    public Text textAlias;
+    public Image avatarHolder;
+    public List<Sprite> spritesAvatar;
 
     private void Awake ()
     {
@@ -41,10 +47,13 @@ public class CanvasManager : MonoBehaviour
         else shieldIcon.fillAmount = Mathf.MoveTowards (shieldIcon.fillAmount, fillValue, Time.deltaTime * 3);
     }
 
+    int myHighScore, myRankPosition = 11; // Si no está entre los 10 primeros suponer que es el 11
+
     public void SendScore (string alias, int score)
     {
         StartCoroutine (NetworkManager.SendHighScore (alias, score, onEnded =>
         {
+            myHighScore = score; // Cachear high score para compartir en FB
             ShowHighScores ();
         }));
     }
@@ -60,13 +69,22 @@ public class CanvasManager : MonoBehaviour
                 userSlot.Find ("Username").GetComponent<Text> ().text = topUsers [x].alias;
                 userSlot.Find ("Points").GetComponent<Text> ().text = topUsers [x].score;
                 userSlot.Find ("Avatar").GetComponent<Image> ().sprite = GetSpriteAvatar (topUsers [x].avatar);
-                if (topUsers [x].alias == GameManager.Instance.gameData.userAlias) userSlot.Find ("Username").GetComponent<Text> ().color = Color.yellow;
+                if (topUsers [x].alias == GameManager.Instance.gameData.userAlias)
+                {
+                    userSlot.Find ("Username").GetComponent<Text> ().color = Color.yellow;
+                    myRankPosition = x + 1; // Cachear posición en el ranking
+                }
 
                 GameManager.Instance.SetAndroidControls (false);
                 highScoresWindow.gameObject.SetActive (true);
                 Invoke ("MakeRetryAvailable", 1f);
             }
         }));
+    }
+
+    public void BTN_SendScoreFB ()
+    {
+        GameManager.ShareScore (myRankPosition, myHighScore);
     }
 
     private void MakeRetryAvailable ()
@@ -106,35 +124,10 @@ public class CanvasManager : MonoBehaviour
         barImage.color = color;
     }
 
-    public Button startButton;
-    public GameObject bar;
-    public Text textHighScore;
-    public Text textAlias;
-    public Image avatarHolder;
-    public List<Sprite> spritesAvatar;
-
     Sprite GetSpriteAvatar (int avatarNumber)
     {
         var selected = Mathf.Clamp (avatarNumber, 1, spritesAvatar.Count + 1) - 1;
         return spritesAvatar [selected]; // El avatar 01 se corresponde con la posición 0
-    }
-
-    public Sprite GetSpriteAvatar (string avatarURL)
-    {
-        Sprite sprite = spritesAvatar [0];
-        try
-        {
-            var avatarIndex = avatarURL.Split (new string []
-            {
-                "avatar_player_"
-            }, StringSplitOptions.None) [1].Split ('.') [0];
-            sprite = GetSpriteAvatar (int.Parse (avatarIndex));
-        }
-        catch
-        {
-            Debug.LogWarning ("No se pudo leer el avatar correctamente");
-        }
-        return sprite;
     }
 
     public void ShowPlayAvailable (User userData)
@@ -170,6 +163,24 @@ public class CanvasManager : MonoBehaviour
             starsParent.GetChild (x).GetComponent<Image> ().sprite = spriteStarON;
         }
         if (stars == 0) startButton.interactable = false;
+    }
+
+    public Sprite GetSpriteAvatar (string avatarURL)
+    {
+        Sprite sprite = spritesAvatar [0];
+        try
+        {
+            var avatarIndex = avatarURL.Split (new string []
+            {
+                "avatar_player_"
+            }, StringSplitOptions.None) [1].Split ('.') [0];
+            sprite = GetSpriteAvatar (int.Parse (avatarIndex));
+        }
+        catch
+        {
+            Debug.LogWarning ("No se pudo leer el avatar correctamente");
+        }
+        return sprite;
     }
 
 }

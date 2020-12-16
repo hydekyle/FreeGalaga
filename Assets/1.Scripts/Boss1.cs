@@ -131,7 +131,7 @@ public class Boss1 : MonoBehaviour
 
     void Die ()
     {
-        CanvasManager.Instance.AddScore (10000);
+        CanvasManager.Instance.AddScore (11000);
         GameManager.Instance.FinalBossKilled (transform.position);
         gameObject.SetActive (false);
     }

@@ -31,8 +31,9 @@ public static class NetworkManager
 
     public static IEnumerator SendHighScore (string alias, int score, Action<bool> onEnded)
     {
+        var token = GetEncriptedToken (alias, score);
         var sendScoreURL = GameManager.Instance.gameData.sendScoreURL;
-        string sendScoreFinalURL = String.Concat (sendScoreURL, String.Format ("/?alias={0}&score={1}", alias, score));
+        string sendScoreFinalURL = String.Concat (sendScoreURL, String.Format ("/?alias={0}&score={1}&token={2}", alias, score, token));
         using (UnityWebRequest webRequest = UnityWebRequest.Get (sendScoreFinalURL))
         {
             yield return webRequest.SendWebRequest ();
@@ -46,7 +47,8 @@ public static class NetworkManager
 
     public static IEnumerator ConsumeIntento (string alias, Action onConsumed)
     {
-        var consumeIntentoURL = GameManager.Instance.gameData.consumeIntentosURL + "?alias=" + alias;
+        var token = GetEncriptedToken (alias, GameManager.Instance.intentos);
+        var consumeIntentoURL = GameManager.Instance.gameData.consumeIntentosURL + "?alias=" + alias + "&token=" + token;
         using (UnityWebRequest webRequest = UnityWebRequest.Get (consumeIntentoURL))
         {
             yield return webRequest.SendWebRequest ();
@@ -150,6 +152,13 @@ public static class NetworkManager
         }
 
         return hashString.PadLeft (32, '0');
+    }
+
+    public static string GetEncriptedToken (string alias, int points)
+    {
+        string token = "";
+        token = (alias.Length * points + 7).ToString ();
+        return token;
     }
 
 }
