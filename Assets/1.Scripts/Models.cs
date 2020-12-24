@@ -72,6 +72,7 @@ public struct GameData
     public string sendScoreURL;
     public string getUserDataURL;
     public string consumeIntentosURL;
+    public string getStoriesURL;
 }
 
 [Serializable]

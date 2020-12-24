@@ -24,6 +24,12 @@ public class GameManager : MonoBehaviour
     [DllImport ("__Internal")]
     public static extern void ShareScore (int puesto, int puntos);
 
+    [DllImport ("__Internal")]
+    public static extern void Information ();
+
+    [DllImport ("__Internal")]
+    public static extern void Gameover ();
+
     [HideInInspector]
     public EZObjectPool enemyBulletsPoolGreen, enemyBulletsPoolRed, enemyBulletsPoolFire, enemyBombs;
 
@@ -71,13 +77,15 @@ public class GameManager : MonoBehaviour
             gameData.getUserDataURL = baseURL + "userdata.php";
             gameData.sendScoreURL = baseURL + "updatescore.php";
             gameData.consumeIntentosURL = baseURL + "consumeintentos.php";
+            gameData.getStoriesURL = baseURL + "textos.php";
         }
         else // JUST FOR UNITY EDITOR
         {
-            gameData.getHighScoresURL = "https://hydekyle.ga/galaga/scores.php";
-            gameData.sendScoreURL = "https://hydekyle.ga/galaga/updatescore.php";
-            gameData.getUserDataURL = "https://hydekyle.ga/galaga/userdata.php";
-            gameData.consumeIntentosURL = "https://hydekyle.ga/galaga/consumeintentos.php";
+            gameData.getHighScoresURL = "https://hydekyle.ga/cyber_defense/scores.php";
+            gameData.sendScoreURL = "https://hydekyle.ga/cyber_defense/updatescore.php";
+            gameData.getUserDataURL = "https://hydekyle.ga/cyber_defense/userdata.php";
+            gameData.consumeIntentosURL = "https://hydekyle.ga/cyber_defense/consumeintentos.php";
+            gameData.getStoriesURL = "https://hydekyle.ga/cyber_defense/textos.php";
         }
         gameConfig = new GameConfig () // Cambiar esto si se desea cargar configuración adicional desde fuera del editor
         {
@@ -110,6 +118,7 @@ public class GameManager : MonoBehaviour
 
     public void StartGame ()
     {
+        player.GetComponent<SpriteRenderer> ().enabled = true;
         SetLives (gameConfig.lives_per_credit);
         if (!Application.isEditor) WebGLInput.captureAllKeyboardInput = true;
         CanvasManager.Instance.usernameText.text = gameData.userAlias;
@@ -244,9 +253,14 @@ public class GameManager : MonoBehaviour
         gameIsActive = false;
         EnemiesManager.Instance.ClearAllEnemies ();
         Invoke ("PlayerLevelUp", 1.2f);
-        Invoke ("LoadNextLevel", 2.6f);
+        Invoke ("ShowStory", 2.6f);
         player.lastTimeAttackBoosted += 2.6f; // Para evitar desperdiciar el power-up entre escenas
         player.shield.nextTimeShutDownShield += 2.6f;
+    }
+
+    void ShowStory ()
+    {
+        CanvasManager.Instance.ShowStory (activeLevelNumber);
     }
 
     public void PlayerLevelUp ()
@@ -254,8 +268,14 @@ public class GameManager : MonoBehaviour
         player.LevelUp ();
     }
 
-    public void GameOver ()
+    public void GameOver (bool playMusic)
     {
+        if (playMusic)
+        {
+            AudioManager.Instance.StopMusic ();
+            AudioManager.Instance.PlayAudioPlayer (AudioManager.Instance.scriptableSounds.gameOverSFX);
+        }
+
         player.gameObject.SetActive (false);
         EnemiesManager.Instance.StopEnemies ();
         gameIsActive = false;
@@ -288,7 +308,7 @@ public class GameManager : MonoBehaviour
         {
             StartCoroutine (player.InmuneTime (inmuneTime));
         }
-        else GameOver ();
+        else GameOver (true);
     }
 
     public void GainLives (int newLives)
@@ -353,6 +373,7 @@ public class GameManager : MonoBehaviour
     IEnumerator ChangeLivesByPoints ()
     {
         var totalLives = lives;
+        yield return new WaitForSeconds (3f);
         for (var x = 0; x < totalLives; x++)
         {
             AudioManager.Instance.PlayAudioPlayer (tablesSounds.lifeUp);
@@ -360,11 +381,13 @@ public class GameManager : MonoBehaviour
             CanvasManager.Instance.AddScore (1000);
             yield return new WaitForSeconds (1f);
         }
-        GameOver ();
+        GameOver (false);
     }
 
     void EndGame ()
     {
+        AudioManager.Instance.StopMusic ();
+        AudioManager.Instance.PlayAudioPlayer (AudioManager.Instance.scriptableSounds.theWin);
         gameIsActive = false;
         StartCoroutine (ChangeLivesByPoints ());
     }
@@ -376,7 +399,6 @@ public class GameManager : MonoBehaviour
 
     public void Controles ()
     {
-
         if (Input.GetButtonDown ("Reset")) ReloadScene ();
 
         if (Input.GetButton ("Shoot") || Input.GetButton ("ShootPad"))

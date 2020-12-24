@@ -145,6 +145,7 @@ public class Enemy : MonoBehaviour
 
     public void Die ()
     {
+        alive = false;
         GameManager.Instance.DropPowerUp (transform.position, powerUp);
         CanvasManager.Instance.AddScore (points);
         Erase ();
@@ -166,7 +167,6 @@ public class Enemy : MonoBehaviour
                 EnemiesManager.Instance.AddEnemy (enemy);
             }
         }
-        alive = false;
         gameObject.SetActive (false);
         EnemiesManager.Instance.EnemyDestroyed (this);
     }

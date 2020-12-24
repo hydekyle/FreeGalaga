@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using System;
+using TMPro;
 
 public class CanvasManager : MonoBehaviour
 {
@@ -20,10 +21,15 @@ public class CanvasManager : MonoBehaviour
     public Sprite spriteStarON;
     public Button startButton;
     public GameObject bar;
-    public Text textHighScore;
-    public Text textAlias;
+    public TextMeshProUGUI textHighScore;
+    public TextMeshProUGUI textAlias;
     public Image avatarHolder;
     public List<Sprite> spritesAvatar;
+
+    public GameObject storiesUI;
+    public TextMeshProUGUI informationText;
+    public TextMeshProUGUI storyText;
+    public List<string> storiesList = new List<string> ();
 
     private void Awake ()
     {
@@ -34,6 +40,14 @@ public class CanvasManager : MonoBehaviour
     private void Start ()
     {
         SetLivesNumber (GameManager.Instance.lives);
+    }
+
+    private void Update ()
+    {
+        if (Input.GetButtonDown ("ShootPad") && storiesUI.activeSelf)
+        {
+            BTN_StoryOK ();
+        }
     }
 
     public void SetFillBoostIcon (float fillValue)
@@ -66,12 +80,12 @@ public class CanvasManager : MonoBehaviour
             for (var x = 0; x < topUsers.Count; x++)
             {
                 var userSlot = content.GetChild (x);
-                userSlot.Find ("Username").GetComponent<Text> ().text = topUsers [x].alias;
-                userSlot.Find ("Points").GetComponent<Text> ().text = topUsers [x].score;
+                userSlot.Find ("Username").GetComponent<TextMeshProUGUI> ().text = topUsers [x].alias;
+                userSlot.Find ("Points").GetComponent<TextMeshProUGUI> ().text = topUsers [x].score;
                 userSlot.Find ("Avatar").GetComponent<Image> ().sprite = GetSpriteAvatar (topUsers [x].avatar);
                 if (topUsers [x].alias == GameManager.Instance.gameData.userAlias)
                 {
-                    userSlot.Find ("Username").GetComponent<Text> ().color = Color.yellow;
+                    userSlot.Find ("Username").GetComponent<TextMeshProUGUI> ().color = Color.yellow;
                     myRankPosition = x + 1; // Recachear si estoy en el top (puntuación puede ser diferente)
                     myHighScore = int.Parse (topUsers [x].score);
                 }
@@ -133,12 +147,18 @@ public class CanvasManager : MonoBehaviour
 
     public void ShowPlayAvailable (User userData)
     {
-        SetStars (int.Parse (userData.intentos));
-        SetScore (int.Parse (userData.score));
-        avatarHolder.sprite = GetSpriteAvatar (userData.avatar);
+        StartCoroutine (NetworkManager.GetStories (stories =>
+        {
+            storiesList = stories;
+            informationText.text = stories [stories.Count - 1];
 
-        textAlias.text = userData.alias;
-        startMenu.SetActive (true);
+            SetStars (int.Parse (userData.intentos));
+            SetScore (int.Parse (userData.score));
+            avatarHolder.sprite = GetSpriteAvatar (userData.avatar);
+
+            textAlias.text = userData.alias;
+            startMenu.SetActive (true);
+        }));
     }
 
     public void BTN_Start ()
@@ -147,8 +167,64 @@ public class CanvasManager : MonoBehaviour
         {
             startMenu.SetActive (false);
             bar.SetActive (true);
-            GameManager.Instance.StartGame ();
+            ShowStory (-1);
         }));
+    }
+
+    public GameObject storyImage, mainStoryButton;
+
+    public void ShowStory (int number)
+    {
+        storyText.text = storiesList [number + 1];
+        storiesUI.SetActive (true);
+        Time.timeScale = 0f;
+    }
+
+    public void BTN_CloseMainStory ()
+    {
+        storyImage.SetActive (false);
+        mainStoryButton.SetActive (false);
+        mainStoryButton.transform.parent.Find ("Button_Next").GetComponent<Button> ().interactable = true;
+        ShowStory (0);
+    }
+
+    public void ShowGameover ()
+    {
+        ShowStory (storiesList.Count);
+    }
+
+    public void BTN_StoryOK ()
+    {
+        var levelNumber = GameManager.Instance.activeLevelNumber;
+        if (levelNumber == 0) GameManager.Instance.StartGame ();
+        else GameManager.Instance.LoadNextLevel ();
+
+        var player = GameManager.Instance.player;
+        player.transform.position = new Vector3 (0, -4, 0);
+        player.lastTimeShot = Time.time;
+        Time.timeScale = 1f;
+        storiesUI.SetActive (false);
+    }
+
+    public GameObject informationUI;
+    public void BTN_InformationBack ()
+    {
+        informationUI.SetActive (false);
+    }
+
+    public void BTN_Information ()
+    {
+        GameManager.Information ();
+    }
+
+    public void BTN_InformationOpen ()
+    {
+        informationUI.SetActive (true);
+    }
+
+    public void BTN_Gameover ()
+    {
+        GameManager.Gameover ();
     }
 
     void SetScore (int amount)

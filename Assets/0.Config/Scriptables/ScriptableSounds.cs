@@ -18,4 +18,5 @@ public class ScriptableSounds : ScriptableObject
     public AudioClip explosionLow, explosionBig;
     public AudioClip shipUpgrade;
     public AudioClip gameOverSFX;
+    public AudioClip theWin;
 }

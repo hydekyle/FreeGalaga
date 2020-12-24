@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
     public GameObject shotPrefab;
     public Stats stats;
     EZObjectPool playerShots;
-    float lastTimeShot;
+    public float lastTimeShot;
     float minPosX, maxPosX, minPosY = -5f, maxPosY = -2f;
     AudioClip shotAudioClip;
     Transform gunPoint;
@@ -187,8 +187,11 @@ public class Player : MonoBehaviour
         {
             if (vulnerable)
             {
-                other.GetComponent<Enemy> ().Erase ();
-                GetStrike ();
+                if (other.TryGetComponent (out Enemy enemy))
+                {
+                    enemy.Erase ();
+                    GetStrike ();
+                }
             }
         }
         else if (other.CompareTag ("EnemyShot"))

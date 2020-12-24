@@ -1,10 +1,7 @@
 <?php
     header("Access-Control-Allow-Origin: *");
 
-    define('DB_NAME', 'palolto_spgame');
-    define('DB_USER', 'mktlogic_game_ad');
-    define('DB_PASSWORD', 'eM93bn#6');
-    define('DB_HOST', 'localhost');
+    include "config.php";
 
     $table_name = "registro";
     $column_alias = "reg_alias";

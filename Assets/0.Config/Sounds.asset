@@ -27,3 +27,4 @@ MonoBehaviour:
   explosionBig: {fileID: 8300000, guid: ce58f9926b0d4984b802b2b309188cac, type: 3}
   shipUpgrade: {fileID: 8300000, guid: b5682408b5afe9440b2d883ed5cdebb2, type: 3}
   gameOverSFX: {fileID: 8300000, guid: d500b4ba427678a49880e6fdd06abfb0, type: 3}
+  theWin: {fileID: 8300000, guid: fd7149e6638c48d4489970c10bdadbe4, type: 3}

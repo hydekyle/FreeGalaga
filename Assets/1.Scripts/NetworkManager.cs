@@ -33,7 +33,7 @@ public static class NetworkManager
     {
         var token = GetEncriptedToken (alias, score);
         var sendScoreURL = GameManager.Instance.gameData.sendScoreURL;
-        string sendScoreFinalURL = String.Concat (sendScoreURL, String.Format ("/?alias={0}&score={1}&token={2}", alias, score, token));
+        string sendScoreFinalURL = String.Concat (sendScoreURL, String.Format ("?alias={0}&score={1}&token={2}", alias, score, token));
         using (UnityWebRequest webRequest = UnityWebRequest.Get (sendScoreFinalURL))
         {
             yield return webRequest.SendWebRequest ();
@@ -120,6 +120,26 @@ public static class NetworkManager
                 topUsers (users);
             }
             else Debug.LogWarning ("Error GetHighScore: " + webRequest.error);
+        }
+    }
+
+    public static IEnumerator GetStories (Action<List<string>> stories)
+    {
+        var storiesURL = GameManager.Instance.gameData.getStoriesURL;
+        using (UnityWebRequest request = UnityWebRequest.Get (storiesURL))
+        {
+            var storiesList = new List<string> ();
+            yield return request.SendWebRequest ();
+            if (!request.isNetworkError)
+            {
+                var fetched_stories = request.downloadHandler.text.Split ('|');
+                foreach (string story in fetched_stories) storiesList.Add (story);
+                stories (storiesList);
+            }
+            else
+            {
+                Debug.LogWarning ("No se ha podido conectar con el servidor remoto.");
+            }
         }
     }
 
