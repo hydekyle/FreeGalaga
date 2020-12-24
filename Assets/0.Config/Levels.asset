@@ -14,21 +14,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   backgroundLevel1: {fileID: 21300000, guid: ceb27cd484c5cc14db5e4c9c5436b9bb, type: 3}
   barColorLevel1: {r: 0.16862746, g: 0.7490196, b: 0.9058824, a: 0}
-  animSpeed1: 1
+  animSpeed1: 1.5
   prefabLevel1: {fileID: 6768246466652972997, guid: e1a79eccc24b81443b7ab1b3a2e8b600, type: 3}
   backgroundLevel2: {fileID: 21300000, guid: bb2e5dcb79fb6fe4a8f18ccaca041315, type: 3}
   barColorLevel2: {r: 0.18039216, g: 0.7960785, b: 0.39607847, a: 0}
-  animSpeed2: 1
+  animSpeed2: 1.5
   prefabLevel2: {fileID: 129102842776391718, guid: 088296ce7f2cd6349be35819b8567dfc, type: 3}
   backgroundLevel3: {fileID: 21300000, guid: b82cb3100b9cc72439d0612bb84d9b66, type: 3}
   barColorLevel3: {r: 0.9921569, g: 0.7960785, b: 0.015686275, a: 0}
-  animSpeed3: 2
+  animSpeed3: 1
   prefabLevel3: {fileID: 6768246466652972997, guid: 5f5e7e701ac86ed4a866c780fa0dcd84, type: 3}
   backgroundLevel4: {fileID: 21300000, guid: 1c73597b219067743832a59b1b229b5a, type: 3}
   barColorLevel4: {r: 0.9568628, g: 0.34117648, b: 0.17254902, a: 0}
-  animSpeed4: 3
+  animSpeed4: 0.6
   prefabLevel4: {fileID: 6768246466652972997, guid: e75436944f38ac349931c9d5b95539a0, type: 3}
   backgroundLevelFinal: {fileID: 21300000, guid: 90b5534b0999ef744a2d2d79590d264f, type: 3}
   barColorLevelFinal: {r: 0, g: 0, b: 0, a: 0}
-  animSpeedFinal: 4
-  prefabLevelFinal: {fileID: 6768246466652972997, guid: e75436944f38ac349931c9d5b95539a0, type: 3}
+  animSpeedFinal: 1
+  prefabLevelFinal: {fileID: 6768246466652972997, guid: 6ce6c8ba94699014b81b693a99d05781, type: 3}

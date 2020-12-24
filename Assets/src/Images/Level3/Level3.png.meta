@@ -20,6 +20,12 @@ TextureImporter:
   - first:
       213: -558743383406851690
     second: Level3_5
+  - first:
+      213: -4343673686411664785
+    second: Level3_6
+  - first:
+      213: -2144732213623223221
+    second: Level3_7
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -50,7 +56,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: -1
+    filterMode: 0
     aniso: -1
     mipBias: -100
     wrapU: 1
@@ -73,8 +79,6 @@ TextureImporter:
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
-  flipbookRows: 1
-  flipbookColumns: 1
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
@@ -162,7 +166,7 @@ TextureImporter:
         width: 70
         height: 65
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -183,7 +187,7 @@ TextureImporter:
         width: 98
         height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -204,7 +208,7 @@ TextureImporter:
         width: 63
         height: 103
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -222,10 +226,10 @@ TextureImporter:
         serializedVersion: 2
         x: 1110
         y: 221
-        width: 70
-        height: 87
+        width: 71
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -241,12 +245,12 @@ TextureImporter:
       name: Level3_5
       rect:
         serializedVersion: 2
-        x: 659
-        y: 363
-        width: 74
-        height: 116
+        x: 681
+        y: 393
+        width: 29
+        height: 86
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -254,6 +258,48 @@ TextureImporter:
       bones: []
       spriteID: 6994f676ad1fe38f0800000000000000
       internalID: -558743383406851690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Level3_6
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 1260
+        width: 89
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f62a835cbcb28b3c0800000000000000
+      internalID: -4343673686411664785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Level3_7
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 1392
+        width: 74
+        height: 77
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4c86ac3a616c32e0800000000000000
+      internalID: -2144732213623223221
       vertices: []
       indices: 
       edges: []

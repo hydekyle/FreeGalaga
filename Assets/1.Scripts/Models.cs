@@ -3,31 +3,54 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-[Serializable]
-public struct ShootModel
+[System.Serializable]
+public struct User
 {
-    public Sprite sprite;
-    public string name;
-    public ShootStats stats;
+    public string alias, score, avatar, intentos;
 }
 
-[Serializable]
-public struct ShootStats
+public enum BoostType
 {
-    public int damage, cooldown;
+    None,
+    Shield,
+    Health,
+    Points,
+    AttackSpeed
 }
 
-[Serializable]
-public struct ShipModel
+public enum EnemyBehavior
 {
-    public Sprite sprite;
-    public string name;
-    public Stats stats;
+    None,
+    Kamikaze,
+    PointAndShoot,
+    Shooter,
+    Leader
+}
+
+public enum ScreenPosition
+{
+    TopLeft,
+    TopMid,
+    TopRight,
+    MidLeft,
+    MidMid,
+    MidRight,
+    BotLeft,
+    BotMid,
+    BotRight
+}
+
+public enum BulletType
+{
+    GreenBullet,
+    RedBullet,
+    FireBullet
 }
 
 [Serializable]
 public struct EnemyModel
 {
+    public BoostType powerupDrop;
     public Sprite sprite;
     public string name;
     public Stats stats;
@@ -36,5 +59,24 @@ public struct EnemyModel
 [Serializable]
 public struct Stats
 {
-    public int health, damage, movementVelocity, shootCooldown, shootSpeed;
+    public int health, damage, shootCooldown, shootSpeed;
+    public float movementVelocity;
+}
+
+[Serializable]
+public struct GameData
+{
+    public string userAlias;
+
+    public string getHighScoresURL;
+    public string sendScoreURL;
+    public string getUserDataURL;
+    public string consumeIntentosURL;
+    public string getStoriesURL;
+}
+
+[Serializable]
+public struct GameConfig
+{
+    public int lives_per_credit;
 }

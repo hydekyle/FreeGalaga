@@ -15,15 +15,15 @@ MonoBehaviour:
   navesJugador:
   - {fileID: 21300000, guid: d7575a8149ff4c54ca6a3e9f617f50a4, type: 3}
   - {fileID: -6596058969607702259, guid: 1a112f4a173160f4abfebd63e7cf1104, type: 3}
-  - {fileID: -6596058969607702259, guid: 1a112f4a173160f4abfebd63e7cf1104, type: 3}
-  disparos:
-  - sprite: {fileID: 21300000, guid: d7575a8149ff4c54ca6a3e9f617f50a4, type: 3}
-    name: 
-    stats:
-      damage: 0
-      cooldown: 0
-  - sprite: {fileID: 0}
-    name: 
-    stats:
-      damage: 0
-      cooldown: 0
+  - {fileID: -3851320641955974510, guid: b553374732947144d8d43aef51b61c43, type: 3}
+  - {fileID: -278423504951692564, guid: 20be347966ea6aa4681f245e9f38bf1c, type: 3}
+  disparosJugador:
+  - {fileID: 4674503822870743029, guid: 6ba947c1be3d00e498fca6406bdad386, type: 3}
+  - {fileID: 4674503822870743029, guid: e431cc75c1680c24cb2d74a73c939bf3, type: 3}
+  - {fileID: 4674503822870743029, guid: c39340f9d49fa1845b60c57d74d78cd3, type: 3}
+  - {fileID: 4674503822870743029, guid: 8effe12cc705c694cbd704b00a887c6a, type: 3}
+  - {fileID: 4674503822870743029, guid: 26848b27ab3adf24dae02d4efdba8421, type: 3}
+  disparosEnemigos:
+  - {fileID: 9046098202265018596, guid: 981529d06ddcab140b6579cf96f57e66, type: 3}
+  - {fileID: 9046098202265018596, guid: da3445d358c5f5741a470c4800639521, type: 3}
+  - {fileID: 9046098202265018596, guid: d40e8b06fd8e2644dbad0e7241dcd92f, type: 3}

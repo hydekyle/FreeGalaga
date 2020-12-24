@@ -58,8 +58,6 @@ TextureImporter:
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
-  flipbookRows: 1
-  flipbookColumns: 1
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
@@ -121,12 +119,12 @@ TextureImporter:
       name: Disparitospng_0
       rect:
         serializedVersion: 2
-        x: 563
-        y: 700
-        width: 120
-        height: 120
+        x: 619
+        y: 709
+        width: 8
+        height: 50
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
