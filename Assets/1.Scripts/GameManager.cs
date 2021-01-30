@@ -21,14 +21,14 @@ public class GameManager : MonoBehaviour
     public GameObject boostShield, boostHealth, boostPoints, boostAttackspeed;
     public bool retryAvailable = false;
 
-    [DllImport ("__Internal")]
-    public static extern void ShareScore (int puesto, int puntos);
+    [DllImport("__Internal")]
+    public static extern void ShareScore(int puesto, int puntos);
 
-    [DllImport ("__Internal")]
-    public static extern void Information ();
+    [DllImport("__Internal")]
+    public static extern void Information();
 
-    [DllImport ("__Internal")]
-    public static extern void Gameover ();
+    [DllImport("__Internal")]
+    public static extern void Gameover();
 
     [HideInInspector]
     public EZObjectPool enemyBulletsPoolGreen, enemyBulletsPoolRed, enemyBulletsPoolFire, enemyBombs;
@@ -36,28 +36,28 @@ public class GameManager : MonoBehaviour
     public float minPosX = -3.8f, maxPosX = 3.8f, minPosY = -4.5f, maxPosY = -2f;
     public GameObject bigExplosion;
 
-    public GameData gameData = new GameData ();
-    public GameConfig gameConfig = new GameConfig ();
+    public GameData gameData = new GameData();
+    public GameConfig gameConfig = new GameConfig();
 
-    private void Awake ()
+    private void Awake()
     {
-        if (Instance) Destroy (this.gameObject);
+        if (Instance) Destroy(this.gameObject);
         Instance = this;
-        Initialize ();
+        Initialize();
     }
 
-    void Initialize ()
+    void Initialize()
     {
-        enemyBulletsPoolGreen = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [0], "Bullets Enemy Green", 4, false, true, true);
-        enemyBulletsPoolRed = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [1], "Bullets Enemy Red", 5, false, true, true);
-        enemyBulletsPoolFire = EZObjectPool.CreateObjectPool (tablesEtc.disparosEnemigos [2], "Bullets Enemy Fire", 4, false, true, true);
-        enemyBombs = EZObjectPool.CreateObjectPool (bombPrefab, "Bombs Boss", 6, false, true, true);
+        enemyBulletsPoolGreen = EZObjectPool.CreateObjectPool(tablesEtc.disparosEnemigos[0], "Bullets Enemy Green", 4, false, true, true);
+        enemyBulletsPoolRed = EZObjectPool.CreateObjectPool(tablesEtc.disparosEnemigos[1], "Bullets Enemy Red", 5, false, true, true);
+        enemyBulletsPoolFire = EZObjectPool.CreateObjectPool(tablesEtc.disparosEnemigos[2], "Bullets Enemy Fire", 4, false, true, true);
+        enemyBombs = EZObjectPool.CreateObjectPool(bombPrefab, "Bombs Boss", 6, false, true, true);
     }
 
-    private void Start ()
+    private void Start()
     {
         //CheckGameLegality ();
-        LoadGameConfig ();
+        LoadGameConfig();
     }
 
     // private void CheckGameLegality ()
@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
     //     }));
     // }
 
-    private void LoadGameConfig ()
+    private void LoadGameConfig()
     {
         if (!Application.isEditor)
         {
@@ -87,125 +87,125 @@ public class GameManager : MonoBehaviour
             gameData.consumeIntentosURL = "https://hydekyle.ga/cyber_defense/consumeintentos.php";
             gameData.getStoriesURL = "https://hydekyle.ga/cyber_defense/textos.php";
         }
-        gameConfig = new GameConfig () // Cambiar esto si se desea cargar configuración adicional desde fuera del editor
+        gameConfig = new GameConfig() // Cambiar esto si se desea cargar configuración adicional desde fuera del editor
         {
             lives_per_credit = 3
         };
-        GetUserData ();
+        GetUserData();
     }
 
     public string alias = "";
     public int intentos;
 
-    private void GetUserData ()
+    private void GetUserData()
     {
-        if (!Application.isEditor) alias = HttpCookie.GetCookie ("ALIAS");
+        if (!Application.isEditor) alias = HttpCookie.GetCookie("ALIAS");
 
         if (alias != "")
         {
-            StartCoroutine (NetworkManager.GetUserData (alias, userData =>
-            {
-                gameData.userAlias = userData.alias;
-                intentos = int.Parse (userData.intentos);
-                CanvasManager.Instance.ShowPlayAvailable (userData);
-            }));
+            StartCoroutine(NetworkManager.GetUserData(alias, userData =>
+          {
+              gameData.userAlias = userData.alias;
+              intentos = int.Parse(userData.intentos);
+              CanvasManager.Instance.LoadUserData(userData);
+          }));
         }
         else
         {
-            Debug.LogWarning ("No ALIAS founded!");
+            Debug.LogWarning("No ALIAS founded!");
         }
     }
 
-    public void StartGame ()
+    public void StartGame()
     {
-        player.GetComponent<SpriteRenderer> ().enabled = true;
-        SetLives (gameConfig.lives_per_credit);
+        player.GetComponent<SpriteRenderer>().enabled = true;
+        SetLives(gameConfig.lives_per_credit);
         if (!Application.isEditor) WebGLInput.captureAllKeyboardInput = true;
         CanvasManager.Instance.usernameText.text = gameData.userAlias;
-        AudioManager.Instance.StartMusic ();
-        LoadLevel (++activeLevelNumber);
+        AudioManager.Instance.StartMusic();
+        LoadLevel(++activeLevelNumber);
     }
 
-    public void SetAndroidControls (bool status)
+    public void SetAndroidControls(bool status)
     {
-        CanvasManager.Instance.androidControls.gameObject.SetActive (status);
+        CanvasManager.Instance.androidControls.gameObject.SetActive(status);
     }
 
-    public void AddRandomPowerUps (List<Enemy> enemyList)
+    public void AddRandomPowerUps(List<Enemy> enemyList)
     {
-        enemyList.Sort ((a, b) => 1 - 2 * Random.Range (0, 2));
-        enemyList [0].powerUp = BoostType.Shield;
-        enemyList [1].powerUp = BoostType.AttackSpeed;
-        enemyList [2].powerUp = BoostType.Points;
+        enemyList.Sort((a, b) => 1 - 2 * Random.Range(0, 2));
+        enemyList[0].powerUp = BoostType.Shield;
+        enemyList[1].powerUp = BoostType.AttackSpeed;
+        enemyList[2].powerUp = BoostType.Points;
     }
 
     float lastTimePowerUpDropped;
-    public void DropPowerUp (Vector3 dropPosition, BoostType boostType)
+    public void DropPowerUp(Vector3 dropPosition, BoostType boostType)
     {
         if (boostType == BoostType.None) return;
         bool hacePoco = lastTimePowerUpDropped + 1.3f > Time.time;
         float gravity = hacePoco ? 0.1f : 0.25f;
-        gravity += Random.Range (0f, 0.2f);
+        gravity += Random.Range(0f, 0.2f);
         GameObject powerUp;
         switch (boostType)
         {
             case BoostType.Points:
-                powerUp = Instantiate (boostPoints, dropPosition, Quaternion.identity);
-                powerUp.GetComponent<Rigidbody2D> ().gravityScale = gravity;
+                powerUp = Instantiate(boostPoints, dropPosition, Quaternion.identity);
+                powerUp.GetComponent<Rigidbody2D>().gravityScale = gravity;
                 break;
             case BoostType.Health:
-                powerUp = Instantiate (boostHealth, dropPosition, Quaternion.identity);
-                powerUp.GetComponent<Rigidbody2D> ().gravityScale = gravity;
+                powerUp = Instantiate(boostHealth, dropPosition, Quaternion.identity);
+                powerUp.GetComponent<Rigidbody2D>().gravityScale = gravity;
                 break;
             case BoostType.AttackSpeed:
-                powerUp = Instantiate (boostAttackspeed, dropPosition, Quaternion.identity);
-                powerUp.GetComponent<Rigidbody2D> ().gravityScale = gravity;
+                powerUp = Instantiate(boostAttackspeed, dropPosition, Quaternion.identity);
+                powerUp.GetComponent<Rigidbody2D>().gravityScale = gravity;
                 break;
             case BoostType.Shield:
-                powerUp = Instantiate (boostShield, dropPosition, Quaternion.identity);
-                powerUp.GetComponent<Rigidbody2D> ().gravityScale = gravity;
+                powerUp = Instantiate(boostShield, dropPosition, Quaternion.identity);
+                powerUp.GetComponent<Rigidbody2D>().gravityScale = gravity;
                 break;
         }
 
         lastTimePowerUpDropped = Time.time;
     }
 
-    public void ExplosionBigAtPosition (Vector3 explosionPosition, Color explosionColor)
+    public void ExplosionBigAtPosition(Vector3 explosionPosition, Color explosionColor)
     {
-        AudioManager.Instance.PlayAudioEnemy (tablesSounds.explosionBig);
-        var explosion = Instantiate (bigExplosion, explosionPosition, Quaternion.identity);
-        explosion.GetComponent<SpriteRenderer> ().color = explosionColor;
+        AudioManager.Instance.PlayAudioEnemy(tablesSounds.explosionBig);
+        var explosion = Instantiate(bigExplosion, explosionPosition, Quaternion.identity);
+        explosion.GetComponent<SpriteRenderer>().color = explosionColor;
     }
 
-    public void FinalBossKilled (Vector3 explosionPosition)
+    public void FinalBossKilled(Vector3 explosionPosition)
     {
-        StartCoroutine (FinalBossExplosionRoutine (explosionPosition));
+        StartCoroutine(FinalBossExplosionRoutine(explosionPosition));
     }
 
-    IEnumerator FinalBossExplosionRoutine (Vector3 explosionPosition)
+    IEnumerator FinalBossExplosionRoutine(Vector3 explosionPosition)
     {
-        AudioManager.Instance.PlayAudioEnemy (tablesSounds.explosionBig);
-        Instantiate (bigExplosion, explosionPosition, Quaternion.identity);
-        DropPowerUp (explosionPosition, BoostType.Points);
-        yield return new WaitForSeconds (0.3f);
+        AudioManager.Instance.PlayAudioEnemy(tablesSounds.explosionBig);
+        Instantiate(bigExplosion, explosionPosition, Quaternion.identity);
+        DropPowerUp(explosionPosition, BoostType.Points);
+        yield return new WaitForSeconds(0.3f);
         for (var x = 0; x < 10; x++)
         {
-            Vector3 randomPos = new Vector3 (Random.Range (-2f, 2f), Random.Range (-2f, 2f), 0);
-            AudioManager.Instance.PlayAudioEnemy (tablesSounds.explosionBig);
-            Instantiate (bigExplosion, explosionPosition + randomPos, Quaternion.identity);
-            DropPowerUp (explosionPosition, BoostType.Points);
-            yield return new WaitForSeconds (0.3f);
+            Vector3 randomPos = new Vector3(Random.Range(-2f, 2f), Random.Range(-2f, 2f), 0);
+            AudioManager.Instance.PlayAudioEnemy(tablesSounds.explosionBig);
+            Instantiate(bigExplosion, explosionPosition + randomPos, Quaternion.identity);
+            DropPowerUp(explosionPosition, BoostType.Points);
+            yield return new WaitForSeconds(0.3f);
         }
-        if (lives > 0) GameFinished ();
+        if (lives > 0) GameFinished();
     }
 
-    public void LoadNextLevel ()
+    public void LoadNextLevel()
     {
         if (lives == 0) return;
-        LoadLevel (++activeLevelNumber);
+        LoadLevel(++activeLevelNumber);
     }
 
-    void LoadLevel (int levelNumber)
+    void LoadLevel(int levelNumber)
     {
         Sprite background;
         float animationSpeed;
@@ -239,90 +239,98 @@ public class GameManager : MonoBehaviour
                 colorTextUI = Color.yellow;
                 break;
         }
-        EnemiesManager.Instance.LoadEnemies ();
+        EnemiesManager.Instance.LoadEnemies();
 
-        CanvasManager.Instance.SetBackground (background);
-        CanvasManager.Instance.SetLevelNumber (levelNumber);
-        CanvasManager.Instance.SetColorTextUI (colorTextUI);
-        CanvasManager.Instance.SetBarColor (GetColorByLevel (levelNumber));
-
+        CanvasManager.Instance.SetBackground(background);
+        CanvasManager.Instance.SetLevelNumber(levelNumber);
+        CanvasManager.Instance.SetColorTextUI(colorTextUI);
+        CanvasManager.Instance.SetBarColor(GetColorByLevel(levelNumber));
     }
 
-    public void LevelCompleted ()
+    public bool showStories = true;
+
+    public void LevelCompleted()
     {
         gameIsActive = false;
-        EnemiesManager.Instance.ClearAllEnemies ();
-        Invoke ("PlayerLevelUp", 1.2f);
-        Invoke ("ShowStory", 2.6f);
+        EnemiesManager.Instance.ClearAllEnemies();
+        Invoke("PlayerLevelUp", 1.2f);
+        Invoke("PrepareNextLevel", 2.6f);
+
         player.lastTimeAttackBoosted += 2.6f; // Para evitar desperdiciar el power-up entre escenas
         player.shield.nextTimeShutDownShield += 2.6f;
     }
 
-    void ShowStory ()
+    void PrepareNextLevel()
     {
-        CanvasManager.Instance.ShowStory (activeLevelNumber);
+        if (showStories) ShowStory();
+        else CanvasManager.Instance.BTN_StoryOK();
     }
 
-    public void PlayerLevelUp ()
+    void ShowStory()
     {
-        player.LevelUp ();
+        CanvasManager.Instance.ShowStory(activeLevelNumber);
     }
 
-    public void GameOver (bool playMusic)
+    public void PlayerLevelUp()
+    {
+        player.LevelUp();
+    }
+
+    public void GameOver(bool playMusic)
     {
         if (playMusic)
         {
-            AudioManager.Instance.StopMusic ();
-            AudioManager.Instance.PlayAudioPlayer (AudioManager.Instance.scriptableSounds.gameOverSFX);
+            AudioManager.Instance.StopMusic();
+            AudioManager.Instance.PlayAudioPlayer(AudioManager.Instance.scriptableSounds.gameOverSFX);
         }
 
-        player.gameObject.SetActive (false);
-        EnemiesManager.Instance.StopEnemies ();
+        player.gameObject.SetActive(false);
+        EnemiesManager.Instance.StopEnemies();
         gameIsActive = false;
-        CanvasManager.Instance.SendScore (gameData.userAlias, CanvasManager.Instance.score);
+        CanvasManager.Instance.SendScore(gameData.userAlias, CanvasManager.Instance.score);
     }
 
-    private void Update ()
+    private void Update()
     {
-        Controles ();
+        Controles();
     }
 
-    public void RestartLevel ()
+    public void RestartLevel()
     {
-        player.gameObject.SetActive (true);
-        EnemiesManager.Instance.Reset ();
+        player.gameObject.SetActive(true);
+        EnemiesManager.Instance.Reset();
     }
 
-    void SetLives (int livesAmount)
+    void SetLives(int livesAmount)
     {
-        CanvasManager.Instance.SetLivesNumber (livesAmount);
+        CanvasManager.Instance.SetLivesNumber(livesAmount);
         lives = livesAmount;
     }
 
-    public void LoseLives (int livesLost, float inmuneTime)
+    public void LoseLives(int livesLost, float inmuneTime)
     {
-        AudioManager.Instance.PlayPlayerDestroyed ();
+        AudioManager.Instance.PlayPlayerDestroyed();
         lives -= livesLost;
-        CanvasManager.Instance.SetLivesNumber (lives);
+        CanvasManager.Instance.SetLivesNumber(lives);
         if (lives > 0)
         {
-            StartCoroutine (player.InmuneTime (inmuneTime));
+            StartCoroutine(player.InmuneTime(inmuneTime));
         }
-        else GameOver (true);
+        else GameOver(true);
     }
 
-    public void GainLives (int newLives)
+    public void GainLives(int newLives)
     {
         lives += newLives;
-        CanvasManager.Instance.SetLivesNumber (lives);
+        CanvasManager.Instance.SetLivesNumber(lives);
     }
 
-    public int GetLevelNumber ()
+    public int GetLevelNumber()
     {
         return activeLevelNumber;
     }
 
-    Color GetColorByLevel (int levelNumber)
+    Color GetColorByLevel(int levelNumber)
     {
         Color color;
         switch (levelNumber)
@@ -347,63 +355,63 @@ public class GameManager : MonoBehaviour
         return color;
     }
 
-    public void DesactivateOnTime (GameObject go, float time)
+    public void DesactivateOnTime(GameObject go, float time)
     {
-        StartCoroutine (_DesactivateOnTime (go, time));
+        StartCoroutine(_DesactivateOnTime(go, time));
     }
 
-    IEnumerator _DesactivateOnTime (GameObject go, float time)
+    IEnumerator _DesactivateOnTime(GameObject go, float time)
     {
-        yield return new WaitForSeconds (time);
-        go.SetActive (false);
+        yield return new WaitForSeconds(time);
+        go.SetActive(false);
     }
 
-    public void GameFinished ()
+    public void GameFinished()
     {
-        AddScoreByTime ();
-        Invoke ("EndGame", 6.6f);
+        AddScoreByTime();
+        Invoke("EndGame", 6.6f);
     }
 
-    void AddScoreByTime ()
+    void AddScoreByTime()
     {
-        var score = (int) (300f - Time.timeSinceLevelLoad);
-        CanvasManager.Instance.AddScore (score);
+        var score = (int)(300f - Time.timeSinceLevelLoad);
+        CanvasManager.Instance.AddScore(score);
     }
 
-    IEnumerator ChangeLivesByPoints ()
+    IEnumerator ChangeLivesByPoints()
     {
         var totalLives = lives;
-        yield return new WaitForSeconds (3f);
+        yield return new WaitForSeconds(3f);
         for (var x = 0; x < totalLives; x++)
         {
-            AudioManager.Instance.PlayAudioPlayer (tablesSounds.lifeUp);
-            CanvasManager.Instance.SetLivesNumber (--lives);
-            CanvasManager.Instance.AddScore (1000);
-            yield return new WaitForSeconds (1f);
+            AudioManager.Instance.PlayAudioPlayer(tablesSounds.lifeUp);
+            CanvasManager.Instance.SetLivesNumber(--lives);
+            CanvasManager.Instance.AddScore(1000);
+            yield return new WaitForSeconds(1f);
         }
-        GameOver (false);
+        GameOver(false);
     }
 
-    void EndGame ()
+    void EndGame()
     {
-        AudioManager.Instance.StopMusic ();
-        AudioManager.Instance.PlayAudioPlayer (AudioManager.Instance.scriptableSounds.theWin);
+        AudioManager.Instance.StopMusic();
+        AudioManager.Instance.PlayAudioPlayer(AudioManager.Instance.scriptableSounds.theWin);
         gameIsActive = false;
-        StartCoroutine (ChangeLivesByPoints ());
+        StartCoroutine(ChangeLivesByPoints());
     }
 
-    public void ReloadScene ()
+    public void ReloadScene()
     {
-        SceneManager.LoadScene ("MainLevel");
+        SceneManager.LoadScene("MainLevel");
     }
 
-    public void Controles ()
+    public void Controles()
     {
-        if (Input.GetButtonDown ("Reset")) ReloadScene ();
+        if (Input.GetButtonDown("Reset")) ReloadScene();
 
-        if (Input.GetButton ("Shoot") || Input.GetButton ("ShootPad"))
+        if (Input.GetButton("Shoot") || Input.GetButton("ShootPad"))
         {
-            if (gameIsActive && lives > 0) player.Shoot ();
+            if (gameIsActive && lives > 0) player.Shoot();
         }
     }
 
