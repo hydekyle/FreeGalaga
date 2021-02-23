@@ -14,129 +14,130 @@ public class EnemiesManager : MonoBehaviour
     public Transform enemiesT;
     Vector3 defaultPosEnemies;
     Animator enemiesAnimator;
-    List<Enemy> enemiesList = new List<Enemy> ();
+    List<Enemy> enemiesList = new List<Enemy>();
     EZObjectPool explosionsPool;
     public AudioSource enemiesAudio;
 
     int forwardSteps = 0; // Veces que los enemigos han avanzado
     int enemiesleft = 0;
 
-    private void Awake ()
+    private void Awake()
     {
-        if (Instance) Destroy (this.gameObject);
+        if (Instance) Destroy(this.gameObject);
         Instance = this;
     }
 
-    private void Start ()
+    private void Start()
     {
-        Initialize ();
+        Initialize();
     }
 
-    public void AddEnemy (Enemy enemy)
+    public void AddEnemy(Enemy enemy)
     {
-        enemiesList.Add (enemy);
+        enemiesList.Add(enemy);
     }
 
-    public void ReloadShootCooldown ()
+    public void ReloadShootCooldown()
     {
-        foreach (var enemy in enemiesList) enemy?.GetShootOnCooldown ();
+        foreach (var enemy in enemiesList) enemy?.GetShootOnCooldown();
     }
 
-    void Initialize ()
+    void Initialize()
     {
         defaultPosEnemies = enemiesT.localPosition;
-        enemiesAnimator = enemiesT.parent.GetComponent<Animator> ();
-        explosionsPool = EZObjectPool.CreateObjectPool (explosionPrefab, "Explosiones", 12, true, true, true);
+        enemiesAnimator = enemiesT.parent.GetComponent<Animator>();
+        explosionsPool = EZObjectPool.CreateObjectPool(explosionPrefab, "Explosiones", 12, true, true, true);
     }
 
-    public void Reset ()
+    public void Reset()
     {
         forwardSteps = 0;
         enemiesT.parent.position = Vector3.zero;
         enemiesT.localPosition = defaultPosEnemies;
-        SetAnimationSpeed (GetLevelSpeed (GameManager.Instance.activeLevelNumber));
+        SetAnimationSpeed(GetLevelSpeed(GameManager.Instance.activeLevelNumber));
     }
 
-    public void EnemyTouchBottom ()
+    public void EnemyTouchBottom(Enemy enemy)
     {
-        RestartPositions ();
-        GameManager.Instance.LoseLives (1, 0.5f);
+        //RestartPositions();
+        //GameManager.Instance.LoseLives(1, 0.5f);
+        enemy.Die();
     }
 
-    public void RestartPositions ()
+    public void RestartPositions()
     {
-        StopEnemies ();
-        Reset ();
-        ReloadEnemies ();
+        StopEnemies();
+        Reset();
+        ReloadEnemies();
     }
 
-    public void ClearAllEnemies ()
+    public void ClearAllEnemies()
     {
         if (enemiesT.childCount > 0)
-            foreach (Transform t in enemiesT) Destroy (t.gameObject); // Destruye cualquier nivel activo
+            foreach (Transform t in enemiesT) Destroy(t.gameObject); // Destruye cualquier nivel activo
 
-        foreach (Enemy enemy in enemiesList) Destroy (enemy.gameObject); // Destruye cada enemigo
+        foreach (Enemy enemy in enemiesList) Destroy(enemy.gameObject); // Destruye cada enemigo
     }
 
-    public void LoadEnemies ()
+    public void LoadEnemies()
     {
-        StopEnemies ();
-        Reset ();
-        LoadEnemies (GameManager.Instance.activeLevelNumber);
+        StopEnemies();
+        Reset();
+        LoadEnemies(GameManager.Instance.activeLevelNumber);
     }
 
-    void LoadEnemies (int levelNumber)
+    void LoadEnemies(int levelNumber)
     {
-        var go = Instantiate (GetLevelPrefab (levelNumber), Vector3.zero, Quaternion.identity, enemiesT);
+        var go = Instantiate(GetLevelPrefab(levelNumber), Vector3.zero, Quaternion.identity, enemiesT);
         go.transform.localPosition = Vector3.zero;
         enemiesleft = go.transform.childCount;
-        enemiesAnimator.Play (GetAnimationName ());
+        enemiesAnimator.Play(GetAnimationName());
         enemiesAnimator.enabled = true;
-        SetAnimationSpeed (animationSpeed);
-        List<Enemy> newEnemiesList = new List<Enemy> ();
+        SetAnimationSpeed(animationSpeed);
+        List<Enemy> newEnemiesList = new List<Enemy>();
         foreach (Transform t in go.transform)
         {
-            if (t.TryGetComponent (out Enemy newEnemy)) newEnemiesList.Add (newEnemy);
+            if (t.TryGetComponent(out Enemy newEnemy)) newEnemiesList.Add(newEnemy);
         }
-        enemiesleft += newEnemiesList.FindAll (e => e.defaultBehavior == EnemyBehavior.Leader).Count * 4;
+        enemiesleft += newEnemiesList.FindAll(e => e.defaultBehavior == EnemyBehavior.Leader).Count * 4;
         enemiesList = newEnemiesList;
-        GameManager.Instance.AddRandomPowerUps (enemiesList);
+        GameManager.Instance.AddRandomPowerUps(enemiesList);
         GameManager.Instance.gameIsActive = true;
     }
 
-    void ReloadEnemies ()
+    void ReloadEnemies()
     {
-        List<Enemy> newEnemies = new List<Enemy> ();
-        var enemiesAlive = enemiesList.FindAll (enemy => enemy.alive);
-        print (enemiesAlive.Count);
+        List<Enemy> newEnemies = new List<Enemy>();
+        var enemiesAlive = enemiesList.FindAll(enemy => enemy.alive);
+        print(enemiesAlive.Count);
 
         var levelNumber = GameManager.Instance.activeLevelNumber;
-        var go = Instantiate (GetLevelPrefab (levelNumber), Vector3.zero, Quaternion.identity);
+        var go = Instantiate(GetLevelPrefab(levelNumber), Vector3.zero, Quaternion.identity);
 
-        foreach (Transform t in go.transform) t.gameObject.SetActive (false); // Desactivar todos del nuevo GO
+        foreach (Transform t in go.transform) t.gameObject.SetActive(false); // Desactivar todos del nuevo GO
 
         foreach (Enemy enemy in enemiesAlive)
         {
             if (enemy.ID == "4C") return;
-            var newEnemyT = go.transform.Find (enemy.transform.name);
-            newEnemyT.gameObject.SetActive (true); // Activar sólo los que quedaron vivos
-            newEnemies.Add (newEnemyT.GetComponent<Enemy> ());
+            var newEnemyT = go.transform.Find(enemy.transform.name);
+            newEnemyT.gameObject.SetActive(true); // Activar sólo los que quedaron vivos
+            newEnemies.Add(newEnemyT.GetComponent<Enemy>());
         }
 
-        ClearAllEnemies ();
+        ClearAllEnemies();
 
-        go.transform.SetParent (enemiesT);
+        go.transform.SetParent(enemiesT);
 
         enemiesList = newEnemies;
 
         go.transform.localPosition = Vector3.zero;
-        enemiesAnimator.Play (GetAnimationName ());
+        enemiesAnimator.Play(GetAnimationName());
         enemiesAnimator.enabled = true;
-        SetAnimationSpeed (animationSpeed);
+        SetAnimationSpeed(animationSpeed);
         GameManager.Instance.gameIsActive = true;
     }
 
-    GameObject GetLevelPrefab (int levelNumber)
+    GameObject GetLevelPrefab(int levelNumber)
     {
         GameObject levelPrefab;
         switch (levelNumber)
@@ -161,7 +162,7 @@ public class EnemiesManager : MonoBehaviour
         return levelPrefab;
     }
 
-    float GetLevelSpeed (int levelNumber)
+    float GetLevelSpeed(int levelNumber)
     {
         float value;
         switch (levelNumber)
@@ -185,12 +186,12 @@ public class EnemiesManager : MonoBehaviour
         return value;
     }
 
-    public void StepForward ()
+    public void StepForward()
     {
-        StartCoroutine (MoveForwardEnemies ());
+        StartCoroutine(MoveForwardEnemies());
     }
 
-    IEnumerator MoveForwardEnemies ()
+    IEnumerator MoveForwardEnemies()
     {
         float actualSpeed = animationSpeed;
         enemiesAnimator.enabled = false;
@@ -199,69 +200,69 @@ public class EnemiesManager : MonoBehaviour
         Vector3 targetPos = Vector3.down * forwardSteps / 3f;
         while (v < 1f)
         {
-            transform.position = Vector3.Lerp (transform.position, targetPos, v / 10);
+            transform.position = Vector3.Lerp(transform.position, targetPos, v / 10);
             v += Time.deltaTime * actualSpeed;
-            yield return new WaitForEndOfFrame ();
+            yield return new WaitForEndOfFrame();
         }
         transform.position = targetPos;
         enemiesAnimator.enabled = true;
     }
 
-    public void StopEnemies ()
+    public void StopEnemies()
     {
         enemiesAnimator.speed = 0;
-        StopAllCoroutines ();
+        StopAllCoroutines();
     }
 
     int crazyEnemiesTotal = 0;
-    public void MakeCrazyEnemy ()
+    public void MakeCrazyEnemy()
     {
-        var lista = enemiesList.FindAll (e => e.alive == true);
-        lista = lista.FindAll (e => e.activeBehavior == EnemyBehavior.None);
+        var lista = enemiesList.FindAll(e => e.alive == true);
+        lista = lista.FindAll(e => e.activeBehavior == EnemyBehavior.None);
         if (lista.Count == 0) return;
 
-        var enemy = lista [Random.Range (0, lista.Count)];
-        enemy.SetBehavior (enemy.defaultBehavior);
+        var enemy = lista[Random.Range(0, lista.Count)];
+        enemy.SetBehavior(enemy.defaultBehavior);
 
         // Esta parte solo es para el nivel 4
         if (GameManager.Instance.activeLevelNumber == 4 && crazyEnemiesTotal % 2 == 0)
         {
-            var laLista = enemiesList.FindAll (leader => leader.defaultBehavior == EnemyBehavior.Leader)?.FindAll (alive => alive.alive)?.FindAll (leader => leader.activeBehavior == EnemyBehavior.Shooter);
-            if (laLista.Count > 0) laLista [Random.Range (0, laLista.Count)].SetBehavior (EnemyBehavior.Leader);
+            var laLista = enemiesList.FindAll(leader => leader.defaultBehavior == EnemyBehavior.Leader)?.FindAll(alive => alive.alive)?.FindAll(leader => leader.activeBehavior == EnemyBehavior.Shooter);
+            if (laLista.Count > 0) laLista[Random.Range(0, laLista.Count)].SetBehavior(EnemyBehavior.Leader);
         }
         crazyEnemiesTotal++;
     }
 
-    public void SetAnimationSpeed (float speed)
+    public void SetAnimationSpeed(float speed)
     {
         animationSpeed = speed;
         enemiesAnimator.speed = animationSpeed;
     }
 
-    bool IsFinalLevel ()
+    bool IsFinalLevel()
     {
         return GameManager.Instance.activeLevelNumber == 5;
     }
 
-    public void EnemyDestroyed (Enemy enemy)
+    public void EnemyDestroyed(Enemy enemy)
     {
-        if (explosionsPool.TryGetNextObject (enemy.transform.position, Quaternion.identity, out GameObject explosionGO))
+        if (explosionsPool.TryGetNextObject(enemy.transform.position, Quaternion.identity, out GameObject explosionGO))
         {
-            GameManager.Instance.DesactivateOnTime (explosionGO, 0.06f);
+            GameManager.Instance.DesactivateOnTime(explosionGO, 0.06f);
         }
-        AudioManager.Instance.PlayEnemyExplosionLow ();
+        AudioManager.Instance.PlayEnemyExplosionLow();
 
-        if (!IsFinalLevel ())
+        if (!IsFinalLevel())
         {
             enemiesleft--;
-            if (enemiesleft % 3 == 0) MakeCrazyEnemy ();
-            if (enemiesleft % 10 == 0) SetAnimationSpeed (animationSpeed + 0.5f);
-            if (enemiesleft == 0) GameManager.Instance.LevelCompleted ();
-            else if (enemiesleft == 1) SetAnimationSpeed (animationSpeed * 2);
+            if (enemiesleft % 3 == 0) MakeCrazyEnemy();
+            if (enemiesleft % 10 == 0) SetAnimationSpeed(animationSpeed + 0.5f);
+            if (enemiesleft == 0) GameManager.Instance.LevelCompleted();
+            else if (enemiesleft == 1) SetAnimationSpeed(animationSpeed * 2);
         }
     }
 
-    string GetAnimationName ()
+    string GetAnimationName()
     {
         var level = GameManager.Instance.activeLevelNumber;
         string animName = level != 3 ? "Enemies" : "EnemiesVariant";

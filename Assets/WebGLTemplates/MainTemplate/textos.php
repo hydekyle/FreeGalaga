@@ -14,28 +14,22 @@ Si estás seguro de tener las habilidades y capacidades para ser parte de nuestr
     
     $nivel1 = 
     "
-Para lograr esta batalla cuentas con 3 vidas para completar los 5 Cyber Levels.
-Además, contarás con Power Ups que te ayudarán a vencer más fácil a las naves enemigas.
- 
-En este primer nivel, tu nave es una X-Basic Prototype, por lo cual, deberás poner tus capacidades y sentidos al máximo para detener a los Cyber Invaders que vienen de avanzada.
-¡No olvides recargar tus Power Ups!
+Nivel 1
     ";
 
     $nivel2 = 
     "
-¡Lo has hecho muy bien!, y por eso, para este nivel, te hemos designado una de nuestras mejores naves; la TX-2020, equipada con mayor velocidad de movimiento y un arma ultra letal y de rápidas descargas.
-Recuerda: un buen Code Pilot nunca se confía. ¡Mantente alerta!, pues en este nivel, las naves del malware serán más difíciles de vencer.
+Nivel 2
     ";
 
     $nivel3 = 
     "
-Sin duda, eres uno de nuestros mejores pilotos, por eso, tu siguiente misión es el Cyber Level 3, una difícil prueba a tu fuerza interior, pues tendrás que estar atento a un nuevo patrón de ataque y blindaje de las oscuras fuerzas del mal.
-Recuerda recargar tus Power Ups.
+Nivel 3
     ";
 
     $nivel4 =
     "
-Por haber llegado a hasta este nivel, recibirás el rango de Code Captain, porque ahora, te enfrentarás a un escuadrón de Cyber Invaders más inteligentes y organizados, por lo cual, la intuición y la velocidad serán tu mejor arma.
+Nivel 4
     ";
 
     $nivel5 = 

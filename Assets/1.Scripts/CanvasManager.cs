@@ -146,22 +146,15 @@ public class CanvasManager : MonoBehaviour
         return spritesAvatar[selected]; // El avatar 01 se corresponde con la posición 0
     }
 
-    public void LoadUserData(User userData)
+    public void LoadUserDataAndShowMenu(User userData)
     {
-        if (int.Parse(userData.intentos) == 3)
+        GameManager.Instance.intentos = int.Parse(userData.intentos);
+        StartCoroutine(NetworkManager.GetStories(stories =>
         {
-            StartCoroutine(NetworkManager.GetStories(stories =>
-            {
-                storiesList = stories;
-                informationText.text = stories[stories.Count - 1];
-                SetUserDataAndStartMenu(userData);
-            }));
-        }
-        else
-        {
-            GameManager.Instance.showStories = false;
+            storiesList = stories;
+            informationText.text = stories[stories.Count - 1];
             SetUserDataAndStartMenu(userData);
-        }
+        }));
     }
 
     private void SetUserDataAndStartMenu(User userData)
@@ -176,13 +169,23 @@ public class CanvasManager : MonoBehaviour
 
     public void BTN_Start()
     {
-        StartCoroutine(NetworkManager.ConsumeIntento(GameManager.Instance.alias, () =>
-      {
-          startMenu.SetActive(false);
-          bar.SetActive(true);
-          if (GameManager.Instance.showStories) ShowStory(-1);
-          else BTN_StoryOK();
-      }));
+
+        if (!GameManager.Instance.debugMode && GameManager.Instance.intentos > 0)
+            StartCoroutine(NetworkManager.ConsumeIntento(GameManager.Instance.alias, () => StartGame()));
+        else
+            StartGame();
+    }
+
+    private void StartGame()
+    {
+        startMenu.SetActive(false);
+        bar.SetActive(true);
+        if (GameManager.Instance.intentos == 3) ShowStory(-1); // Mostrar solo la primera historia la primera partida
+        else
+        {
+            FadeOutMainStory();
+            BTN_StoryOK();
+        }
     }
 
     public void ShowStory(int number)
@@ -194,10 +197,15 @@ public class CanvasManager : MonoBehaviour
 
     public void BTN_CloseMainStory()
     {
+        FadeOutMainStory();
+        ShowStory(0);
+    }
+
+    private void FadeOutMainStory()
+    {
         storyImage.SetActive(false);
         mainStoryButton.SetActive(false);
         mainStoryButton.transform.parent.Find("Button_Next").GetComponent<Button>().interactable = true;
-        ShowStory(0);
     }
 
     public void ShowGameover()
@@ -251,7 +259,6 @@ public class CanvasManager : MonoBehaviour
         {
             starsParent.GetChild(x).GetComponent<Image>().sprite = spriteStarON;
         }
-        if (stars == 0) startButton.interactable = false;
     }
 
     public Sprite GetSpriteAvatar(string avatarURL)

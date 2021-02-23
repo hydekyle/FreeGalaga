@@ -20,57 +20,57 @@ public class Player : MonoBehaviour
     public bool vulnerable = true;
     float attackBoostTime = 7f;
 
-    private void Start ()
+    private void Start()
     {
-        Initialize ();
+        Initialize();
     }
 
-    void Initialize ()
+    void Initialize()
     {
         bulletMaterial.color = Color.white;
         minPosX = GameManager.Instance.minPosX;
         maxPosX = GameManager.Instance.maxPosX;
-        spriteRenderer = GetComponent<SpriteRenderer> ();
-        myCollider = GetComponent<BoxCollider2D> ();
-        gunPoint = transform.Find ("GunPoint");
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        myCollider = GetComponent<BoxCollider2D>();
+        gunPoint = transform.Find("GunPoint");
         shotAudioClip = AudioManager.Instance.scriptableSounds.basicShot;
-        SetBulletsPool (0);
+        SetBulletsPool(0);
     }
 
-    void SetBulletsPool (int level)
+    void SetBulletsPool(int level)
     {
         if (level > GameManager.Instance.tablesEtc.disparosJugador.Count) return;
-        playerShots?.ClearPool ();
-        var newShotPrefab = GameManager.Instance.tablesEtc.disparosJugador [level];
-        playerShots = EZObjectPool.CreateObjectPool (newShotPrefab, "PlayerShots" + level, 15, true, true, true);
+        playerShots?.ClearPool();
+        var newShotPrefab = GameManager.Instance.tablesEtc.disparosJugador[level];
+        playerShots = EZObjectPool.CreateObjectPool(newShotPrefab, "PlayerShots" + level, 15, true, true, true);
     }
 
-    void Update ()
+    void Update()
     {
-        Vector3 deltaPosition = new Vector3 (Mathf.Clamp (Input.GetAxis ("Horizontal"), -1f, 1f), Mathf.Clamp (Input.GetAxis ("Vertical"), -1f, 1f), 0);
+        Vector3 deltaPosition = new Vector3(Mathf.Clamp(Input.GetAxis("Horizontal"), -1f, 1f), Mathf.Clamp(Input.GetAxis("Vertical"), -1f, 1f), 0);
         transform.position += deltaPosition * Time.deltaTime * stats.movementVelocity;
-        transform.position = new Vector3 (Mathf.Clamp (transform.position.x, minPosX, maxPosX), Mathf.Clamp (transform.position.y, minPosY, maxPosY), 0);
+        transform.position = new Vector3(Mathf.Clamp(transform.position.x, minPosX, maxPosX), Mathf.Clamp(transform.position.y, minPosY, maxPosY), 0);
 
-        if (isAttackBoosted && Time.time > lastTimeAttackBoosted + attackBoostTime) DesactivateAttackBoost ();
+        if (isAttackBoosted && Time.time > lastTimeAttackBoosted + attackBoostTime) DesactivateAttackBoost();
         else
         {
-            float fillValue = Mathf.Clamp ((lastTimeAttackBoosted + attackBoostTime - Time.time) * 2 / 10f, 0f, 1f);
-            CanvasManager.Instance.SetFillBoostIcon (fillValue);
+            float fillValue = Mathf.Clamp((lastTimeAttackBoosted + attackBoostTime - Time.time) * 2 / 10f, 0f, 1f);
+            CanvasManager.Instance.SetFillBoostIcon(fillValue);
         }
     }
 
-    public void Shoot ()
+    public void Shoot()
     {
-        if (isShootAvailable () && playerShots.TryGetNextObject (GetGunPosition (), Quaternion.identity, out GameObject go))
+        if (isShootAvailable() && playerShots.TryGetNextObject(GetGunPosition(), Quaternion.identity, out GameObject go))
         {
-            go.GetComponent<Rigidbody2D> ().velocity = Vector2.up * stats.shootSpeed * 10;
+            go.GetComponent<Rigidbody2D>().velocity = Vector2.up * stats.shootSpeed * 10;
             lastTimeShot = Time.time;
-            AudioManager.Instance.PlayPlayerShot ();
+            AudioManager.Instance.PlayPlayerShot();
         }
     }
 
     bool lastShootRight;
-    Vector3 GetGunPosition ()
+    Vector3 GetGunPosition()
     {
         if (playerLevel == 4)
         {
@@ -80,29 +80,29 @@ public class Player : MonoBehaviour
         return gunPoint.transform.position;
     }
 
-    bool isShootAvailable ()
+    bool isShootAvailable()
     {
         return Time.time > lastTimeShot + 0.4f / stats.shootCooldown / (isAttackBoosted ? 2 : 1);
     }
 
-    void GetStrike ()
+    void GetStrike()
     {
         vulnerable = false;
-        GameManager.Instance.LoseLives (1, 1.5f);
+        GameManager.Instance.LoseLives(1, 1.5f);
     }
 
-    public IEnumerator InmuneTime (float inmuneTime)
+    public IEnumerator InmuneTime(float inmuneTime)
     {
         var lastLevel = GameManager.Instance.activeLevelNumber;
         var lastSpeed = EnemiesManager.Instance.animationSpeed;
 
-        StartCoroutine (BlinkTime (inmuneTime));
-        yield return new WaitForSeconds (inmuneTime);
+        StartCoroutine(BlinkTime(inmuneTime));
+        yield return new WaitForSeconds(inmuneTime);
 
         vulnerable = true; // El collider se desactiva antes de entrar en la Corutina para evitar múltiples hits.
     }
 
-    public IEnumerator BlinkTime (float blinkTime)
+    public IEnumerator BlinkTime(float blinkTime)
     {
         //var startTime = Time.time;
         var endTime = Time.time + blinkTime;
@@ -113,62 +113,62 @@ public class Player : MonoBehaviour
         while (Time.time < endTime)
         {
             spriteRenderer.color = spriteRenderer.color == invisibleColor ? defaultColor : invisibleColor;
-            yield return new WaitForSeconds (0.12f);
+            yield return new WaitForSeconds(0.12f);
         }
         spriteRenderer.color = Color.white;
     }
 
-    public void LevelUp ()
+    public void LevelUp()
     {
         if (GameManager.Instance.lives == 0) return;
-        AudioManager.Instance.PlayPlayerLevelUp ();
+        AudioManager.Instance.PlayPlayerLevelUp();
         playerLevel++;
         stats.movementVelocity += 0.75f;
         stats.shootSpeed += 1;
         stats.shootCooldown += 1;
         stats.damage += 1;
 
-        SetBulletsPool (playerLevel - 1);
+        SetBulletsPool(playerLevel - 1);
 
         try
         {
-            GetComponent<SpriteRenderer> ().sprite = GameManager.Instance.tablesEtc.navesJugador [playerLevel - 1];
+            GetComponent<SpriteRenderer>().sprite = GameManager.Instance.tablesEtc.navesJugador[playerLevel - 1];
 
         }
         catch
         { }
     }
 
-    void GetShield ()
+    void GetShield()
     {
-        AudioManager.Instance.PlayAudioPlayer (GameManager.Instance.tablesSounds.lifeUp);
-        shield.ActivateShield ();
+        AudioManager.Instance.PlayAudioPlayer(GameManager.Instance.tablesSounds.lifeUp);
+        shield.ActivateShield();
     }
 
-    void GetPoints ()
+    void GetPoints()
     {
-        AudioManager.Instance.PlayAudioPlayer (GameManager.Instance.tablesSounds.lifeUp);
-        CanvasManager.Instance.AddScore (1000);
+        AudioManager.Instance.PlayAudioPlayer(GameManager.Instance.tablesSounds.lifeUp);
+        CanvasManager.Instance.AddScore(1000);
     }
 
-    void GetHealth ()
+    void GetHealth()
     {
-        AudioManager.Instance.PlayAudioPlayer (GameManager.Instance.tablesSounds.lifeUp);
-        GameManager.Instance.GainLives (1);
+        AudioManager.Instance.PlayAudioPlayer(GameManager.Instance.tablesSounds.lifeUp);
+        GameManager.Instance.GainLives(1);
     }
 
     public Material bulletMaterial;
 
-    void GetAttackBoost ()
+    void GetAttackBoost()
     {
-        AudioManager.Instance.PlayAudioPlayer (GameManager.Instance.tablesSounds.lifeUp);
+        AudioManager.Instance.PlayAudioPlayer(GameManager.Instance.tablesSounds.lifeUp);
         //stats.shootCooldown++;
         lastTimeAttackBoosted = Time.time;
         isAttackBoosted = true;
         bulletMaterial.color = Color.red;
     }
 
-    void DesactivateAttackBoost ()
+    void DesactivateAttackBoost()
     {
         isAttackBoosted = false;
         bulletMaterial.color = Color.white;
@@ -181,45 +181,45 @@ public class Player : MonoBehaviour
     //     return Time.time < lastTimeAttackBoosted + 6.66f;
     // }
 
-    private void OnTriggerStay2D (Collider2D other)
+    private void OnTriggerStay2D(Collider2D other)
     {
-        if (other.CompareTag ("Enemy"))
+        if (other.CompareTag("Enemy"))
         {
             if (vulnerable)
             {
-                if (other.TryGetComponent (out Enemy enemy))
+                if (other.TryGetComponent(out Enemy enemy))
                 {
-                    enemy.Erase ();
-                    GetStrike ();
+                    enemy.Die();
+                    GetStrike();
                 }
             }
         }
-        else if (other.CompareTag ("EnemyShot"))
+        else if (other.CompareTag("EnemyShot"))
         {
             if (!vulnerable) return;
-            other.gameObject.SetActive (false);
-            GetStrike ();
-            EnemiesManager.Instance.ReloadShootCooldown ();
+            other.gameObject.SetActive(false);
+            GetStrike();
+            EnemiesManager.Instance.ReloadShootCooldown();
         }
-        else if (other.CompareTag ("PowerUp"))
+        else if (other.CompareTag("PowerUp"))
         {
-            var boostType = other.GetComponent<PowerUp> ().boostType;
+            var boostType = other.GetComponent<PowerUp>().boostType;
             switch (boostType)
             {
                 case BoostType.Shield:
-                    GetShield ();
+                    GetShield();
                     break;
                 case BoostType.Points:
-                    GetPoints ();
+                    GetPoints();
                     break;
                 case BoostType.AttackSpeed:
-                    GetAttackBoost ();
+                    GetAttackBoost();
                     break;
                 case BoostType.Health:
-                    GetHealth ();
+                    GetHealth();
                     break;
             }
-            Destroy (other.gameObject);
+            Destroy(other.gameObject);
         }
     }
 

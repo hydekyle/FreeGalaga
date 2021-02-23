@@ -8,52 +8,52 @@ public class Shield : MonoBehaviour
     Player player;
     SpriteRenderer spriteRenderer;
 
-    private void Start ()
+    private void Start()
     {
         player = GameManager.Instance.player;
-        spriteRenderer = GetComponent<SpriteRenderer> ();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    private void Update ()
+    private void Update()
     {
-        spriteRenderer.color = Color.Lerp (spriteRenderer.color, Color.white, Time.deltaTime * 6.66f);
-        if (gameObject.activeSelf && Time.time > nextTimeShutDownShield) DesactivateShield ();
+        spriteRenderer.color = Color.Lerp(spriteRenderer.color, Color.white, Time.deltaTime * 6.66f);
+        if (gameObject.activeSelf && Time.time > nextTimeShutDownShield) DesactivateShield();
         else
         {
-            float fillValue = Mathf.Clamp ((nextTimeShutDownShield - Time.time) * 2 / 10f, 0f, 1f);
-            CanvasManager.Instance.SetFillShieldIcon (fillValue);
+            float fillValue = Mathf.Clamp((nextTimeShutDownShield - Time.time) * 2 / 10f, 0f, 1f);
+            CanvasManager.Instance.SetFillShieldIcon(fillValue);
         }
     }
 
-    public void ActivateShield ()
+    public void ActivateShield()
     {
-        gameObject.SetActive (true);
+        gameObject.SetActive(true);
         nextTimeShutDownShield = Time.time + 15f;
     }
 
-    public void DesactivateShield ()
+    public void DesactivateShield()
     {
-        CanvasManager.Instance.SetFillShieldIcon (0f);
-        gameObject.SetActive (false);
+        CanvasManager.Instance.SetFillShieldIcon(0f);
+        gameObject.SetActive(false);
     }
 
-    void GetStrike ()
+    void GetStrike()
     {
         spriteRenderer.color = Color.red;
         nextTimeShutDownShield -= 1.5f;
     }
 
-    private void OnTriggerEnter2D (Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag ("EnemyShot"))
+        if (other.CompareTag("EnemyShot"))
         {
-            other.gameObject.SetActive (false);
-            GetStrike ();
+            other.gameObject.SetActive(false);
+            GetStrike();
         }
-        else if (other.CompareTag ("Enemy"))
+        else if (other.CompareTag("Enemy"))
         {
-            other.GetComponent<Enemy> ().Die ();
-            GetStrike ();
+            other.GetComponent<Enemy>().DestroyedByPlayer();
+            GetStrike();
         }
     }
 }

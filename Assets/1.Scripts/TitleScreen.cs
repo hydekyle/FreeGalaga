@@ -13,9 +13,14 @@ public class TitleScreen : MonoBehaviour
 
     public GameObject historyGO;
 
-    public void BTN_Play ()
+    private void Start()
     {
-        StartGame ();
+        Invoke("StartGame", 3f);
+    }
+
+    public void BTN_Play()
+    {
+        StartGame();
         // if (!loading)
         // {
         //     image.sprite = historySprite;
@@ -24,15 +29,15 @@ public class TitleScreen : MonoBehaviour
         // }
     }
 
-    public void BTN_PlayNow ()
+    public void BTN_PlayNow()
     {
-        StartGame ();
+        StartGame();
     }
 
-    void StartGame ()
+    void StartGame()
     {
-        titleImage.color = new Color (255f, 255f, 255f, 0.5f);
-        SceneManager.LoadScene ("MainLevel");
+        titleImage.color = new Color(255f, 255f, 255f, 0.5f);
+        SceneManager.LoadScene("MainLevel");
     }
 
 }

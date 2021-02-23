@@ -39,6 +39,8 @@ public class GameManager : MonoBehaviour
     public GameData gameData = new GameData();
     public GameConfig gameConfig = new GameConfig();
 
+    public bool debugMode = false;
+
     private void Awake()
     {
         if (Instance) Destroy(this.gameObject);
@@ -56,21 +58,26 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        //CheckGameLegality ();
         LoadGameConfig();
+        if (!debugMode) GetUserData();
+        else LoadTestMode();
     }
 
-    // private void CheckGameLegality ()
-    // {
-    //     StartCoroutine (NetworkManager.CheckLegality (isLegal =>
-    //     {
-    //         if (isLegal) LoadGameConfig ();
-    //     }));
-    // }
+    private void LoadTestMode()
+    {
+        User testUser = new User()
+        {
+            alias = "testUser",
+            avatar = "",
+            intentos = "0",
+            score = "666"
+        };
+        CanvasManager.Instance.LoadUserDataAndShowMenu(testUser);
+    }
 
     private void LoadGameConfig()
     {
-        if (!Application.isEditor)
+        if (!Application.isEditor) // Playing from WebGL
         {
             var baseURL = Application.absoluteURL;
             gameData.getHighScoresURL = baseURL + "scores.php";
@@ -91,7 +98,6 @@ public class GameManager : MonoBehaviour
         {
             lives_per_credit = 3
         };
-        GetUserData();
     }
 
     public string alias = "";
@@ -106,8 +112,7 @@ public class GameManager : MonoBehaviour
             StartCoroutine(NetworkManager.GetUserData(alias, userData =>
           {
               gameData.userAlias = userData.alias;
-              intentos = int.Parse(userData.intentos);
-              CanvasManager.Instance.LoadUserData(userData);
+              CanvasManager.Instance.LoadUserDataAndShowMenu(userData);
           }));
         }
         else

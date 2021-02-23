@@ -6,12 +6,12 @@ public class GameOverArea : MonoBehaviour
 {
     float lastTimeEntered;
 
-    private void OnTriggerEnter2D (Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag ("Enemy") && Time.time > lastTimeEntered + 1)
+        if (other.CompareTag("Enemy"))
         {
-            if (other.GetComponent<Enemy> ().ID == "4C") return;
-            EnemiesManager.Instance.EnemyTouchBottom ();
+            if (other.GetComponent<Enemy>().ID == "4C") return;
+            EnemiesManager.Instance.EnemyTouchBottom(other.GetComponent<Enemy>());
             lastTimeEntered = Time.time;
         }
     }
