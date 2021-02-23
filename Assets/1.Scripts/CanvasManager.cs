@@ -66,11 +66,12 @@ public class CanvasManager : MonoBehaviour
 
     public void SendScore(string alias, int score)
     {
+        GameSession.Instance.GameFinished();
         StartCoroutine(NetworkManager.SendHighScore(alias, score, onEnded =>
-      {
-          myHighScore = score; // Cachear high score para compartir en FB
-          ShowHighScores();
-      }));
+        {
+            myHighScore = score; // Cachear high score para compartir en FB
+            ShowHighScores();
+        }));
     }
 
     public void ShowHighScores()
@@ -180,7 +181,7 @@ public class CanvasManager : MonoBehaviour
     {
         startMenu.SetActive(false);
         bar.SetActive(true);
-        if (GameManager.Instance.intentos == 3) ShowStory(-1); // Mostrar solo la primera historia la primera partida
+        if (GameSession.Instance.IsFirstGame()) ShowStory(-1); // Mostrar solo la primera historia la primera partida
         else
         {
             FadeOutMainStory();
@@ -190,9 +191,16 @@ public class CanvasManager : MonoBehaviour
 
     public void ShowStory(int number)
     {
+        if (number > -1) DisableStoryButton();
         storyText.text = storiesList[number + 1];
         storiesUI.SetActive(true);
         Time.timeScale = 0f;
+    }
+
+    void DisableStoryButton()
+    {
+        mainStoryButton.gameObject.SetActive(false);
+        Invoke("BTN_StoryOK", 1.2f);
     }
 
     public void BTN_CloseMainStory()
