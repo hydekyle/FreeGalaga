@@ -19,7 +19,6 @@ public class CanvasManager : MonoBehaviour
     public Transform starsParent;
     public GameObject startMenu;
     public Sprite spriteStarON;
-    public Button startButton;
     public GameObject bar;
     public TextMeshProUGUI textHighScore;
     public TextMeshProUGUI textAlias;
@@ -29,8 +28,8 @@ public class CanvasManager : MonoBehaviour
     public GameObject storiesUI;
     public TextMeshProUGUI informationText;
     public TextMeshProUGUI storyText;
-    public List<string> storiesList = new List<string>();
     public GameObject storyImage, mainStoryButton;
+    public Button nextButton;
 
     private void Awake()
     {
@@ -41,14 +40,6 @@ public class CanvasManager : MonoBehaviour
     private void Start()
     {
         SetLivesNumber(GameManager.Instance.lives);
-    }
-
-    private void Update()
-    {
-        if (Input.GetButtonDown("ShootPad") && storiesUI.activeSelf)
-        {
-            BTN_StoryOK();
-        }
     }
 
     public void SetFillBoostIcon(float fillValue)
@@ -109,6 +100,12 @@ public class CanvasManager : MonoBehaviour
         GameManager.Instance.retryAvailable = true;
     }
 
+    public void LoseScore(int value)
+    {
+        score = score - value > 0 ? score - value : 0;
+        scoreText.text = score.ToString();
+    }
+
     public void AddScore(int value)
     {
         score += value;
@@ -150,17 +147,48 @@ public class CanvasManager : MonoBehaviour
     public void LoadUserDataAndShowMenu(User userData)
     {
         GameManager.Instance.intentos = int.Parse(userData.intentos);
-        StartCoroutine(NetworkManager.GetStories(stories =>
+        StartCoroutine(NetworkManager.GetGameConfiguration(gameConfig =>
         {
-            storiesList = stories;
-            informationText.text = stories[stories.Count - 1];
+            informationText.text = gameConfig.stories[gameConfig.stories.Count - 1];
             SetUserDataAndStartMenu(userData);
+            GameManager.Instance.SetGameConfiguration(gameConfig);
         }));
+    }
+
+    public void LoadUserDataAndShowMenuDebug(User userData)
+    {
+        GameManager.Instance.intentos = int.Parse(userData.intentos);
+        var stories = GetDebugStories();
+        informationText.text = stories[stories.Count - 1];
+        SetUserDataAndStartMenu(userData);
+        GameManager.Instance.gameConfiguration = new GameConfiguration()
+        {
+            livesPerCredit = 66,
+            finalBossHealth = 20,
+            miniBossHealth = 100,
+            playerAttackSpeed = 10,
+            playerMovementSpeed = 10,
+            stories = stories,
+            storyLevelWaitTime = 20
+        };
+    }
+
+    List<string> GetDebugStories()
+    {
+        return new List<string>(){
+            "Story -1",
+            "Story 0",
+            "Story 1",
+            "Story 2",
+            "Story 3",
+            "Story 4",
+            "Story Information"
+        };
     }
 
     private void SetUserDataAndStartMenu(User userData)
     {
-        SetStars(int.Parse(userData.intentos));
+        //SetStars(int.Parse(userData.intentos));
         SetScore(int.Parse(userData.score));
         avatarHolder.sprite = GetSpriteAvatar(userData.avatar);
 
@@ -181,32 +209,42 @@ public class CanvasManager : MonoBehaviour
     {
         startMenu.SetActive(false);
         bar.SetActive(true);
-        if (GameSession.Instance.IsFirstGame()) ShowStory(-1); // Mostrar solo la primera historia la primera partida
+        if (GameSession.Instance.IsFirstGame()) ShowMainStory(); // Mostrar solo la primera historia la primera partida
         else
         {
             FadeOutMainStory();
-            BTN_StoryOK();
+            BTN_Next();
         }
     }
 
-    public void ShowStory(int number)
+    void ShowMainStory()
     {
-        if (number > -1) DisableStoryButton();
-        storyText.text = storiesList[number + 1];
+        storyText.text = GameManager.Instance.gameConfiguration.stories[0];
         storiesUI.SetActive(true);
-        Time.timeScale = 0f;
+    }
+
+    public void ShowLevelStory(int number)
+    {
+        storyText.text = GameManager.Instance.gameConfiguration.stories[number + 1];
+        storiesUI.SetActive(true);
+        Invoke(nameof(BTN_Next), GameManager.Instance.gameConfiguration.storyLevelWaitTime / 10f);
     }
 
     void DisableStoryButton()
     {
         mainStoryButton.gameObject.SetActive(false);
-        Invoke("BTN_StoryOK", 1.2f);
     }
 
     public void BTN_CloseMainStory()
     {
         FadeOutMainStory();
-        ShowStory(0);
+        ShowLevelStory(0);
+    }
+
+    IEnumerator WaitSeconds(float seconds, Action onEnded)
+    {
+        yield return new WaitForSeconds(seconds);
+        onEnded();
     }
 
     private void FadeOutMainStory()
@@ -218,11 +256,12 @@ public class CanvasManager : MonoBehaviour
 
     public void ShowGameover()
     {
-        ShowStory(storiesList.Count);
+        ShowLevelStory(GameManager.Instance.gameConfiguration.stories.Count);
     }
 
-    public void BTN_StoryOK()
+    public void BTN_Next()
     {
+        storiesUI.SetActive(false);
         var levelNumber = GameManager.Instance.activeLevelNumber;
         if (levelNumber == 0) GameManager.Instance.StartGame();
         else GameManager.Instance.LoadNextLevel();
@@ -231,7 +270,6 @@ public class CanvasManager : MonoBehaviour
         player.transform.position = new Vector3(0, -4, 0);
         player.lastTimeShot = Time.time;
         Time.timeScale = 1f;
-        storiesUI.SetActive(false);
     }
 
     public GameObject informationUI;

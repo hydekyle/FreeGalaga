@@ -9,6 +9,12 @@ public struct User
     public string alias, score, avatar, intentos;
 }
 
+public struct GameConfiguration
+{
+    public int livesPerCredit, playerMovementSpeed, playerAttackSpeed, storyLevelWaitTime, miniBossHealth, finalBossHealth;
+    public List<string> stories;
+}
+
 public enum BoostType
 {
     None,
@@ -59,8 +65,8 @@ public struct EnemyModel
 [Serializable]
 public struct Stats
 {
-    public int health, damage, shootCooldown, shootSpeed;
-    public float movementVelocity;
+    public int health, damage;
+    public float movementVelocity, shootCooldown, shootSpeed;
 }
 
 [Serializable]
@@ -72,11 +78,5 @@ public struct GameData
     public string sendScoreURL;
     public string getUserDataURL;
     public string consumeIntentosURL;
-    public string getStoriesURL;
-}
-
-[Serializable]
-public struct GameConfig
-{
-    public int lives_per_credit;
+    public string gameConfigurationURL;
 }

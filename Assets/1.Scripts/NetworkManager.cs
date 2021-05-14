@@ -4,31 +4,10 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System;
 using System.Security.Cryptography;
+using System.Linq;
 
 public static class NetworkManager
 {
-    public static IEnumerator GetGameConfig(string gameConfigURL, Action<GameConfig> gameConfig)
-    {
-        using (UnityWebRequest webRequest = UnityWebRequest.Get(gameConfigURL))
-        {
-            yield return webRequest.SendWebRequest();
-            if (!webRequest.isNetworkError)
-            {
-                GameConfig config = JsonUtility.FromJson<GameConfig>(webRequest.downloadHandler.text);
-                gameConfig(config);
-            }
-            else
-            {
-                Debug.LogWarning("Error al leer el json de configuración, cargando default");
-                var newGameConfig = new GameConfig()
-                {
-                    lives_per_credit = 3
-                };
-                gameConfig(newGameConfig);
-            }
-        }
-    }
-
     public static IEnumerator SendHighScore(string alias, int score, Action<bool> onEnded)
     {
         var token = GetEncriptedToken(alias, score);
@@ -125,18 +104,27 @@ public static class NetworkManager
         }
     }
 
-    public static IEnumerator GetStories(Action<List<string>> stories)
+    public static IEnumerator GetGameConfiguration(Action<GameConfiguration> gameConfiguration)
     {
-        var storiesURL = GameManager.Instance.gameData.getStoriesURL;
+        var storiesURL = GameManager.Instance.gameData.gameConfigurationURL;
         using (UnityWebRequest request = UnityWebRequest.Get(storiesURL))
         {
-            var storiesList = new List<string>();
+            GameConfiguration gameConfig = new GameConfiguration();
             yield return request.SendWebRequest();
             if (!request.isNetworkError)
             {
-                var fetched_stories = request.downloadHandler.text.Split('|');
-                foreach (string story in fetched_stories) storiesList.Add(story);
-                stories(storiesList);
+                var fetched_data = request.downloadHandler.text.Split('|').ToList();
+                gameConfig.livesPerCredit = int.Parse(fetched_data[0]);
+                gameConfig.playerMovementSpeed = int.Parse(fetched_data[1]);
+                gameConfig.playerAttackSpeed = int.Parse(fetched_data[2]);
+                gameConfig.storyLevelWaitTime = int.Parse(fetched_data[3]);
+                gameConfig.miniBossHealth = int.Parse(fetched_data[4]);
+                gameConfig.finalBossHealth = int.Parse(fetched_data[5]);
+                fetched_data.RemoveRange(0, 6);
+                var storiesList = new List<string>();
+                foreach (string story in fetched_data) storiesList.Add(story);
+                gameConfig.stories = storiesList;
+                gameConfiguration(gameConfig);
             }
             else
             {

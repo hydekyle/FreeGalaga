@@ -129,7 +129,7 @@ public class Enemy : MonoBehaviour
         var dir = (playerT.position - transform.position).normalized;
         var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
 
-        if (!isLeader && transform.position.y + 0.5f < playerT.transform.position.y) falling = true;
+        if (!isLeader && transform.position.y + 0.33f < playerT.transform.position.y) falling = true;
         if (falling) dir = new Vector2(dir.x, -dir.y);
 
         transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.AngleAxis(angle, transform.forward), Time.deltaTime * velocity);

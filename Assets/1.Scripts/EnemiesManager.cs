@@ -59,8 +59,7 @@ public class EnemiesManager : MonoBehaviour
 
     public void EnemyTouchBottom(Enemy enemy)
     {
-        //RestartPositions();
-        //GameManager.Instance.LoseLives(1, 0.5f);
+        CanvasManager.Instance.LoseScore(enemy.points / 2);
         enemy.Die();
     }
 

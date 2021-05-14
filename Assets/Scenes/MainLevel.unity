@@ -4029,7 +4029,7 @@ RectTransform:
   - {fileID: 1476109248}
   - {fileID: 1477456077}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -6045,7 +6045,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 23000
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e900e938f9772844aaa63b55506ebd3c, type: 2}
   m_sharedMaterial: {fileID: -9150468066996468349, guid: e900e938f9772844aaa63b55506ebd3c, type: 2}
@@ -6217,9 +6217,9 @@ MonoBehaviour:
   stats:
     health: 11
     damage: 1
+    movementVelocity: 3
     shootCooldown: 2
     shootSpeed: 1
-    movementVelocity: 3
   lastTimeShot: 0
   myCollider: {fileID: 0}
   playerLevel: 1
@@ -7655,7 +7655,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1259267509
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7722,7 +7722,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1520833342}
         m_TargetAssemblyTypeName: CanvasManager, Assembly-CSharp
-        m_MethodName: BTN_StoryOK
+        m_MethodName: BTN_Next
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8347,7 +8347,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Hyde Kyle
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e900e938f9772844aaa63b55506ebd3c, type: 2}
   m_sharedMaterial: {fileID: -9150468066996468349, guid: e900e938f9772844aaa63b55506ebd3c, type: 2}
@@ -9475,7 +9475,6 @@ MonoBehaviour:
   starsParent: {fileID: 0}
   startMenu: {fileID: 275165301}
   spriteStarON: {fileID: 21300000, guid: 324b0d3e661f8a44e9a66ca2aec65037, type: 3}
-  startButton: {fileID: 0}
   bar: {fileID: 1016806680}
   textHighScore: {fileID: 880138307}
   textAlias: {fileID: 1348760980}
@@ -9504,9 +9503,9 @@ MonoBehaviour:
   storiesUI: {fileID: 1351121005}
   informationText: {fileID: 737628849}
   storyText: {fileID: 275499402}
-  storiesList: []
   storyImage: {fileID: 1978771328}
   mainStoryButton: {fileID: 683611435}
+  nextButton: {fileID: 0}
   informationUI: {fileID: 1329918065}
 --- !u!114 &1520833343
 MonoBehaviour:
@@ -9588,7 +9587,7 @@ RectTransform:
   - {fileID: 1351121006}
   - {fileID: 1329918066}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -12094,6 +12093,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2095406231}
   m_CullTransparentMesh: 0
+--- !u!1001 &2111555351
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 751263476882309140, guid: 1574cccbc51541f4c82697bac9ad919f, type: 3}
+      propertyPath: m_Name
+      value: GameSession
+      objectReference: {fileID: 0}
+    - target: {fileID: 751263476882309142, guid: 1574cccbc51541f4c82697bac9ad919f, type: 3}
+      propertyPath: m_RootOrder
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 751263476882309142, guid: 1574cccbc51541f4c82697bac9ad919f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 401.31247
+      objectReference: {fileID: 0}
+    - target: {fileID: 751263476882309142, guid: 1574cccbc51541f4c82697bac9ad919f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 155.63939
+      objectReference: {fileID: 0}
+    - target: {fileID: 751263476882309142, guid: 1574cccbc51541f4c82697bac9ad919f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -30.703232
+      objectReference: {fileID: 0}
+    - target: {fileID: 751263476882309142, guid: 1574cccbc51541f4c82697bac9ad919f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 751263476882309142, guid: 1574cccbc51541f4c82697bac9ad919f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 751263476882309142, guid: 1574cccbc51541f4c82697bac9ad919f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 751263476882309142, guid: 1574cccbc51541f4c82697bac9ad919f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 751263476882309142, guid: 1574cccbc51541f4c82697bac9ad919f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 751263476882309142, guid: 1574cccbc51541f4c82697bac9ad919f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 751263476882309142, guid: 1574cccbc51541f4c82697bac9ad919f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1574cccbc51541f4c82697bac9ad919f, type: 3}
 --- !u!1 &2119239882
 GameObject:
   m_ObjectHideFlags: 0
@@ -12365,27 +12421,25 @@ MonoBehaviour:
   boostPoints: {fileID: 2408850371273742185, guid: 7a864e46d2ab9f046873f3e3aa2eb3f7, type: 3}
   boostAttackspeed: {fileID: 5246635532009567422, guid: af19d8741ee07a54ea02f0d9df07a889, type: 3}
   retryAvailable: 0
-  enemyBulletsPoolGreen: {fileID: 0}
-  enemyBulletsPoolRed: {fileID: 0}
-  enemyBulletsPoolFire: {fileID: 0}
-  enemyBombs: {fileID: 0}
-  minPosX: -2.5
-  maxPosX: 2.5
-  minPosY: -5
-  maxPosY: -2
-  bigExplosion: {fileID: 267842034401730938, guid: ad1e2d3776cace348b32e39891e0e3c2, type: 3}
   gameData:
     userAlias: 
     getHighScoresURL: 
     sendScoreURL: 
     getUserDataURL: 
     consumeIntentosURL: 
-    getStoriesURL: 
-  gameConfig:
-    lives_per_credit: 0
-  debugMode: 1
-  alias: Invitado
+    gameConfigurationURL: 
+  enemyBulletsPoolGreen: {fileID: 0}
+  enemyBulletsPoolRed: {fileID: 0}
+  enemyBulletsPoolFire: {fileID: 0}
+  enemyBombs: {fileID: 0}
+  alias: test
   intentos: 0
+  bigExplosion: {fileID: 267842034401730938, guid: ad1e2d3776cace348b32e39891e0e3c2, type: 3}
+  minPosX: -2.5
+  maxPosX: 2.5
+  minPosY: -5
+  maxPosY: -2
+  debugMode: 0
   showStories: 1
 --- !u!4 &2140480312
 Transform:

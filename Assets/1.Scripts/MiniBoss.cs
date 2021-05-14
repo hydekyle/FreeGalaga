@@ -5,7 +5,7 @@ using UnityEngine;
 public class MiniBoss : MonoBehaviour
 {
     public Transform boss;
-    public List<Enemy> minions = new List<Enemy> ();
+    public List<Enemy> minions = new List<Enemy>();
     public Stats stats;
     public Vector3 leftPos, rightPos;
     SpriteRenderer spriteRenderer;
@@ -15,43 +15,44 @@ public class MiniBoss : MonoBehaviour
     float startPingPongTime;
     float nextTimePosChange;
 
-    private void Start ()
+    private void Start()
     {
-        spriteRenderer = GetComponent<SpriteRenderer> ();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        stats.health = GameManager.Instance.gameConfiguration.miniBossHealth;
     }
 
-    private void FixedUpdate ()
+    private void FixedUpdate()
     {
-        if (!vulnerable && IsAllMinionsDead ()) LoseVulnerability ();
+        if (!vulnerable && IsAllMinionsDead()) LoseVulnerability();
     }
 
-    void SwitchTargetPos ()
+    void SwitchTargetPos()
     {
         targetPos = targetPos == leftPos ? rightPos : leftPos;
-        nextTimePosChange = Time.time + Random.Range (2.5f, 5f);
+        nextTimePosChange = Time.time + Random.Range(2.5f, 5f);
     }
 
-    private void Update ()
+    private void Update()
     {
-        spriteRenderer.color = Color.Lerp (spriteRenderer.color, Color.white, Time.deltaTime * 15);
+        spriteRenderer.color = Color.Lerp(spriteRenderer.color, Color.white, Time.deltaTime * 15);
         if (vulnerable)
         {
-            if (nextTimePosChange < Time.time) SwitchTargetPos ();
-            transform.position = Vector3.Lerp (transform.position, targetPos, Time.deltaTime * stats.movementVelocity);
+            if (nextTimePosChange < Time.time) SwitchTargetPos();
+            transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * stats.movementVelocity);
         }
     }
 
-    void ThrowBomb ()
+    void ThrowBomb()
     {
-        if (GameManager.Instance.enemyBombs.TryGetNextObject (transform.position, Quaternion.identity, out GameObject enemyBomb))
+        if (GameManager.Instance.enemyBombs.TryGetNextObject(transform.position, Quaternion.identity, out GameObject enemyBomb))
         {
-            AudioManager.Instance.PlayEnemyShieldImpact ();
-            Vector2 bombDirection = Vector2.up * 4 + Vector2.right * Random.Range (-1.8f, 1.8f);
-            enemyBomb.GetComponent<Rigidbody2D> ().AddForce (bombDirection, ForceMode2D.Impulse);
+            AudioManager.Instance.PlayEnemyShieldImpact();
+            Vector2 bombDirection = Vector2.up * 4 + Vector2.right * Random.Range(-1.8f, 1.8f);
+            enemyBomb.GetComponent<Rigidbody2D>().AddForce(bombDirection, ForceMode2D.Impulse);
         }
     }
 
-    bool IsAllMinionsDead ()
+    bool IsAllMinionsDead()
     {
         foreach (var enemy in minions)
         {
@@ -60,45 +61,45 @@ public class MiniBoss : MonoBehaviour
         return true;
     }
 
-    void LoseVulnerability ()
+    void LoseVulnerability()
     {
-        EnemiesManager.Instance.StopEnemies ();
-        GetComponent<Animator> ().enabled = false;
-        transform.SetParent (null);
+        EnemiesManager.Instance.StopEnemies();
+        GetComponent<Animator>().enabled = false;
+        transform.SetParent(null);
         vulnerable = true;
         //StartCoroutine (MyRoutine ());
     }
 
-    void Die ()
+    void Die()
     {
-        CanvasManager.Instance.AddScore (1000);
-        boss.gameObject.SetActive (true);
-        StopAllCoroutines ();
-        GameManager.Instance.ExplosionBigAtPosition (transform.position, Color.magenta);
-        gameObject.SetActive (false);
-        GameManager.Instance.DropPowerUp (transform.position, BoostType.Health);
+        CanvasManager.Instance.AddScore(1000);
+        boss.gameObject.SetActive(true);
+        StopAllCoroutines();
+        GameManager.Instance.ExplosionBigAtPosition(transform.position, Color.magenta);
+        gameObject.SetActive(false);
+        GameManager.Instance.DropPowerUp(transform.position, BoostType.Health);
     }
 
-    public void GetStrike (int strikeDamage)
+    public void GetStrike(int strikeDamage)
     {
         stats.health -= strikeDamage;
-        CanvasManager.Instance.AddScore (strikeDamage);
-        if (stats.health <= 0) Die ();
+        CanvasManager.Instance.AddScore(strikeDamage);
+        if (stats.health <= 0) Die();
         else
         {
-            AudioManager.Instance.PlayBossDamaged ();
+            AudioManager.Instance.PlayBossDamaged();
             spriteRenderer.color = Color.red;
         }
     }
 
-    private void OnTriggerEnter2D (Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag ("PlayerShot"))
+        if (other.CompareTag("PlayerShot"))
         {
-            if (vulnerable) GetStrike (GameManager.Instance.player.stats.damage);
+            if (vulnerable) GetStrike(GameManager.Instance.player.stats.damage);
 
-            other.gameObject.SetActive (false);
-            ThrowBomb ();
+            other.gameObject.SetActive(false);
+            ThrowBomb();
         }
     }
 

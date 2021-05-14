@@ -7,6 +7,13 @@ using System.Runtime.InteropServices;
 
 public class GameManager : MonoBehaviour
 {
+    [DllImport("__Internal")]
+    public static extern void ShareScore(int puesto, int puntos);
+    [DllImport("__Internal")]
+    public static extern void Information();
+    [DllImport("__Internal")]
+    public static extern void Gameover();
+
     public static GameManager Instance;
     public GameObject settings;
     public Player player;
@@ -20,25 +27,20 @@ public class GameManager : MonoBehaviour
     public GameObject bulletEnemyPrefab, bombPrefab;
     public GameObject boostShield, boostHealth, boostPoints, boostAttackspeed;
     public bool retryAvailable = false;
-
-    [DllImport("__Internal")]
-    public static extern void ShareScore(int puesto, int puntos);
-
-    [DllImport("__Internal")]
-    public static extern void Information();
-
-    [DllImport("__Internal")]
-    public static extern void Gameover();
+    public GameData gameData = new GameData();
+    public GameConfiguration gameConfiguration;
 
     [HideInInspector]
     public EZObjectPool enemyBulletsPoolGreen, enemyBulletsPoolRed, enemyBulletsPoolFire, enemyBombs;
 
-    public float minPosX = -3.8f, maxPosX = 3.8f, minPosY = -4.5f, maxPosY = -2f;
+    public string alias = "";
+    public int intentos;
+
+    [Header("SETTINGS")]
     public GameObject bigExplosion;
+    public float minPosX = -3.8f, maxPosX = 3.8f, minPosY = -4.5f, maxPosY = -2f;
 
-    public GameData gameData = new GameData();
-    public GameConfig gameConfig = new GameConfig();
-
+    [Header("DEBUG MODE")]
     public bool debugMode = false;
 
     private void Awake()
@@ -60,19 +62,19 @@ public class GameManager : MonoBehaviour
     {
         LoadGameConfig();
         if (!debugMode) GetUserData();
-        else LoadTestMode();
+        else LoadDebugMode();
     }
 
-    private void LoadTestMode()
+    private void LoadDebugMode()
     {
         User testUser = new User()
         {
-            alias = "testUser",
+            alias = "test",
             avatar = "",
             intentos = "0",
             score = "666"
         };
-        CanvasManager.Instance.LoadUserDataAndShowMenu(testUser);
+        CanvasManager.Instance.LoadUserDataAndShowMenuDebug(testUser);
     }
 
     private void LoadGameConfig()
@@ -84,24 +86,22 @@ public class GameManager : MonoBehaviour
             gameData.getUserDataURL = baseURL + "userdata.php";
             gameData.sendScoreURL = baseURL + "updatescore.php";
             gameData.consumeIntentosURL = baseURL + "consumeintentos.php";
-            gameData.getStoriesURL = baseURL + "textos.php";
+            gameData.gameConfigurationURL = baseURL + "game-configuration.php";
         }
         else // JUST FOR UNITY EDITOR
         {
-            gameData.getHighScoresURL = "https://hydekyle.ga/cyber_defense/scores.php";
-            gameData.sendScoreURL = "https://hydekyle.ga/cyber_defense/updatescore.php";
-            gameData.getUserDataURL = "https://hydekyle.ga/cyber_defense/userdata.php";
-            gameData.consumeIntentosURL = "https://hydekyle.ga/cyber_defense/consumeintentos.php";
-            gameData.getStoriesURL = "https://hydekyle.ga/cyber_defense/textos.php";
+            gameData.getHighScoresURL = "https://www.experienciasvirtuales.tv/paloalto/spacegame_test/game/scores.php";
+            gameData.sendScoreURL = "https://www.experienciasvirtuales.tv/paloalto/spacegame_test/game/updatescore.php";
+            gameData.getUserDataURL = "https://www.experienciasvirtuales.tv/paloalto/spacegame_test/game/userdata.php";
+            gameData.consumeIntentosURL = "https://www.experienciasvirtuales.tv/paloalto/spacegame_test/game/consumeintentos.php";
+            gameData.gameConfigurationURL = "https://www.experienciasvirtuales.tv/paloalto/spacegame_test/game/game-configuration.php";
         }
-        gameConfig = new GameConfig() // Cambiar esto si se desea cargar configuración adicional desde fuera del editor
-        {
-            lives_per_credit = 3
-        };
     }
 
-    public string alias = "";
-    public int intentos;
+    public void SetGameConfiguration(GameConfiguration gameConfig)
+    {
+        gameConfiguration = gameConfig;
+    }
 
     private void GetUserData()
     {
@@ -124,7 +124,9 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
         player.GetComponent<SpriteRenderer>().enabled = true;
-        SetLives(gameConfig.lives_per_credit);
+        SetLives(gameConfiguration.livesPerCredit);
+        player.stats.movementVelocity = GameManager.Instance.gameConfiguration.playerMovementSpeed / 4f;
+        player.stats.shootCooldown = GameManager.Instance.gameConfiguration.playerAttackSpeed / 4f;
         if (!Application.isEditor) WebGLInput.captureAllKeyboardInput = true;
         CanvasManager.Instance.usernameText.text = gameData.userAlias;
         AudioManager.Instance.StartMusic();
@@ -245,7 +247,6 @@ public class GameManager : MonoBehaviour
                 break;
         }
         EnemiesManager.Instance.LoadEnemies();
-
         CanvasManager.Instance.SetBackground(background);
         CanvasManager.Instance.SetLevelNumber(levelNumber);
         CanvasManager.Instance.SetColorTextUI(colorTextUI);
@@ -268,12 +269,12 @@ public class GameManager : MonoBehaviour
     void PrepareNextLevel()
     {
         if (showStories) ShowStory();
-        else CanvasManager.Instance.BTN_StoryOK();
+        else CanvasManager.Instance.BTN_Next();
     }
 
     void ShowStory()
     {
-        CanvasManager.Instance.ShowStory(activeLevelNumber);
+        CanvasManager.Instance.ShowLevelStory(activeLevelNumber);
     }
 
     public void PlayerLevelUp()
@@ -306,7 +307,7 @@ public class GameManager : MonoBehaviour
         EnemiesManager.Instance.Reset();
     }
 
-    void SetLives(int livesAmount)
+    public void SetLives(int livesAmount)
     {
         CanvasManager.Instance.SetLivesNumber(livesAmount);
         lives = livesAmount;
