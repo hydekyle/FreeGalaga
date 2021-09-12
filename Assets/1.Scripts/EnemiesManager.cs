@@ -108,28 +108,23 @@ public class EnemiesManager : MonoBehaviour
     {
         List<Enemy> newEnemies = new List<Enemy>();
         var enemiesAlive = enemiesList.FindAll(enemy => enemy.alive);
-        print(enemiesAlive.Count);
-
         var levelNumber = GameManager.Instance.activeLevelNumber;
-        var go = Instantiate(GetLevelPrefab(levelNumber), Vector3.zero, Quaternion.identity);
+        var level = Instantiate(GetLevelPrefab(levelNumber), Vector3.zero, Quaternion.identity);
 
-        foreach (Transform t in go.transform) t.gameObject.SetActive(false); // Desactivar todos del nuevo GO
+        foreach (Transform t in level.transform) t.gameObject.SetActive(false);
 
         foreach (Enemy enemy in enemiesAlive)
         {
             if (enemy.ID == "4C") return;
-            var newEnemyT = go.transform.Find(enemy.transform.name);
+            var newEnemyT = level.transform.Find(enemy.transform.name);
             newEnemyT.gameObject.SetActive(true); // Activar sólo los que quedaron vivos
             newEnemies.Add(newEnemyT.GetComponent<Enemy>());
         }
 
         ClearAllEnemies();
-
-        go.transform.SetParent(enemiesT);
-
+        level.transform.SetParent(enemiesT);
         enemiesList = newEnemies;
-
-        go.transform.localPosition = Vector3.zero;
+        level.transform.localPosition = Vector3.zero;
         enemiesAnimator.Play(GetAnimationName());
         enemiesAnimator.enabled = true;
         SetAnimationSpeed(animationSpeed);
@@ -138,51 +133,12 @@ public class EnemiesManager : MonoBehaviour
 
     GameObject GetLevelPrefab(int levelNumber)
     {
-        GameObject levelPrefab;
-        switch (levelNumber)
-        {
-            case 1:
-                levelPrefab = GameManager.Instance.tablesLevels.prefabLevel1;
-                break;
-            case 2:
-                levelPrefab = GameManager.Instance.tablesLevels.prefabLevel2;
-                break;
-            case 3:
-                levelPrefab = GameManager.Instance.tablesLevels.prefabLevel3;
-                break;
-            case 4:
-                levelPrefab = GameManager.Instance.tablesLevels.prefabLevel4;
-                break;
-            default:
-                levelPrefab = GameManager.Instance.tablesLevels.prefabLevelFinal;
-                break;
-        }
-
-        return levelPrefab;
+        return GameManager.Instance.tablesLevels.levels[levelNumber].prefab;
     }
 
     float GetLevelSpeed(int levelNumber)
     {
-        float value;
-        switch (levelNumber)
-        {
-            case 1:
-                value = GameManager.Instance.tablesLevels.animSpeed1;
-                break;
-            case 2:
-                value = GameManager.Instance.tablesLevels.animSpeed2;
-                break;
-            case 3:
-                value = GameManager.Instance.tablesLevels.animSpeed3;
-                break;
-            case 4:
-                value = GameManager.Instance.tablesLevels.animSpeed4;
-                break;
-            default:
-                value = GameManager.Instance.tablesLevels.animSpeedFinal;
-                break;
-        }
-        return value;
+        return GameManager.Instance.tablesLevels.levels[levelNumber].animationSpeed;
     }
 
     public void StepForward()
@@ -240,7 +196,7 @@ public class EnemiesManager : MonoBehaviour
 
     bool IsFinalLevel()
     {
-        return GameManager.Instance.activeLevelNumber == 5;
+        return GameManager.Instance.activeLevelNumber == GameManager.Instance.tablesLevels.levels.Count;
     }
 
     public void EnemyDestroyed(Enemy enemy)

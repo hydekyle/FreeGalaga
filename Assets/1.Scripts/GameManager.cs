@@ -40,9 +40,6 @@ public class GameManager : MonoBehaviour
     public GameObject bigExplosion;
     public float minPosX = -3.8f, maxPosX = 3.8f, minPosY = -4.5f, maxPosY = -2f;
 
-    [Header("DEBUG MODE")]
-    public bool debugMode = false;
-
     private void Awake()
     {
         if (Instance) Destroy(this.gameObject);
@@ -61,8 +58,8 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         LoadGameConfig();
-        if (!debugMode) GetUserData();
-        else LoadDebugMode();
+        if (Application.isEditor) LoadDebugMode();
+        else GetUserData();
     }
 
     private void LoadDebugMode()
@@ -86,7 +83,7 @@ public class GameManager : MonoBehaviour
             gameData.getUserDataURL = baseURL + "userdata.php";
             gameData.sendScoreURL = baseURL + "updatescore.php";
             gameData.consumeIntentosURL = baseURL + "consumeintentos.php";
-            gameData.gameConfigurationURL = baseURL + "game-configuration.php";
+            gameData.configurationURL = baseURL + "game-configuration.php";
         }
         else // JUST FOR UNITY EDITOR
         {
@@ -94,7 +91,7 @@ public class GameManager : MonoBehaviour
             gameData.sendScoreURL = "https://www.experienciasvirtuales.tv/paloalto/spacegame_test/game/updatescore.php";
             gameData.getUserDataURL = "https://www.experienciasvirtuales.tv/paloalto/spacegame_test/game/userdata.php";
             gameData.consumeIntentosURL = "https://www.experienciasvirtuales.tv/paloalto/spacegame_test/game/consumeintentos.php";
-            gameData.gameConfigurationURL = "https://www.experienciasvirtuales.tv/paloalto/spacegame_test/game/game-configuration.php";
+            gameData.configurationURL = "https://www.experienciasvirtuales.tv/paloalto/spacegame_test/game/game-configuration.php";
         }
     }
 
@@ -130,7 +127,7 @@ public class GameManager : MonoBehaviour
         if (!Application.isEditor) WebGLInput.captureAllKeyboardInput = true;
         CanvasManager.Instance.usernameText.text = gameData.userAlias;
         AudioManager.Instance.StartMusic();
-        LoadLevel(++activeLevelNumber);
+        LoadLevel(activeLevelNumber);
     }
 
     public void SetAndroidControls(bool status)
@@ -209,48 +206,21 @@ public class GameManager : MonoBehaviour
     public void LoadNextLevel()
     {
         if (lives == 0) return;
-        LoadLevel(++activeLevelNumber);
+        LoadLevel(activeLevelNumber);
     }
 
     void LoadLevel(int levelNumber)
     {
-        Sprite background;
-        float animationSpeed;
-        Color colorTextUI;
+        var background = tablesLevels.levels[levelNumber].background;
+        var colorTextUI = tablesLevels.levels[levelNumber].colorTextUI;
+        //var animationSpeed = tablesLevels.levels[levelNumber].animationSpeed;
 
-        switch (levelNumber)
-        {
-            case 1:
-                background = tablesLevels.backgroundLevel1;
-                animationSpeed = tablesLevels.animSpeed1;
-                colorTextUI = Color.black;
-                break;
-            case 2:
-                background = tablesLevels.backgroundLevel2;
-                animationSpeed = tablesLevels.animSpeed2;
-                colorTextUI = Color.white;
-                break;
-            case 3:
-                background = tablesLevels.backgroundLevel3;
-                animationSpeed = tablesLevels.animSpeed3;
-                colorTextUI = Color.black;
-                break;
-            case 4:
-                background = tablesLevels.backgroundLevel3;
-                animationSpeed = tablesLevels.animSpeed3;
-                colorTextUI = Color.white;
-                break;
-            default:
-                background = tablesLevels.backgroundLevelFinal;
-                animationSpeed = tablesLevels.animSpeedFinal;
-                colorTextUI = Color.yellow;
-                break;
-        }
         EnemiesManager.Instance.LoadEnemies();
         CanvasManager.Instance.SetBackground(background);
         CanvasManager.Instance.SetLevelNumber(levelNumber);
         CanvasManager.Instance.SetColorTextUI(colorTextUI);
         CanvasManager.Instance.SetBarColor(GetColorByLevel(levelNumber));
+        activeLevelNumber++;
     }
 
     public bool showStories = true;
@@ -338,27 +308,7 @@ public class GameManager : MonoBehaviour
 
     Color GetColorByLevel(int levelNumber)
     {
-        Color color;
-        switch (levelNumber)
-        {
-            case 1:
-                color = tablesLevels.barColorLevel1;
-                break;
-            case 2:
-                color = tablesLevels.barColorLevel2;
-                break;
-            case 3:
-                color = tablesLevels.barColorLevel3;
-                break;
-            case 4:
-                color = tablesLevels.barColorLevel4;
-                break;
-            default:
-                color = tablesLevels.barColorLevelFinal;
-                break;
-        }
-        color.a = 1;
-        return color;
+        return tablesLevels.levels[levelNumber].colorTextUI;
     }
 
     public void DesactivateOnTime(GameObject go, float time)

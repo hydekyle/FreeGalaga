@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
 
     void SetBulletsPool(int level)
     {
-        if (level > GameManager.Instance.tablesEtc.disparosJugador.Count) return;
+        if (level > GameManager.Instance.tablesEtc.disparosJugador.Count - 1) return;
         playerShots?.ClearPool();
         var newShotPrefab = GameManager.Instance.tablesEtc.disparosJugador[level];
         playerShots = EZObjectPool.CreateObjectPool(newShotPrefab, "PlayerShots" + level, 15, true, true, true);

@@ -3,18 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-[System.Serializable]
-public struct User
-{
-    public string alias, score, avatar, intentos;
-}
-
-public struct GameConfiguration
-{
-    public int livesPerCredit, playerMovementSpeed, playerAttackSpeed, storyLevelWaitTime, miniBossHealth, finalBossHealth;
-    public List<string> stories;
-}
-
 public enum BoostType
 {
     None,
@@ -70,6 +58,18 @@ public struct Stats
 }
 
 [Serializable]
+public struct User
+{
+    public string alias, score, avatar, intentos;
+}
+
+public struct GameConfiguration
+{
+    public int livesPerCredit, playerMovementSpeed, playerAttackSpeed, storyLevelWaitTime, miniBossHealth, finalBossHealth;
+    public GameStrings stories;
+}
+
+[Serializable]
 public struct GameData
 {
     public string userAlias;
@@ -78,5 +78,21 @@ public struct GameData
     public string sendScoreURL;
     public string getUserDataURL;
     public string consumeIntentosURL;
-    public string gameConfigurationURL;
+    public string configurationURL;
+    public GameStrings strings;
+}
+
+[Serializable]
+public struct LevelData
+{
+    public Sprite background;
+    public float animationSpeed;
+    public Color colorTextUI;
+    public GameObject prefab;
+}
+
+[Serializable]
+public struct GameStrings
+{
+    public string historia, nivelFinal, about;
 }

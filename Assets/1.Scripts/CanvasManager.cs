@@ -58,11 +58,19 @@ public class CanvasManager : MonoBehaviour
     public void SendScore(string alias, int score)
     {
         GameSession.Instance.GameFinished();
-        StartCoroutine(NetworkManager.SendHighScore(alias, score, onEnded =>
+        // No enviar Scores desde el editor
+        if (Application.isEditor)
         {
-            myHighScore = score; // Cachear high score para compartir en FB
             ShowHighScores();
-        }));
+        }
+        else
+        {
+            StartCoroutine(NetworkManager.SendHighScore(alias, score, onEnded =>
+            {
+                myHighScore = score; // Cachear high score para compartir en FB
+                ShowHighScores();
+            }));
+        }
     }
 
     public void ShowHighScores()
@@ -149,7 +157,7 @@ public class CanvasManager : MonoBehaviour
         GameManager.Instance.intentos = int.Parse(userData.intentos);
         StartCoroutine(NetworkManager.GetGameConfiguration(gameConfig =>
         {
-            informationText.text = gameConfig.stories[gameConfig.stories.Count - 1];
+            informationText.text = gameConfig.stories.about;
             SetUserDataAndStartMenu(userData);
             GameManager.Instance.SetGameConfiguration(gameConfig);
         }));
@@ -159,7 +167,7 @@ public class CanvasManager : MonoBehaviour
     {
         GameManager.Instance.intentos = int.Parse(userData.intentos);
         var stories = GetDebugStories();
-        informationText.text = stories[stories.Count - 1];
+        informationText.text = stories.about;
         SetUserDataAndStartMenu(userData);
         GameManager.Instance.gameConfiguration = new GameConfiguration()
         {
@@ -173,16 +181,13 @@ public class CanvasManager : MonoBehaviour
         };
     }
 
-    List<string> GetDebugStories()
+    GameStrings GetDebugStories()
     {
-        return new List<string>(){
-            "Story -1",
-            "Story 0",
-            "Story 1",
-            "Story 2",
-            "Story 3",
-            "Story 4",
-            "Story Information"
+        return new GameStrings()
+        {
+            historia = "Debug historia chicos.",
+            about = "Debug about sobre el juego. En modo producción cargará los establecidos en game-configuration.php",
+            nivelFinal = "Debug oh my god, level final !!"
         };
     }
 
@@ -198,8 +203,8 @@ public class CanvasManager : MonoBehaviour
 
     public void BTN_Start()
     {
-
-        if (!GameManager.Instance.debugMode && GameManager.Instance.intentos > 0)
+        // Intenta consumir intentos si tienes, si no puedes jugar igualmente
+        if (!Application.isEditor && GameManager.Instance.intentos > 0)
             StartCoroutine(NetworkManager.ConsumeIntento(GameManager.Instance.alias, () => StartGame()));
         else
             StartGame();
@@ -219,13 +224,20 @@ public class CanvasManager : MonoBehaviour
 
     void ShowMainStory()
     {
-        storyText.text = GameManager.Instance.gameConfiguration.stories[0];
+        storyText.text = GameManager.Instance.gameConfiguration.stories.historia;
         storiesUI.SetActive(true);
     }
 
     public void ShowLevelStory(int number)
     {
-        storyText.text = GameManager.Instance.gameConfiguration.stories[number + 1];
+        if (number == GameManager.Instance.tablesLevels.levels.Count - 1)
+        {
+            storyText.text = GameManager.Instance.gameConfiguration.stories.nivelFinal;
+        }
+        else
+        {
+            storyText.text = "Nivel " + (number + 1);
+        }
         storiesUI.SetActive(true);
         Invoke(nameof(BTN_Next), GameManager.Instance.gameConfiguration.storyLevelWaitTime / 10f);
     }
@@ -252,11 +264,6 @@ public class CanvasManager : MonoBehaviour
         storyImage.SetActive(false);
         mainStoryButton.SetActive(false);
         mainStoryButton.transform.parent.Find("Button_Next").GetComponent<Button>().interactable = true;
-    }
-
-    public void ShowGameover()
-    {
-        ShowLevelStory(GameManager.Instance.gameConfiguration.stories.Count);
     }
 
     public void BTN_Next()

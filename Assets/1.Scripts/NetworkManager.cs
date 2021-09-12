@@ -106,7 +106,7 @@ public static class NetworkManager
 
     public static IEnumerator GetGameConfiguration(Action<GameConfiguration> gameConfiguration)
     {
-        var storiesURL = GameManager.Instance.gameData.gameConfigurationURL;
+        var storiesURL = GameManager.Instance.gameData.configurationURL;
         using (UnityWebRequest request = UnityWebRequest.Get(storiesURL))
         {
             GameConfiguration gameConfig = new GameConfiguration();
@@ -121,9 +121,9 @@ public static class NetworkManager
                 gameConfig.miniBossHealth = int.Parse(fetched_data[4]);
                 gameConfig.finalBossHealth = int.Parse(fetched_data[5]);
                 fetched_data.RemoveRange(0, 6);
-                var storiesList = new List<string>();
-                foreach (string story in fetched_data) storiesList.Add(story);
-                gameConfig.stories = storiesList;
+                gameConfig.stories.historia = fetched_data[6];
+                gameConfig.stories.nivelFinal = fetched_data[7];
+                gameConfig.stories.about = fetched_data[8];
                 gameConfiguration(gameConfig);
             }
             else
