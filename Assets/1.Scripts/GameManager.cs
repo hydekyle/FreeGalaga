@@ -213,7 +213,6 @@ public class GameManager : MonoBehaviour
     {
         var background = tablesLevels.levels[levelNumber].background;
         var colorTextUI = tablesLevels.levels[levelNumber].colorTextUI;
-        //var animationSpeed = tablesLevels.levels[levelNumber].animationSpeed;
 
         EnemiesManager.Instance.LoadEnemies();
         CanvasManager.Instance.SetBackground(background);
