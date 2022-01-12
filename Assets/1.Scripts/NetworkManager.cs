@@ -12,7 +12,7 @@ public static class NetworkManager
     {
         var token = GetEncriptedToken(alias, score);
         var sendScoreURL = GameManager.Instance.gameData.sendScoreURL;
-        string sendScoreFinalURL = String.Concat(sendScoreURL, String.Format("?alias={0}&score={1}&token={2}", alias, score, token));
+        string sendScoreFinalURL = String.Concat(sendScoreURL, String.Format("?alias={0}&score={1}&token={2}&id={3}&avatar={4}", alias, score, token, PlayerPrefs.GetString("id"), GameManager.Instance.user.avatar));
         using (UnityWebRequest webRequest = UnityWebRequest.Get(sendScoreFinalURL))
         {
             yield return webRequest.SendWebRequest();
@@ -24,61 +24,48 @@ public static class NetworkManager
         }
     }
 
-    public static IEnumerator ConsumeIntento(string alias, Action onConsumed)
+    public static IEnumerator GetUserData(string id, Action<User> userData)
     {
-        var token = GetEncriptedToken(alias, GameManager.Instance.intentos);
-        var consumeIntentoURL = GameManager.Instance.gameData.consumeIntentosURL + "?alias=" + alias + "&token=" + token;
-        using (UnityWebRequest webRequest = UnityWebRequest.Get(consumeIntentoURL))
-        {
-            yield return webRequest.SendWebRequest();
-            if (!webRequest.isNetworkError)
-            {
-                onConsumed(); // Ahora se puede jugar con 0 intentos
-                // if (webRequest.downloadHandler.text == "OK")
-                // {
-                //     onConsumed ();
-                // }
-            }
-        }
-    }
-
-    public static IEnumerator GetUserData(string alias, Action<User> userData)
-    {
-        var getUserDataURL = GameManager.Instance.gameData.getUserDataURL + "?alias=" + alias;
+        var getUserDataURL = GameManager.Instance.gameData.getUserDataURL + "?id=" + id;
         using (UnityWebRequest webRequest = UnityWebRequest.Get(getUserDataURL))
         {
-            User user = new User();
             yield return webRequest.SendWebRequest();
             if (!webRequest.isNetworkError)
             {
                 Debug.Log(webRequest.downloadHandler.text);
-                foreach (var rawUser in webRequest.downloadHandler.text.Split('|'))
+                Debug.Log(webRequest.responseCode);
+                if (webRequest.responseCode != 200) // El usuario no existe asi que creamos uno provisional
                 {
-                    try
+                    string newID = PlayerPrefs.GetString("id");
+                    userData(new User
                     {
-                        var storedUserValues = rawUser.Split('·');
-                        user = new User
-                        {
-                            alias = storedUserValues[0],
-                            score = storedUserValues[1],
-                            avatar = storedUserValues[2],
-                            intentos = storedUserValues[3]
-                        };
-                    }
-                    catch
-                    { }
+                        id = newID,
+                        alias = "Player-" + newID.Substring(0, 4),
+                        score = "0",
+                        avatar = 1
+                    });
+                }
+                else
+                {
+                    var storedUserValues = webRequest.downloadHandler.text.Split('|');
+                    userData(new User
+                    {
+                        id = storedUserValues[0],
+                        alias = storedUserValues[1],
+                        score = storedUserValues[2],
+                        avatar = int.Parse(storedUserValues[3])
+                    });
                 }
             }
-            userData(user);
         }
     }
 
     public static IEnumerator GetHighScores(Action<List<User>> topUsers)
     {
         var highScoresURL = GameManager.Instance.gameData.getHighScoresURL;
+        List<User> users = new List<User>();
         using (UnityWebRequest webRequest = UnityWebRequest.Get(highScoresURL))
         {
-            List<User> users = new List<User>();
             yield return webRequest.SendWebRequest();
             if (!webRequest.isNetworkError)
             {
@@ -87,26 +74,28 @@ public static class NetworkManager
                     try
                     {
                         var storedUserValues = rawUser.Split('·');
-                        var newUser = new User
+                        users.Add(new User
                         {
                             alias = storedUserValues[0],
                             score = storedUserValues[1],
-                            avatar = storedUserValues[2]
-                        };
-                        users.Add(newUser);
+                            avatar = int.Parse(storedUserValues[2])
+                        });
                     }
                     catch
                     { }
                 }
                 topUsers(users);
             }
-            else Debug.LogWarning("Error GetHighScore: " + webRequest.error);
+            else
+            {
+                users.Add(GameManager.Instance.user);
+            }
         }
     }
 
     public static IEnumerator GetGameConfiguration(Action<GameConfiguration> gameConfiguration)
     {
-        var storiesURL = GameManager.Instance.gameData.gameConfigurationURL;
+        var storiesURL = GameManager.Instance.gameData.gameDataURL;
         using (UnityWebRequest request = UnityWebRequest.Get(storiesURL))
         {
             GameConfiguration gameConfig = new GameConfiguration();
@@ -130,17 +119,6 @@ public static class NetworkManager
             {
                 Debug.LogWarning("No se ha podido conectar con el servidor remoto.");
             }
-        }
-    }
-
-    public static IEnumerator CheckLegality(Action<bool> isLegal)
-    {
-        var legalityURL = "https://hydekyle.ga/galaga/legal.txt";
-        using (UnityWebRequest webRequest = UnityWebRequest.Get(legalityURL))
-        {
-            yield return webRequest.SendWebRequest();
-            if (!webRequest.isNetworkError && webRequest.downloadHandler.text.Substring(0, 1) == "*") isLegal(false);
-            else isLegal(true);
         }
     }
 

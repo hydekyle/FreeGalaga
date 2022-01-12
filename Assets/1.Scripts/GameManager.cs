@@ -33,8 +33,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public EZObjectPool enemyBulletsPoolGreen, enemyBulletsPoolRed, enemyBulletsPoolFire, enemyBombs;
 
-    public string alias = "";
-    public int intentos;
+    public User user;
 
     [Header("SETTINGS")]
     public GameObject bigExplosion;
@@ -56,46 +55,28 @@ public class GameManager : MonoBehaviour
         enemyBulletsPoolRed = EZObjectPool.CreateObjectPool(tablesEtc.disparosEnemigos[1], "Bullets Enemy Red", 5, false, true, true);
         enemyBulletsPoolFire = EZObjectPool.CreateObjectPool(tablesEtc.disparosEnemigos[2], "Bullets Enemy Fire", 4, false, true, true);
         enemyBombs = EZObjectPool.CreateObjectPool(bombPrefab, "Bombs Boss", 6, false, true, true);
+        if (!PlayerPrefs.HasKey("id"))
+        {
+            var newID = System.Guid.NewGuid().ToString();
+            PlayerPrefs.SetString("id", newID);
+        }
     }
 
     private void Start()
     {
         LoadGameConfig();
-        if (!debugMode) GetUserData();
-        else LoadDebugMode();
-    }
-
-    private void LoadDebugMode()
-    {
-        User testUser = new User()
-        {
-            alias = "test",
-            avatar = "",
-            intentos = "0",
-            score = "666"
-        };
-        CanvasManager.Instance.LoadUserDataAndShowMenuDebug(testUser);
+        LoadUserData();
     }
 
     private void LoadGameConfig()
     {
-        if (!Application.isEditor) // Playing from WebGL
-        {
-            var baseURL = Application.absoluteURL;
-            gameData.getHighScoresURL = baseURL + "scores.php";
-            gameData.getUserDataURL = baseURL + "userdata.php";
-            gameData.sendScoreURL = baseURL + "updatescore.php";
-            gameData.consumeIntentosURL = baseURL + "consumeintentos.php";
-            gameData.gameConfigurationURL = baseURL + "game-configuration.php";
-        }
-        else // JUST FOR UNITY EDITOR
-        {
-            gameData.getHighScoresURL = "https://www.experienciasvirtuales.tv/paloalto/spacegame_test/game/scores.php";
-            gameData.sendScoreURL = "https://www.experienciasvirtuales.tv/paloalto/spacegame_test/game/updatescore.php";
-            gameData.getUserDataURL = "https://www.experienciasvirtuales.tv/paloalto/spacegame_test/game/userdata.php";
-            gameData.consumeIntentosURL = "https://www.experienciasvirtuales.tv/paloalto/spacegame_test/game/consumeintentos.php";
-            gameData.gameConfigurationURL = "https://www.experienciasvirtuales.tv/paloalto/spacegame_test/game/game-configuration.php";
-        }
+        string baseURL;
+        if (Application.isEditor) baseURL = "localhost:8079/galaga/";
+        else baseURL = Application.absoluteURL;
+        gameData.getHighScoresURL = baseURL + "getscores.php";
+        gameData.getUserDataURL = baseURL + "getuserdata.php";
+        gameData.sendScoreURL = baseURL + "updatescore.php";
+        gameData.gameDataURL = baseURL + "getgamedata.php";
     }
 
     public void SetGameConfiguration(GameConfiguration gameConfig)
@@ -103,22 +84,16 @@ public class GameManager : MonoBehaviour
         gameConfiguration = gameConfig;
     }
 
-    private void GetUserData()
+    private void LoadUserData()
     {
-        if (!Application.isEditor) alias = HttpCookie.GetCookie("ALIAS");
+        string id = PlayerPrefs.GetString("id");
+        StartCoroutine(NetworkManager.GetUserData(id, userData =>
+        {
+            gameData.userAlias = userData.alias;
+            user = userData;
+            CanvasManager.Instance.LoadUserDataAndShowMenu(userData);
+        }));
 
-        if (alias != "")
-        {
-            StartCoroutine(NetworkManager.GetUserData(alias, userData =>
-          {
-              gameData.userAlias = userData.alias;
-              CanvasManager.Instance.LoadUserDataAndShowMenu(userData);
-          }));
-        }
-        else
-        {
-            Debug.LogWarning("No ALIAS founded!");
-        }
     }
 
     public void StartGame()

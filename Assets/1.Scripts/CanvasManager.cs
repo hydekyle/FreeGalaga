@@ -29,7 +29,7 @@ public class CanvasManager : MonoBehaviour
     public TextMeshProUGUI informationText;
     public TextMeshProUGUI storyText;
     public GameObject storyImage, mainStoryButton;
-    public Button nextButton;
+    public GameObject loadingBlackScreen;
 
     private void Awake()
     {
@@ -58,6 +58,7 @@ public class CanvasManager : MonoBehaviour
     public void SendScore(string alias, int score)
     {
         GameSession.Instance.GameFinished();
+        GameManager.Instance.user.score = score.ToString();
         StartCoroutine(NetworkManager.SendHighScore(alias, score, onEnded =>
         {
             myHighScore = score; // Cachear high score para compartir en FB
@@ -67,6 +68,7 @@ public class CanvasManager : MonoBehaviour
 
     public void ShowHighScores()
     {
+        loadingBlackScreen.SetActive(true);
         StartCoroutine(NetworkManager.GetHighScores(topUsers =>
       {
           Transform content = highScoresWindow.Find("Leader Board").Find("Scroll View").Find("Viewport").Find("Content");
@@ -82,9 +84,9 @@ public class CanvasManager : MonoBehaviour
                   myRankPosition = x + 1; // Recachear si estoy en el top (puntuación puede ser diferente)
                   myHighScore = int.Parse(topUsers[x].score);
               }
-
               GameManager.Instance.SetAndroidControls(false);
               highScoresWindow.gameObject.SetActive(true);
+              loadingBlackScreen.SetActive(false);
               Invoke("MakeRetryAvailable", 1f);
           }
       }));
@@ -146,43 +148,43 @@ public class CanvasManager : MonoBehaviour
 
     public void LoadUserDataAndShowMenu(User userData)
     {
-        GameManager.Instance.intentos = int.Parse(userData.intentos);
         StartCoroutine(NetworkManager.GetGameConfiguration(gameConfig =>
         {
             informationText.text = gameConfig.stories[gameConfig.stories.Count - 1];
             SetUserDataAndStartMenu(userData);
             GameManager.Instance.SetGameConfiguration(gameConfig);
+            loadingBlackScreen.SetActive(false);
         }));
     }
 
-    public void LoadUserDataAndShowMenuDebug(User userData)
-    {
-        GameManager.Instance.intentos = int.Parse(userData.intentos);
-        var stories = GetDebugStories();
-        informationText.text = stories[stories.Count - 1];
-        SetUserDataAndStartMenu(userData);
-        GameManager.Instance.gameConfiguration = new GameConfiguration()
-        {
-            livesPerCredit = 66,
-            finalBossHealth = 20,
-            miniBossHealth = 100,
-            playerAttackSpeed = 10,
-            playerMovementSpeed = 10,
-            stories = stories,
-            storyLevelWaitTime = 20
-        };
-    }
+    // public void LoadUserDataAndShowMenuDebug(User userData)
+    // {
+    //     GameManager.Instance.intentos = int.Parse(userData.intentos);
+    //     var stories = GetDebugStories();
+    //     informationText.text = stories[stories.Count - 1];
+    //     SetUserDataAndStartMenu(userData);
+    //     GameManager.Instance.gameConfiguration = new GameConfiguration()
+    //     {
+    //         livesPerCredit = 3,
+    //         finalBossHealth = 1555,
+    //         miniBossHealth = 666,
+    //         playerAttackSpeed = 10,
+    //         playerMovementSpeed = 10,
+    //         stories = stories,
+    //         storyLevelWaitTime = 20
+    //     };
+    // }
 
     List<string> GetDebugStories()
     {
         return new List<string>(){
-            "Story -1",
-            "Story 0",
+            "Welcome to FreeGalaga, a game made by Ayoze",
+            "Get Ready !!",
             "Story 1",
             "Story 2",
             "Story 3",
             "Story 4",
-            "Story Information"
+            "This is a free version of a Freelancer project of mine. \nYou can check the source code clicking on INFORMATION button. \nHave fun!"
         };
     }
 
@@ -199,10 +201,7 @@ public class CanvasManager : MonoBehaviour
     public void BTN_Start()
     {
 
-        if (!GameManager.Instance.debugMode && GameManager.Instance.intentos > 0)
-            StartCoroutine(NetworkManager.ConsumeIntento(GameManager.Instance.alias, () => StartGame()));
-        else
-            StartGame();
+        StartGame();
     }
 
     private void StartGame()
@@ -225,8 +224,13 @@ public class CanvasManager : MonoBehaviour
 
     public void ShowLevelStory(int number)
     {
-        storyText.text = GameManager.Instance.gameConfiguration.stories[number + 1];
-        storiesUI.SetActive(true);
+        try
+        {
+            storyText.text = GameManager.Instance.gameConfiguration.stories[number + 1];
+            storiesUI.SetActive(true);
+        }
+        catch
+        { }
         Invoke(nameof(BTN_Next), GameManager.Instance.gameConfiguration.storyLevelWaitTime / 10f);
     }
 
@@ -298,25 +302,21 @@ public class CanvasManager : MonoBehaviour
         textHighScore.text = amount.ToString();
     }
 
-    void SetStars(int amount)
-    {
-        var stars = Mathf.Clamp(amount, 0, 3);
-        for (var x = 0; x < stars; x++)
-        {
-            starsParent.GetChild(x).GetComponent<Image>().sprite = spriteStarON;
-        }
-    }
+    // void SetStars(int amount)
+    // {
+    //     var stars = Mathf.Clamp(amount, 0, 3);
+    //     for (var x = 0; x < stars; x++)
+    //     {
+    //         starsParent.GetChild(x).GetComponent<Image>().sprite = spriteStarON;
+    //     }
+    // }
 
-    public Sprite GetSpriteAvatar(string avatarURL)
+    public Sprite GetSpriteAvatar(string avatarIndex)
     {
         Sprite sprite = spritesAvatar[0];
         try
         {
-            var avatarIndex = avatarURL.Split(new string[]
-            {
-                "avatar_player_"
-            }, StringSplitOptions.None)[1].Split('.')[0];
-            sprite = GetSpriteAvatar(int.Parse(avatarIndex));
+            GetSpriteAvatar(int.Parse(avatarIndex));
         }
         catch
         {

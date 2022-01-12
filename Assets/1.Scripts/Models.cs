@@ -6,7 +6,8 @@ using System;
 [System.Serializable]
 public struct User
 {
-    public string alias, score, avatar, intentos;
+    public int avatar;
+    public string id, alias, score;
 }
 
 public struct GameConfiguration
@@ -77,6 +78,5 @@ public struct GameData
     public string getHighScoresURL;
     public string sendScoreURL;
     public string getUserDataURL;
-    public string consumeIntentosURL;
-    public string gameConfigurationURL;
+    public string gameDataURL;
 }

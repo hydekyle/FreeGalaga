@@ -1,10 +1,10 @@
 <?php
     include "config.php";
 
-    $table_name = "registro";
-    $column_alias = "reg_alias";
-    $column_score = "reg_score";
-    $column_avatar = "reg_avatar";
+    $table_name = "scores";
+    $column_alias = "alias";
+    $column_score = "score";
+    $column_avatar = "avatar";
     
     $get_scores = "SELECT * FROM $table_name ORDER BY $column_score DESC LIMIT 9";
 
