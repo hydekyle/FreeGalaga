@@ -79,11 +79,6 @@ public class GameManager : MonoBehaviour
         gameData.gameDataURL = baseURL + "getgamedata.php";
     }
 
-    public void SetGameConfiguration(GameConfiguration gameConfig)
-    {
-        gameConfiguration = gameConfig;
-    }
-
     private void LoadUserData()
     {
         string id = PlayerPrefs.GetString("id");
@@ -94,6 +89,18 @@ public class GameManager : MonoBehaviour
             CanvasManager.Instance.LoadUserDataAndShowMenu(userData);
         }));
 
+    }
+
+    public void ChangeAvatar(int newAvatarIndex)
+    {
+        PlayerPrefs.SetInt("avatar", newAvatarIndex);
+        user.avatar = newAvatarIndex;
+    }
+
+    public void ChangeAlias(string newAlias)
+    {
+        PlayerPrefs.SetString("alias", newAlias);
+        user.alias = newAlias;
     }
 
     public void StartGame()
@@ -271,16 +278,30 @@ public class GameManager : MonoBehaviour
         CanvasManager.Instance.SendScore(gameData.userAlias, CanvasManager.Instance.score);
     }
 
+    public void SaveScore(int score)
+    {
+        user.score = score.ToString();
+        if (PlayerPrefs.HasKey("score"))
+        {
+            var lastScore = PlayerPrefs.GetInt("score");
+            if (lastScore < score) PlayerPrefs.SetInt("score", score);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("score", score);
+        }
+    }
+
     private void Update()
     {
         Controles();
     }
 
-    public void RestartLevel()
-    {
-        player.gameObject.SetActive(true);
-        EnemiesManager.Instance.Reset();
-    }
+    // public void RestartLevel()
+    // {
+    //     player.gameObject.SetActive(true);
+    //     EnemiesManager.Instance.Reset();
+    // }
 
     public void SetLives(int livesAmount)
     {
@@ -381,14 +402,14 @@ public class GameManager : MonoBehaviour
         StartCoroutine(ChangeLivesByPoints());
     }
 
-    public void ReloadScene()
+    public void ResetGame()
     {
         SceneManager.LoadScene("MainLevel");
     }
 
     public void Controles()
     {
-        if (Input.GetButtonDown("Reset")) ReloadScene();
+        //if (Input.GetButtonDown("Reset")) ResetGame();
 
         if (Input.GetButton("Shoot") || Input.GetButton("ShootPad"))
         {

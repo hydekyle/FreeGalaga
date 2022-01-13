@@ -15,12 +15,11 @@ public static class NetworkManager
         string sendScoreFinalURL = String.Concat(sendScoreURL, String.Format("?alias={0}&score={1}&token={2}&id={3}&avatar={4}", alias, score, token, PlayerPrefs.GetString("id"), GameManager.Instance.user.avatar));
         using (UnityWebRequest webRequest = UnityWebRequest.Get(sendScoreFinalURL))
         {
+            bool isNewRecord = false;
             yield return webRequest.SendWebRequest();
-            if (!webRequest.isNetworkError)
-            {
-                bool isNewRecord = webRequest.downloadHandler.text == "1" ? true : false;
-                onEnded(isNewRecord);
-            }
+            if (webRequest.result != UnityWebRequest.Result.ConnectionError)
+                isNewRecord = webRequest.downloadHandler.text == "1" ? true : false;
+            onEnded(isNewRecord);
         }
     }
 
@@ -30,23 +29,11 @@ public static class NetworkManager
         using (UnityWebRequest webRequest = UnityWebRequest.Get(getUserDataURL))
         {
             yield return webRequest.SendWebRequest();
-            if (!webRequest.isNetworkError)
+            try
             {
-                Debug.Log(webRequest.downloadHandler.text);
-                Debug.Log(webRequest.responseCode);
-                if (webRequest.responseCode != 200) // El usuario no existe asi que creamos uno provisional
+                if (webRequest.result != UnityWebRequest.Result.ConnectionError)
                 {
-                    string newID = PlayerPrefs.GetString("id");
-                    userData(new User
-                    {
-                        id = newID,
-                        alias = "Player-" + newID.Substring(0, 4),
-                        score = "0",
-                        avatar = 1
-                    });
-                }
-                else
-                {
+                    if (webRequest.responseCode != 200) throw new Exception("User have not send any score yet");
                     var storedUserValues = webRequest.downloadHandler.text.Split('|');
                     userData(new User
                     {
@@ -56,6 +43,23 @@ public static class NetworkManager
                         avatar = int.Parse(storedUserValues[3])
                     });
                 }
+                else
+                {
+                    throw new Exception("Can't connect to database");
+                }
+            }
+            catch (Exception err)
+            {
+                // Generate a new user if we can't get userdata from db
+                Debug.LogWarning(err.Message);
+                string newID = PlayerPrefs.GetString("id");
+                userData(new User
+                {
+                    id = newID,
+                    alias = PlayerPrefs.HasKey("alias") ? PlayerPrefs.GetString("alias") : "Player-" + newID.Substring(0, 4),
+                    score = PlayerPrefs.HasKey("score") ? PlayerPrefs.GetInt("score").ToString() : "0",
+                    avatar = PlayerPrefs.HasKey("avatar") ? PlayerPrefs.GetInt("avatar") : 1
+                });
             }
         }
     }
@@ -67,7 +71,7 @@ public static class NetworkManager
         using (UnityWebRequest webRequest = UnityWebRequest.Get(highScoresURL))
         {
             yield return webRequest.SendWebRequest();
-            if (!webRequest.isNetworkError)
+            if (webRequest.result != UnityWebRequest.Result.ConnectionError)
             {
                 foreach (var rawUser in webRequest.downloadHandler.text.Split('|'))
                 {
@@ -84,25 +88,26 @@ public static class NetworkManager
                     catch
                     { }
                 }
-                topUsers(users);
             }
             else
             {
-                users.Add(GameManager.Instance.user);
+                Debug.LogWarning("Can't connect to ranking");
+                GameManager.Instance.ResetGame();
             }
+            topUsers(users);
         }
     }
 
     public static IEnumerator GetGameConfiguration(Action<GameConfiguration> gameConfiguration)
     {
         var storiesURL = GameManager.Instance.gameData.gameDataURL;
-        using (UnityWebRequest request = UnityWebRequest.Get(storiesURL))
+        using (UnityWebRequest webRequest = UnityWebRequest.Get(storiesURL))
         {
             GameConfiguration gameConfig = new GameConfiguration();
-            yield return request.SendWebRequest();
-            if (!request.isNetworkError)
+            yield return webRequest.SendWebRequest();
+            if (webRequest.result != UnityWebRequest.Result.ConnectionError)
             {
-                var fetched_data = request.downloadHandler.text.Split('|').ToList();
+                var fetched_data = webRequest.downloadHandler.text.Split('|').ToList();
                 gameConfig.livesPerCredit = int.Parse(fetched_data[0]);
                 gameConfig.playerMovementSpeed = int.Parse(fetched_data[1]);
                 gameConfig.playerAttackSpeed = int.Parse(fetched_data[2]);
@@ -113,12 +118,20 @@ public static class NetworkManager
                 var storiesList = new List<string>();
                 foreach (string story in fetched_data) storiesList.Add(story);
                 gameConfig.stories = storiesList;
-                gameConfiguration(gameConfig);
             }
             else
             {
-                Debug.LogWarning("No se ha podido conectar con el servidor remoto.");
+                Debug.LogWarning("Can't get GameConfig from remote server. Default settings loaded.");
+                gameConfig.livesPerCredit = 3;
+                gameConfig.playerMovementSpeed = 7;
+                gameConfig.playerAttackSpeed = 7;
+                gameConfig.storyLevelWaitTime = 0;
+                gameConfig.miniBossHealth = 1000;
+                gameConfig.finalBossHealth = 2000;
+                gameConfig.stories = Helpers.GetDebugStories();
+                GameManager.Instance.showStories = false;
             }
+            gameConfiguration(gameConfig);
         }
     }
 

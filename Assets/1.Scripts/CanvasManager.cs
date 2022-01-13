@@ -5,11 +5,13 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 using System;
 using TMPro;
+using DG.Tweening;
 
 public class CanvasManager : MonoBehaviour
 {
     public static CanvasManager Instance;
     public int score = 0;
+    int myHighScore, myRankPosition = 11;
     public Text scoreText, livesText, levelText, usernameText;
     public Image levelBackground;
     public Image barImage;
@@ -29,7 +31,8 @@ public class CanvasManager : MonoBehaviour
     public TextMeshProUGUI informationText;
     public TextMeshProUGUI storyText;
     public GameObject storyImage, mainStoryButton;
-    public GameObject loadingBlackScreen;
+    public RectTransform loadingBlackScreen, courtineScreen;
+    public Button informationButton;
 
     private void Awake()
     {
@@ -53,22 +56,19 @@ public class CanvasManager : MonoBehaviour
         else shieldIcon.fillAmount = Mathf.MoveTowards(shieldIcon.fillAmount, fillValue, Time.deltaTime * 3);
     }
 
-    int myHighScore, myRankPosition = 11; // Si no está entre los 10 primeros suponer que es el 11
-
     public void SendScore(string alias, int score)
     {
         GameSession.Instance.GameFinished();
-        GameManager.Instance.user.score = score.ToString();
+        GameManager.Instance.SaveScore(score);
         StartCoroutine(NetworkManager.SendHighScore(alias, score, onEnded =>
         {
-            myHighScore = score; // Cachear high score para compartir en FB
+            myHighScore = score; // Cache for sharing on FB
             ShowHighScores();
         }));
     }
 
     public void ShowHighScores()
     {
-        loadingBlackScreen.SetActive(true);
         StartCoroutine(NetworkManager.GetHighScores(topUsers =>
       {
           Transform content = highScoresWindow.Find("Leader Board").Find("Scroll View").Find("Viewport").Find("Content");
@@ -86,7 +86,6 @@ public class CanvasManager : MonoBehaviour
               }
               GameManager.Instance.SetAndroidControls(false);
               highScoresWindow.gameObject.SetActive(true);
-              loadingBlackScreen.SetActive(false);
               Invoke("MakeRetryAvailable", 1f);
           }
       }));
@@ -143,7 +142,7 @@ public class CanvasManager : MonoBehaviour
     Sprite GetSpriteAvatar(int avatarNumber)
     {
         var selected = Mathf.Clamp(avatarNumber, 1, spritesAvatar.Count + 1) - 1;
-        return spritesAvatar[selected]; // El avatar 01 se corresponde con la posición 0
+        return spritesAvatar[selected];
     }
 
     public void LoadUserDataAndShowMenu(User userData)
@@ -151,51 +150,28 @@ public class CanvasManager : MonoBehaviour
         StartCoroutine(NetworkManager.GetGameConfiguration(gameConfig =>
         {
             informationText.text = gameConfig.stories[gameConfig.stories.Count - 1];
+            GameManager.Instance.gameConfiguration = gameConfig;
+            loadingBlackScreen.gameObject.SetActive(false);
             SetUserDataAndStartMenu(userData);
-            GameManager.Instance.SetGameConfiguration(gameConfig);
-            loadingBlackScreen.SetActive(false);
         }));
-    }
-
-    // public void LoadUserDataAndShowMenuDebug(User userData)
-    // {
-    //     GameManager.Instance.intentos = int.Parse(userData.intentos);
-    //     var stories = GetDebugStories();
-    //     informationText.text = stories[stories.Count - 1];
-    //     SetUserDataAndStartMenu(userData);
-    //     GameManager.Instance.gameConfiguration = new GameConfiguration()
-    //     {
-    //         livesPerCredit = 3,
-    //         finalBossHealth = 1555,
-    //         miniBossHealth = 666,
-    //         playerAttackSpeed = 10,
-    //         playerMovementSpeed = 10,
-    //         stories = stories,
-    //         storyLevelWaitTime = 20
-    //     };
-    // }
-
-    List<string> GetDebugStories()
-    {
-        return new List<string>(){
-            "Welcome to FreeGalaga, a game made by Ayoze",
-            "Get Ready !!",
-            "Story 1",
-            "Story 2",
-            "Story 3",
-            "Story 4",
-            "This is a free version of a Freelancer project of mine. \nYou can check the source code clicking on INFORMATION button. \nHave fun!"
-        };
     }
 
     private void SetUserDataAndStartMenu(User userData)
     {
         //SetStars(int.Parse(userData.intentos));
-        SetScore(int.Parse(userData.score));
+        SetScoreUI(int.Parse(userData.score));
         avatarHolder.sprite = GetSpriteAvatar(userData.avatar);
-
         textAlias.text = userData.alias;
         startMenu.SetActive(true);
+        var menuScreen = startMenu.GetComponent<RectTransform>();
+        var topY = courtineScreen.transform.localPosition;
+        courtineScreen.DOAnchorPosY(300f, 1f, false).SetEase(Ease.OutBack).onComplete = new TweenCallback(() =>
+        {
+            courtineScreen.DOAnchorPosY(1100f, 2f, false).SetEase(Ease.OutBack);
+        });
+        menuScreen.anchoredPosition = Vector2.down * 600;
+        menuScreen.DOAnchorPosY(-44f, 2f, false).SetEase(Ease.InOutExpo);
+        //iTween.MoveTo(startMenu, iTween.Hash("x", 0, "y", 0, "transition", "spring"));
     }
 
     public void BTN_Start()
@@ -297,7 +273,7 @@ public class CanvasManager : MonoBehaviour
         GameManager.Gameover();
     }
 
-    void SetScore(int amount)
+    void SetScoreUI(int amount)
     {
         textHighScore.text = amount.ToString();
     }
@@ -311,18 +287,5 @@ public class CanvasManager : MonoBehaviour
     //     }
     // }
 
-    public Sprite GetSpriteAvatar(string avatarIndex)
-    {
-        Sprite sprite = spritesAvatar[0];
-        try
-        {
-            GetSpriteAvatar(int.Parse(avatarIndex));
-        }
-        catch
-        {
-            Debug.LogWarning("No se pudo leer el avatar correctamente");
-        }
-        return sprite;
-    }
 
 }
