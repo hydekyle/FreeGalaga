@@ -30,9 +30,10 @@ public class CanvasManager : MonoBehaviour
     public GameObject storiesUI;
     public TextMeshProUGUI informationText;
     public TextMeshProUGUI storyText;
-    public GameObject storyImage, mainStoryButton;
+    public GameObject storyImage, mainStoryButton, aliasEditWindow;
     public RectTransform loadingBlackScreen, courtineScreen;
     public Button informationButton;
+    public InputField inputTextAlias;
 
     private void Awake()
     {
@@ -75,13 +76,15 @@ public class CanvasManager : MonoBehaviour
           for (var x = 0; x < topUsers.Count; x++)
           {
               var userSlot = content.GetChild(x);
-              userSlot.Find("Username").GetComponent<TextMeshProUGUI>().text = topUsers[x].alias;
+              bool itsMe = topUsers[x].alias == GameManager.Instance.gameData.userAlias;
+              var usernameText = userSlot.Find("Username").GetComponent<TextMeshProUGUI>();
+              usernameText.text = itsMe ? PlayerPrefs.GetString("alias") : topUsers[x].alias;
               userSlot.Find("Points").GetComponent<TextMeshProUGUI>().text = topUsers[x].score;
-              userSlot.Find("Avatar").GetComponent<Image>().sprite = GetSpriteAvatar(topUsers[x].avatar);
-              if (topUsers[x].alias == GameManager.Instance.gameData.userAlias)
+              userSlot.Find("Avatar").GetComponent<Image>().sprite = GetAvatarSprite(itsMe ? PlayerPrefs.GetInt("avatar") : topUsers[x].avatar);
+              if (itsMe)
               {
-                  userSlot.Find("Username").GetComponent<TextMeshProUGUI>().color = Color.yellow;
-                  myRankPosition = x + 1; // Recachear si estoy en el top (puntuación puede ser diferente)
+                  usernameText.color = Color.yellow;
+                  myRankPosition = x + 1;
                   myHighScore = int.Parse(topUsers[x].score);
               }
               GameManager.Instance.SetAndroidControls(false);
@@ -139,9 +142,16 @@ public class CanvasManager : MonoBehaviour
         barImage.color = color;
     }
 
-    Sprite GetSpriteAvatar(int avatarNumber)
+    public void SetAvatarSprite(int avatarIndex)
     {
-        var selected = Mathf.Clamp(avatarNumber, 1, spritesAvatar.Count + 1) - 1;
+        PlayerPrefs.SetInt("avatar", avatarIndex);
+        GameManager.Instance.user.avatar = avatarIndex;
+        avatarHolder.sprite = GetAvatarSprite(avatarIndex);
+    }
+
+    Sprite GetAvatarSprite(int avatarIndex)
+    {
+        var selected = Mathf.Clamp(avatarIndex, 1, spritesAvatar.Count + 1) - 1;
         return spritesAvatar[selected];
     }
 
@@ -153,6 +163,7 @@ public class CanvasManager : MonoBehaviour
             GameManager.Instance.gameConfiguration = gameConfig;
             loadingBlackScreen.gameObject.SetActive(false);
             SetUserDataAndStartMenu(userData);
+            print(userData.avatar);
         }));
     }
 
@@ -160,7 +171,7 @@ public class CanvasManager : MonoBehaviour
     {
         //SetStars(int.Parse(userData.intentos));
         SetScoreUI(int.Parse(userData.score));
-        avatarHolder.sprite = GetSpriteAvatar(userData.avatar);
+        avatarHolder.sprite = GetAvatarSprite(userData.avatar);
         textAlias.text = userData.alias;
         startMenu.SetActive(true);
         var menuScreen = startMenu.GetComponent<RectTransform>();
@@ -171,7 +182,6 @@ public class CanvasManager : MonoBehaviour
         });
         menuScreen.anchoredPosition = Vector2.down * 600;
         menuScreen.DOAnchorPosY(-44f, 2f, false).SetEase(Ease.InOutExpo);
-        //iTween.MoveTo(startMenu, iTween.Hash("x", 0, "y", 0, "transition", "spring"));
     }
 
     public void BTN_Start()
@@ -278,14 +288,14 @@ public class CanvasManager : MonoBehaviour
         textHighScore.text = amount.ToString();
     }
 
-    // void SetStars(int amount)
-    // {
-    //     var stars = Mathf.Clamp(amount, 0, 3);
-    //     for (var x = 0; x < stars; x++)
-    //     {
-    //         starsParent.GetChild(x).GetComponent<Image>().sprite = spriteStarON;
-    //     }
-    // }
-
+    public void SetNewAlias()
+    {
+        var newAlias = inputTextAlias.text;
+        if (newAlias.Length == 0 || newAlias.ToLower() == "new alias") return;
+        PlayerPrefs.SetString("alias", newAlias);
+        GameManager.Instance.user.alias = newAlias;
+        textAlias.text = newAlias;
+        aliasEditWindow.SetActive(false);
+    }
 
 }

@@ -91,12 +91,6 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void ChangeAvatar(int newAvatarIndex)
-    {
-        PlayerPrefs.SetInt("avatar", newAvatarIndex);
-        user.avatar = newAvatarIndex;
-    }
-
     public void ChangeAlias(string newAlias)
     {
         PlayerPrefs.SetString("alias", newAlias);

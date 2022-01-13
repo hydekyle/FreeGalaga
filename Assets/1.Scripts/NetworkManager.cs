@@ -38,9 +38,9 @@ public static class NetworkManager
                     userData(new User
                     {
                         id = storedUserValues[0],
-                        alias = storedUserValues[1],
+                        alias = PlayerPrefs.HasKey("alias") ? PlayerPrefs.GetString("alias") : storedUserValues[1],
                         score = storedUserValues[2],
-                        avatar = int.Parse(storedUserValues[3])
+                        avatar = PlayerPrefs.HasKey("avatar") ? PlayerPrefs.GetInt("avatar") : int.Parse(storedUserValues[3])
                     });
                 }
                 else
