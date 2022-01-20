@@ -3,17 +3,48 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-[System.Serializable]
+[Serializable]
 public struct User
 {
-    public int avatar;
-    public string id, alias, score;
+    public int avatar, score;
+    public string alias;
 }
 
+public struct TopScore
+{
+    public User[] users;
+}
+
+[Serializable]
+public struct EnemyModel
+{
+    public BoostType powerupDrop;
+    public Sprite sprite;
+    public string name;
+    public Stats stats;
+}
+
+[Serializable]
+public struct Stats
+{
+    public int health, damage;
+    public float movementVelocity, shootCooldown, shootSpeed;
+}
+
+[Serializable]
+public struct GameServer
+{
+    public string getHighScoresURL;
+    public string updateScoreURL;
+    public string getUserDataURL;
+    public string getGameConfigURL;
+}
+
+[Serializable]
 public struct GameConfiguration
 {
     public int livesPerCredit, playerMovementSpeed, playerAttackSpeed, storyLevelWaitTime, miniBossHealth, finalBossHealth;
-    public List<string> stories;
+    public string gameInfo, startGameMessage, history;
 }
 
 public enum BoostType
@@ -52,31 +83,4 @@ public enum BulletType
     GreenBullet,
     RedBullet,
     FireBullet
-}
-
-[Serializable]
-public struct EnemyModel
-{
-    public BoostType powerupDrop;
-    public Sprite sprite;
-    public string name;
-    public Stats stats;
-}
-
-[Serializable]
-public struct Stats
-{
-    public int health, damage;
-    public float movementVelocity, shootCooldown, shootSpeed;
-}
-
-[Serializable]
-public struct GameData
-{
-    public string userAlias;
-
-    public string getHighScoresURL;
-    public string sendScoreURL;
-    public string getUserDataURL;
-    public string gameDataURL;
 }

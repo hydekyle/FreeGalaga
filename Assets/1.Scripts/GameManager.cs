@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using EZObjectPools;
 using UnityEngine;
 using System.Runtime.InteropServices;
+using Cysharp.Threading.Tasks;
 
 public class GameManager : MonoBehaviour
 {
@@ -18,7 +19,6 @@ public class GameManager : MonoBehaviour
     public GameObject settings;
     public Player player;
     public Material playerBulletMaterial;
-    public bool gameIsActive = false;
     public int activeLevelNumber = 0;
     public ScriptableEtc tablesEtc;
     public ScriptableLevels tablesLevels;
@@ -26,35 +26,34 @@ public class GameManager : MonoBehaviour
     public int lives = 3;
     public GameObject bulletEnemyPrefab, bombPrefab;
     public GameObject boostShield, boostHealth, boostPoints, boostAttackspeed;
-    public bool retryAvailable = false;
-    public GameData gameData = new GameData();
     public GameConfiguration gameConfiguration;
-
-    [HideInInspector]
-    public EZObjectPool enemyBulletsPoolGreen, enemyBulletsPoolRed, enemyBulletsPoolFire, enemyBombs;
-
-    public User user;
+    public string serverURL;
 
     [Header("SETTINGS")]
     public GameObject bigExplosion;
     public float minPosX = -3.8f, maxPosX = 3.8f, minPosY = -4.5f, maxPosY = -2f;
 
-    [Header("DEBUG MODE")]
-    public bool debugMode = false;
+    [HideInInspector]
+    public EZObjectPool enemyBulletsPoolGreen, enemyBulletsPoolRed, enemyBulletsPoolFire, enemyBombs;
+    [HideInInspector]
+    public bool retryAvailable = false;
+    [HideInInspector]
+    public bool gameIsActive = false;
+    [HideInInspector]
+    public GameServer gameServer;
+    [HideInInspector]
+    public User user;
+    float lastTimePowerUpDropped;
 
-    private void Awake()
+    void Awake()
     {
         if (Instance) Destroy(this.gameObject);
         Instance = this;
-        Initialize();
-    }
-
-    void Initialize()
-    {
         enemyBulletsPoolGreen = EZObjectPool.CreateObjectPool(tablesEtc.disparosEnemigos[0], "Bullets Enemy Green", 4, false, true, true);
         enemyBulletsPoolRed = EZObjectPool.CreateObjectPool(tablesEtc.disparosEnemigos[1], "Bullets Enemy Red", 5, false, true, true);
         enemyBulletsPoolFire = EZObjectPool.CreateObjectPool(tablesEtc.disparosEnemigos[2], "Bullets Enemy Fire", 4, false, true, true);
         enemyBombs = EZObjectPool.CreateObjectPool(bombPrefab, "Bombs Boss", 6, false, true, true);
+        // Get a unique ID if dont have one
         if (!PlayerPrefs.HasKey("id"))
         {
             var newID = System.Guid.NewGuid().ToString();
@@ -62,56 +61,28 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void Start()
+    async void Start()
     {
-        LoadGameConfig();
-        LoadUserData();
-    }
-
-    private void LoadGameConfig()
-    {
-        string baseURL;
-        if (Application.isEditor) baseURL = "localhost:8079/galaga/";
-        else baseURL = Application.absoluteURL;
-        gameData.getHighScoresURL = baseURL + "getscores.php";
-        gameData.getUserDataURL = baseURL + "getuserdata.php";
-        gameData.sendScoreURL = baseURL + "updatescore.php";
-        gameData.gameDataURL = baseURL + "getgamedata.php";
-    }
-
-    private void LoadUserData()
-    {
-        string id = PlayerPrefs.GetString("id");
-        StartCoroutine(NetworkManager.GetUserData(id, userData =>
-        {
-            gameData.userAlias = userData.alias;
-            user = userData;
-            CanvasManager.Instance.LoadUserDataAndShowMenu(userData);
-        }));
-
-    }
-
-    public void ChangeAlias(string newAlias)
-    {
-        PlayerPrefs.SetString("alias", newAlias);
-        user.alias = newAlias;
+        gameServer = Helpers.GetGameServer();
+        gameConfiguration = await NetworkManager.GetGameConfiguration(gameServer);
+        user = await NetworkManager.GetUserDataByID(PlayerPrefs.GetString("id"));
+        CanvasManager.Instance.ShowStartMenu(user);
     }
 
     public void StartGame()
     {
-        player.GetComponent<SpriteRenderer>().enabled = true;
+        if (!Application.isEditor) WebGLInput.captureAllKeyboardInput = true;
+        AudioManager.Instance.PlayMainThemeMusic();
+        LoadLevel(++activeLevelNumber);
+        SpawnPlayer();
+    }
+
+    void SpawnPlayer()
+    {
         SetLives(gameConfiguration.livesPerCredit);
         player.stats.movementVelocity = GameManager.Instance.gameConfiguration.playerMovementSpeed / 4f;
         player.stats.shootCooldown = GameManager.Instance.gameConfiguration.playerAttackSpeed / 4f;
-        if (!Application.isEditor) WebGLInput.captureAllKeyboardInput = true;
-        CanvasManager.Instance.usernameText.text = gameData.userAlias;
-        AudioManager.Instance.StartMusic();
-        LoadLevel(++activeLevelNumber);
-    }
-
-    public void SetAndroidControls(bool status)
-    {
-        CanvasManager.Instance.androidControls.gameObject.SetActive(status);
+        player.GetComponent<SpriteRenderer>().enabled = true;
     }
 
     public void AddRandomPowerUps(List<Enemy> enemyList)
@@ -122,7 +93,6 @@ public class GameManager : MonoBehaviour
         enemyList[2].powerUp = BoostType.Points;
     }
 
-    float lastTimePowerUpDropped;
     public void DropPowerUp(Vector3 dropPosition, BoostType boostType)
     {
         if (boostType == BoostType.None) return;
@@ -149,7 +119,6 @@ public class GameManager : MonoBehaviour
                 powerUp.GetComponent<Rigidbody2D>().gravityScale = gravity;
                 break;
         }
-
         lastTimePowerUpDropped = Time.time;
     }
 
@@ -186,6 +155,9 @@ public class GameManager : MonoBehaviour
     {
         if (lives == 0) return;
         LoadLevel(++activeLevelNumber);
+        player.transform.position = new Vector3(0, -4, 0);
+        player.lastTimeShot = Time.time;
+        Time.timeScale = 1f;
     }
 
     void LoadLevel(int levelNumber)
@@ -236,21 +208,10 @@ public class GameManager : MonoBehaviour
         gameIsActive = false;
         EnemiesManager.Instance.ClearAllEnemies();
         Invoke("PlayerLevelUp", 1.2f);
-        Invoke("PrepareNextLevel", 2.6f);
+        Invoke("LoadNextLevel", 2.6f);
 
         player.lastTimeAttackBoosted += 2.6f; // Para evitar desperdiciar el power-up entre escenas
         player.shield.nextTimeShutDownShield += 2.6f;
-    }
-
-    void PrepareNextLevel()
-    {
-        if (showStories) ShowStory();
-        else CanvasManager.Instance.BTN_Next();
-    }
-
-    void ShowStory()
-    {
-        CanvasManager.Instance.ShowLevelStory(activeLevelNumber);
     }
 
     public void PlayerLevelUp()
@@ -269,12 +230,12 @@ public class GameManager : MonoBehaviour
         player.gameObject.SetActive(false);
         EnemiesManager.Instance.StopEnemies();
         gameIsActive = false;
-        CanvasManager.Instance.SendScore(gameData.userAlias, CanvasManager.Instance.score);
+        CanvasManager.Instance.SendScore(user.alias, CanvasManager.Instance.score);
     }
 
     public void SaveScore(int score)
     {
-        user.score = score.ToString();
+        user.score = score;
         if (PlayerPrefs.HasKey("score"))
         {
             var lastScore = PlayerPrefs.GetInt("score");
@@ -285,17 +246,6 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt("score", score);
         }
     }
-
-    private void Update()
-    {
-        Controles();
-    }
-
-    // public void RestartLevel()
-    // {
-    //     player.gameObject.SetActive(true);
-    //     EnemiesManager.Instance.Reset();
-    // }
 
     public void SetLives(int livesAmount)
     {
@@ -401,14 +351,10 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("MainLevel");
     }
 
-    public void Controles()
+    public void ChangeAlias(string newAlias)
     {
-        //if (Input.GetButtonDown("Reset")) ResetGame();
-
-        if (Input.GetButton("Shoot") || Input.GetButton("ShootPad"))
-        {
-            if (gameIsActive && lives > 0) player.Shoot();
-        }
+        PlayerPrefs.SetString("alias", newAlias);
+        user.alias = newAlias;
     }
 
 }

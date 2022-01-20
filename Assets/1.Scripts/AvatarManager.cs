@@ -23,12 +23,16 @@ public class AvatarManager : MonoBehaviour
 
     public void BTN_AvatarLeft()
     {
+        if (isAnimating) return;
+        AudioManager.Instance.PlayButtonClick();
         iTween.PunchScale(avatarLeftButton.gameObject, Vector3.one * animButtonDistance, animButtonDuration);
         PreviosAvatarPage();
     }
 
     public void BTN_AvatarRight()
     {
+        if (isAnimating) return;
+        AudioManager.Instance.PlayButtonClick();
         iTween.PunchScale(avatarRightButton.gameObject, Vector3.one * animButtonDistance, animButtonDuration);
         NextAvatarPage();
     }
@@ -66,6 +70,7 @@ public class AvatarManager : MonoBehaviour
             avatarButton.onClick.AddListener(() => BTN_Avatar(spriteIndex + 1));
             avatarT.gameObject.SetActive(true);
             avatarT.DOPunchScale(Vector3.one, 0.5f, 5, 0.5f);
+            AudioManager.Instance.PlayBlop();
             await UniTask.Delay(90);
         }
         isAnimating = false;
@@ -73,6 +78,7 @@ public class AvatarManager : MonoBehaviour
 
     void BTN_Avatar(int avatarIndex)
     {
+        AudioManager.Instance.PlayBlop();
         CanvasManager.Instance.SetAvatarSprite(avatarIndex);
         gameObject.SetActive(false);
     }

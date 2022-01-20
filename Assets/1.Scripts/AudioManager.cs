@@ -8,91 +8,101 @@ public class AudioManager : MonoBehaviour
     public ScriptableSounds scriptableSounds;
     public AudioSource musicSource, playerSource, enemySource;
 
-    private void Awake ()
+    private void Awake()
     {
-        if (Instance) Destroy (this.gameObject);
+        if (Instance) Destroy(this.gameObject);
         Instance = this;
     }
 
-    public void StartMusic ()
+    public void PlayMainThemeMusic()
     {
         musicSource.clip = scriptableSounds.mainTheme;
-        musicSource.Play ();
+        musicSource.Play();
     }
 
-    public void StopMusic ()
+    public void StopMusic()
     {
-        musicSource.Stop ();
+        musicSource.Stop();
     }
 
-    public void PlayAudioPlayer (AudioClip clip)
+    public void PlayAudioPlayer(AudioClip clip)
     {
-        playerSource.PlayOneShot (clip);
+        playerSource.PlayOneShot(clip);
     }
 
-    public void PlayAudioEnemy (AudioClip clip)
+    public void PlayAudioEnemy(AudioClip clip)
     {
-        enemySource.PlayOneShot (clip);
+        enemySource.PlayOneShot(clip);
     }
 
-    public void PlayPlayerShot ()
+    public void PlayButtonClick()
     {
-        PlayAudioPlayer (scriptableSounds.basicShot);
+        PlayAudioPlayer(scriptableSounds.buttonClick);
     }
 
-    public void PlayPlayerLevelUp ()
+    public void PlayBlop()
     {
-        PlayAudioPlayer (scriptableSounds.shipUpgrade);
+        PlayAudioPlayer(scriptableSounds.blop);
     }
 
-    public void PlayPlayerLifeUp ()
+    public void PlayPlayerShot()
     {
-        PlayAudioPlayer (scriptableSounds.lifeUp);
+        PlayAudioPlayer(scriptableSounds.basicShot);
     }
 
-    public void PlayPlayerDestroyed ()
+    public void PlayPlayerLevelUp()
     {
-        PlayAudioPlayer (scriptableSounds.playerDestroyed);
+        PlayAudioPlayer(scriptableSounds.shipUpgrade);
     }
 
-    public void PlayEnemyShot ()
+    public void PlayPlayerLifeUp()
     {
-        PlayAudioEnemy (scriptableSounds.enemyShot);
+        PlayAudioPlayer(scriptableSounds.lifeUp);
     }
 
-    public void PlayEnemyShotSlow ()
+    public void PlayPlayerDestroyed()
     {
-        PlayAudioEnemy (scriptableSounds.enemyShot2);
+        PlayAudioPlayer(scriptableSounds.playerDestroyed);
     }
 
-    public void PlayEnemyShotFire ()
+    public void PlayEnemyShot()
     {
-        PlayAudioEnemy (scriptableSounds.enemyShotFire);
+        PlayAudioEnemy(scriptableSounds.enemyShot);
     }
 
-    public void PlayEnemyDamaged ()
+    public void PlayEnemyShotSlow()
     {
-        PlayAudioEnemy (scriptableSounds.enemyDamaged);
+        PlayAudioEnemy(scriptableSounds.enemyShot2);
     }
 
-    public void PlayEnemyDamagedLow ()
+    public void PlayEnemyShotFire()
     {
-        PlayAudioEnemy (scriptableSounds.enemyDamagedLow);
+        PlayAudioEnemy(scriptableSounds.enemyShotFire);
     }
 
-    public void PlayEnemyExplosionLow ()
+    public void PlayEnemyDamaged()
     {
-        PlayAudioEnemy (scriptableSounds.explosionLow);
+        PlayAudioEnemy(scriptableSounds.enemyDamaged);
     }
 
-    public void PlayEnemyShieldImpact ()
+    public void PlayEnemyDamagedLow()
     {
-        PlayAudioEnemy (scriptableSounds.shieldImpact);
+        PlayAudioEnemy(scriptableSounds.enemyDamagedLow);
     }
 
-    public void PlayBossDamaged ()
+    public void PlayEnemyExplosionLow()
     {
-        PlayAudioEnemy (scriptableSounds.bossDamaged);
+        PlayAudioEnemy(scriptableSounds.explosionLow);
+    }
+
+    public void PlayEnemyShieldImpact()
+    {
+        PlayAudioEnemy(scriptableSounds.shieldImpact);
+    }
+
+    public void PlayBossDamaged()
+    {
+        PlayAudioEnemy(scriptableSounds.bossDamaged);
     }
 
 }

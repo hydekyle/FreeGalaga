@@ -6,6 +6,8 @@ using UnityEngine.Networking;
 using System;
 using TMPro;
 using DG.Tweening;
+using Cysharp.Threading.Tasks;
+using System.Linq;
 
 public class CanvasManager : MonoBehaviour
 {
@@ -29,7 +31,7 @@ public class CanvasManager : MonoBehaviour
 
     public GameObject storiesUI;
     public TextMeshProUGUI informationText;
-    public TextMeshProUGUI storyText;
+    public TextMeshProUGUI historyText;
     public GameObject storyImage, mainStoryButton, aliasEditWindow;
     public RectTransform loadingBlackScreen, courtineScreen;
     public Button informationButton;
@@ -57,41 +59,42 @@ public class CanvasManager : MonoBehaviour
         else shieldIcon.fillAmount = Mathf.MoveTowards(shieldIcon.fillAmount, fillValue, Time.deltaTime * 3);
     }
 
-    public void SendScore(string alias, int score)
+    public async void SendScore(string alias, int score)
     {
         GameSession.Instance.GameFinished();
         GameManager.Instance.SaveScore(score);
-        StartCoroutine(NetworkManager.SendHighScore(alias, score, onEnded =>
-        {
-            myHighScore = score; // Cache for sharing on FB
-            ShowHighScores();
-        }));
+        await NetworkManager.UpdateUserData(alias, score);
+        myHighScore = score; // Cache for sharing on FB
+        ShowHighScores();
     }
 
-    public void ShowHighScores()
+    public async void ShowHighScores()
     {
-        StartCoroutine(NetworkManager.GetHighScores(topUsers =>
-      {
-          Transform content = highScoresWindow.Find("Leader Board").Find("Scroll View").Find("Viewport").Find("Content");
-          for (var x = 0; x < topUsers.Count; x++)
-          {
-              var userSlot = content.GetChild(x);
-              bool itsMe = topUsers[x].alias == GameManager.Instance.gameData.userAlias;
-              var usernameText = userSlot.Find("Username").GetComponent<TextMeshProUGUI>();
-              usernameText.text = itsMe ? PlayerPrefs.GetString("alias") : topUsers[x].alias;
-              userSlot.Find("Points").GetComponent<TextMeshProUGUI>().text = topUsers[x].score;
-              userSlot.Find("Avatar").GetComponent<Image>().sprite = GetAvatarSprite(itsMe ? PlayerPrefs.GetInt("avatar") : topUsers[x].avatar);
-              if (itsMe)
-              {
-                  usernameText.color = Color.yellow;
-                  myRankPosition = x + 1;
-                  myHighScore = int.Parse(topUsers[x].score);
-              }
-              GameManager.Instance.SetAndroidControls(false);
-              highScoresWindow.gameObject.SetActive(true);
-              Invoke("MakeRetryAvailable", 1f);
-          }
-      }));
+        var topUsers = (await NetworkManager.GetHighScores()).users.ToList();
+        Transform content = highScoresWindow.Find("Leader Board").Find("Scroll View").Find("Viewport").Find("Content");
+        for (var x = 0; x < topUsers.Count; x++)
+        {
+            var userSlot = content.GetChild(x);
+            bool itsMe = topUsers[x].alias == GameManager.Instance.user.alias;
+            var usernameText = userSlot.Find("Username").GetComponent<TextMeshProUGUI>();
+            usernameText.text = itsMe ? GameManager.Instance.user.alias : topUsers[x].alias;
+            userSlot.Find("Points").GetComponent<TextMeshProUGUI>().text = topUsers[x].score.ToString();
+            userSlot.Find("Avatar").GetComponent<Image>().sprite = GetAvatarSprite(itsMe ? PlayerPrefs.GetInt("avatar") : topUsers[x].avatar);
+            if (itsMe)
+            {
+                usernameText.color = Color.yellow;
+                myRankPosition = x + 1;
+                myHighScore = topUsers[x].score;
+            }
+            SetAndroidControls(false);
+            highScoresWindow.gameObject.SetActive(true);
+            Invoke("MakeRetryAvailable", 1f);
+        }
+    }
+
+    public void SetAndroidControls(bool status)
+    {
+        androidControls.gameObject.SetActive(status);
     }
 
     public void BTN_SendScoreFB()
@@ -155,24 +158,19 @@ public class CanvasManager : MonoBehaviour
         return spritesAvatar[selected];
     }
 
-    public void LoadUserDataAndShowMenu(User userData)
+    public void LoadCanvasText(User user)
     {
-        StartCoroutine(NetworkManager.GetGameConfiguration(gameConfig =>
-        {
-            informationText.text = gameConfig.stories[gameConfig.stories.Count - 1];
-            GameManager.Instance.gameConfiguration = gameConfig;
-            loadingBlackScreen.gameObject.SetActive(false);
-            SetUserDataAndStartMenu(userData);
-            print(userData.avatar);
-        }));
+        informationText.text = GameManager.Instance.gameConfiguration.gameInfo;
+        avatarHolder.sprite = GetAvatarSprite(user.avatar);
+        textAlias.text = user.alias;
+        usernameText.text = user.alias;
+        SetScoreUI(user.score);
     }
 
-    private void SetUserDataAndStartMenu(User userData)
+    public void ShowStartMenu(User user)
     {
-        //SetStars(int.Parse(userData.intentos));
-        SetScoreUI(int.Parse(userData.score));
-        avatarHolder.sprite = GetAvatarSprite(userData.avatar);
-        textAlias.text = userData.alias;
+        LoadCanvasText(user);
+        loadingBlackScreen.gameObject.SetActive(false);
         startMenu.SetActive(true);
         var menuScreen = startMenu.GetComponent<RectTransform>();
         var topY = courtineScreen.transform.localPosition;
@@ -186,7 +184,7 @@ public class CanvasManager : MonoBehaviour
 
     public void BTN_Start()
     {
-
+        AudioManager.Instance.PlayButtonClick();
         StartGame();
     }
 
@@ -204,20 +202,15 @@ public class CanvasManager : MonoBehaviour
 
     void ShowMainStory()
     {
-        storyText.text = GameManager.Instance.gameConfiguration.stories[0];
+        historyText.text = GameManager.Instance.gameConfiguration.history;
         storiesUI.SetActive(true);
     }
 
-    public void ShowLevelStory(int number)
+    public void ShowStartGameMessage()
     {
-        try
-        {
-            storyText.text = GameManager.Instance.gameConfiguration.stories[number + 1];
-            storiesUI.SetActive(true);
-        }
-        catch
-        { }
-        Invoke(nameof(BTN_Next), GameManager.Instance.gameConfiguration.storyLevelWaitTime / 10f);
+        historyText.text = GameManager.Instance.gameConfiguration.startGameMessage;
+        storiesUI.SetActive(true);
+        Invoke(nameof(BTN_Next), GameManager.Instance.gameConfiguration.storyLevelWaitTime / 1000f);
     }
 
     void DisableStoryButton()
@@ -228,7 +221,7 @@ public class CanvasManager : MonoBehaviour
     public void BTN_CloseMainStory()
     {
         FadeOutMainStory();
-        ShowLevelStory(0);
+        ShowStartGameMessage();
     }
 
     IEnumerator WaitSeconds(float seconds, Action onEnded)
@@ -244,10 +237,10 @@ public class CanvasManager : MonoBehaviour
         mainStoryButton.transform.parent.Find("Button_Next").GetComponent<Button>().interactable = true;
     }
 
-    public void ShowGameover()
-    {
-        ShowLevelStory(GameManager.Instance.gameConfiguration.stories.Count);
-    }
+    // public void ShowGameover()
+    // {
+    //     ShowLevelStory(GameManager.Instance.gameConfiguration.stories.Count);
+    // }
 
     public void BTN_Next()
     {
@@ -255,11 +248,6 @@ public class CanvasManager : MonoBehaviour
         var levelNumber = GameManager.Instance.activeLevelNumber;
         if (levelNumber == 0) GameManager.Instance.StartGame();
         else GameManager.Instance.LoadNextLevel();
-
-        var player = GameManager.Instance.player;
-        player.transform.position = new Vector3(0, -4, 0);
-        player.lastTimeShot = Time.time;
-        Time.timeScale = 1f;
     }
 
     public GameObject informationUI;
@@ -275,6 +263,7 @@ public class CanvasManager : MonoBehaviour
 
     public void BTN_InformationOpen()
     {
+        AudioManager.Instance.PlayButtonClick();
         informationUI.SetActive(true);
     }
 

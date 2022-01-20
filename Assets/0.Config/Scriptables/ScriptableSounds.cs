@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu ()]
+[CreateAssetMenu()]
 public class ScriptableSounds : ScriptableObject
 {
-    [Header ("Músicas")]
+    [Header("Músicas")]
     public AudioClip mainTheme;
 
-    [Header ("Sonidos")]
+    [Header("Sonidos")]
     public AudioClip basicShot;
     public AudioClip enemyShot, enemyShot2, enemyShotFire;
     public AudioClip enemyDamaged, enemyDamagedLow, bossDamaged;
@@ -19,4 +19,6 @@ public class ScriptableSounds : ScriptableObject
     public AudioClip shipUpgrade;
     public AudioClip gameOverSFX;
     public AudioClip theWin;
+    public AudioClip buttonClick;
+    public AudioClip blop;
 }

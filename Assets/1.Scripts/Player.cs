@@ -47,16 +47,25 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        Vector3 deltaPosition = new Vector3(Mathf.Clamp(Input.GetAxis("Horizontal"), -1f, 1f), Mathf.Clamp(Input.GetAxis("Vertical"), -1f, 1f), 0);
-        transform.position += deltaPosition * Time.deltaTime * stats.movementVelocity;
-        transform.position = new Vector3(Mathf.Clamp(transform.position.x, minPosX, maxPosX), Mathf.Clamp(transform.position.y, minPosY, maxPosY), 0);
-
+        Control();
         if (isAttackBoosted && Time.time > lastTimeAttackBoosted + attackBoostTime) DesactivateAttackBoost();
         else
         {
             float fillValue = Mathf.Clamp((lastTimeAttackBoosted + attackBoostTime - Time.time) * 2 / 10f, 0f, 1f);
             CanvasManager.Instance.SetFillBoostIcon(fillValue);
         }
+    }
+
+    void Control()
+    {
+        if (Input.GetButton("Shoot") || Input.GetButton("ShootPad"))
+        {
+            if (GameManager.Instance.gameIsActive && GameManager.Instance.lives > 0) Shoot();
+        }
+
+        Vector3 deltaPosition = new Vector3(Mathf.Clamp(Input.GetAxis("Horizontal"), -1f, 1f), Mathf.Clamp(Input.GetAxis("Vertical"), -1f, 1f), 0);
+        transform.position += deltaPosition * Time.deltaTime * stats.movementVelocity;
+        transform.position = new Vector3(Mathf.Clamp(transform.position.x, minPosX, maxPosX), Mathf.Clamp(transform.position.y, minPosY, maxPosY), 0);
     }
 
     public void Shoot()

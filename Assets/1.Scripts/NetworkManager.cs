@@ -5,161 +5,96 @@ using UnityEngine.Networking;
 using System;
 using System.Security.Cryptography;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 
 public static class NetworkManager
 {
-    public static IEnumerator SendHighScore(string alias, int score, Action<bool> onEnded)
+    public static async UniTask<bool> UpdateUserData(string alias, int score)
     {
-        var token = GetEncriptedToken(alias, score);
-        var sendScoreURL = GameManager.Instance.gameData.sendScoreURL;
-        string sendScoreFinalURL = String.Concat(sendScoreURL, String.Format("?alias={0}&score={1}&token={2}&id={3}&avatar={4}", alias, score, token, PlayerPrefs.GetString("id"), GameManager.Instance.user.avatar));
-        using (UnityWebRequest webRequest = UnityWebRequest.Get(sendScoreFinalURL))
+        bool isNewRecord = false;
+        try
         {
-            bool isNewRecord = false;
-            yield return webRequest.SendWebRequest();
-            if (webRequest.result != UnityWebRequest.Result.ConnectionError)
-                isNewRecord = webRequest.downloadHandler.text == "1" ? true : false;
-            onEnded(isNewRecord);
+            var token = Helpers.GetEncryptedToken(alias, score);
+            string url = String.Concat(GameManager.Instance.gameServer.updateScoreURL, String.Format("?alias={0}&score={1}&token={2}&id={3}&avatar={4}", alias, score, token, PlayerPrefs.GetString("id"), GameManager.Instance.user.avatar));
+            var webRequest = await UnityWebRequest.Get(url).SendWebRequest();
+            if (webRequest.result == UnityWebRequest.Result.ConnectionError) throw new Exception("Can't connect to server");
+            isNewRecord = webRequest.downloadHandler.text == "1" ? true : false;
         }
+        catch (Exception err) { Debug.LogWarning(err.Message); }
+        return isNewRecord;
     }
 
-    public static IEnumerator GetUserData(string id, Action<User> userData)
+    public static async UniTask<User> GetUserDataByID(string id)
     {
-        var getUserDataURL = GameManager.Instance.gameData.getUserDataURL + "?id=" + id;
-        using (UnityWebRequest webRequest = UnityWebRequest.Get(getUserDataURL))
+        User user = new User();
+        try
         {
-            yield return webRequest.SendWebRequest();
-            try
+            var url = GameManager.Instance.gameServer.getUserDataURL + "?id=" + id;
+            var webRequest = await UnityWebRequest.Get(url).SendWebRequest();
+            if (webRequest.result == UnityWebRequest.Result.ConnectionError) throw new Exception("Can't connect to database");
+            if (webRequest.responseCode != 200) throw new Exception("User have not send any score yet");
+            var userDB = JsonUtility.FromJson<User>(webRequest.downloadHandler.text);
+            user = new User
             {
-                if (webRequest.result != UnityWebRequest.Result.ConnectionError)
-                {
-                    if (webRequest.responseCode != 200) throw new Exception("User have not send any score yet");
-                    var storedUserValues = webRequest.downloadHandler.text.Split('|');
-                    userData(new User
-                    {
-                        id = storedUserValues[0],
-                        alias = PlayerPrefs.HasKey("alias") ? PlayerPrefs.GetString("alias") : storedUserValues[1],
-                        score = storedUserValues[2],
-                        avatar = PlayerPrefs.HasKey("avatar") ? PlayerPrefs.GetInt("avatar") : int.Parse(storedUserValues[3])
-                    });
-                }
-                else
-                {
-                    throw new Exception("Can't connect to database");
-                }
-            }
-            catch (Exception err)
-            {
-                // Generate a new user if we can't get userdata from db
-                Debug.LogWarning(err.Message);
-                string newID = PlayerPrefs.GetString("id");
-                userData(new User
-                {
-                    id = newID,
-                    alias = PlayerPrefs.HasKey("alias") ? PlayerPrefs.GetString("alias") : "Player-" + newID.Substring(0, 4),
-                    score = PlayerPrefs.HasKey("score") ? PlayerPrefs.GetInt("score").ToString() : "0",
-                    avatar = PlayerPrefs.HasKey("avatar") ? PlayerPrefs.GetInt("avatar") : 1
-                });
-            }
+                alias = PlayerPrefs.HasKey("alias") ? PlayerPrefs.GetString("alias") : userDB.alias,
+                score = userDB.score,
+                avatar = PlayerPrefs.HasKey("avatar") ? PlayerPrefs.GetInt("avatar") : userDB.avatar
+            };
         }
+        catch (Exception err)
+        {
+            // Generate a new user if we can't get userdata from db
+            Debug.LogWarning(err.Message);
+            user = new User
+            {
+                alias = PlayerPrefs.HasKey("alias") ? PlayerPrefs.GetString("alias") : "Player-" + PlayerPrefs.GetString("id").Substring(0, 4),
+                score = PlayerPrefs.HasKey("score") ? PlayerPrefs.GetInt("score") : 0,
+                avatar = PlayerPrefs.HasKey("avatar") ? PlayerPrefs.GetInt("avatar") : 1
+            };
+        }
+        return user;
     }
 
-    public static IEnumerator GetHighScores(Action<List<User>> topUsers)
+    public static async UniTask<TopScore> GetHighScores()
     {
-        var highScoresURL = GameManager.Instance.gameData.getHighScoresURL;
-        List<User> users = new List<User>();
-        using (UnityWebRequest webRequest = UnityWebRequest.Get(highScoresURL))
+        TopScore topScore = new TopScore();
+        try
         {
-            yield return webRequest.SendWebRequest();
-            if (webRequest.result != UnityWebRequest.Result.ConnectionError)
-            {
-                foreach (var rawUser in webRequest.downloadHandler.text.Split('|'))
-                {
-                    try
-                    {
-                        var storedUserValues = rawUser.Split('·');
-                        users.Add(new User
-                        {
-                            alias = storedUserValues[0],
-                            score = storedUserValues[1],
-                            avatar = int.Parse(storedUserValues[2])
-                        });
-                    }
-                    catch
-                    { }
-                }
-            }
-            else
-            {
-                Debug.LogWarning("Can't connect to ranking");
-                GameManager.Instance.ResetGame();
-            }
-            topUsers(users);
+            var url = GameManager.Instance.gameServer.getHighScoresURL;
+            var webRequest = await UnityWebRequest.Get(url).SendWebRequest();
+            if (webRequest.result == UnityWebRequest.Result.ConnectionError) throw new Exception("Can't connect to ranking");
+            topScore = JsonUtility.FromJson<TopScore>(webRequest.downloadHandler.text);
         }
+        catch (Exception err)
+        {
+            Debug.LogWarning(err.Message);
+            GameManager.Instance.ResetGame();
+        }
+        return topScore;
     }
 
-    public static IEnumerator GetGameConfiguration(Action<GameConfiguration> gameConfiguration)
+    public static async UniTask<GameConfiguration> GetGameConfiguration(GameServer gameServer)
     {
-        var storiesURL = GameManager.Instance.gameData.gameDataURL;
-        using (UnityWebRequest webRequest = UnityWebRequest.Get(storiesURL))
+        GameConfiguration gameConfig = new GameConfiguration();
+        try
         {
-            GameConfiguration gameConfig = new GameConfiguration();
-            yield return webRequest.SendWebRequest();
-            if (webRequest.result != UnityWebRequest.Result.ConnectionError)
-            {
-                var fetched_data = webRequest.downloadHandler.text.Split('|').ToList();
-                gameConfig.livesPerCredit = int.Parse(fetched_data[0]);
-                gameConfig.playerMovementSpeed = int.Parse(fetched_data[1]);
-                gameConfig.playerAttackSpeed = int.Parse(fetched_data[2]);
-                gameConfig.storyLevelWaitTime = int.Parse(fetched_data[3]);
-                gameConfig.miniBossHealth = int.Parse(fetched_data[4]);
-                gameConfig.finalBossHealth = int.Parse(fetched_data[5]);
-                fetched_data.RemoveRange(0, 6);
-                var storiesList = new List<string>();
-                foreach (string story in fetched_data) storiesList.Add(story);
-                gameConfig.stories = storiesList;
-            }
-            else
-            {
-                Debug.LogWarning("Can't get GameConfig from remote server. Default settings loaded.");
-                gameConfig.livesPerCredit = 3;
-                gameConfig.playerMovementSpeed = 7;
-                gameConfig.playerAttackSpeed = 7;
-                gameConfig.storyLevelWaitTime = 0;
-                gameConfig.miniBossHealth = 1000;
-                gameConfig.finalBossHealth = 2000;
-                gameConfig.stories = Helpers.GetDebugStories();
-                GameManager.Instance.showStories = false;
-            }
-            gameConfiguration(gameConfig);
+            var url = gameServer.getGameConfigURL;
+            var webRequest = await UnityWebRequest.Get(url).SendWebRequest();
+            if (webRequest.result == UnityWebRequest.Result.ConnectionError) throw new Exception("Can't load GameConfig from remote server. Loading default settings.");
+            gameConfig = JsonUtility.FromJson<GameConfiguration>(webRequest.downloadHandler.text);
         }
-    }
-
-    public static string Md5Sum(string strToEncrypt)
-    {
-        System.Text.UTF32Encoding ue = new System.Text.UTF32Encoding();
-        byte[] bytes = ue.GetBytes(strToEncrypt);
-
-        // encrypt bytes
-        System.Security.Cryptography.MD5CryptoServiceProvider md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
-        byte[] hashBytes = md5.ComputeHash(bytes);
-
-        // Convert the encrypted bytes back to a string (base 16)
-        string hashString = "";
-
-        for (int i = 0; i < hashBytes.Length; i++)
+        catch (Exception err)
         {
-            hashString += System.Convert.ToString(hashBytes[i], 16).PadLeft(2, '0');
+            Debug.LogWarning(err.Message);
+            gameConfig.livesPerCredit = 3;
+            gameConfig.playerMovementSpeed = 7;
+            gameConfig.playerAttackSpeed = 7;
+            gameConfig.storyLevelWaitTime = 0;
+            gameConfig.miniBossHealth = 1000;
+            gameConfig.finalBossHealth = 2000;
+            GameManager.Instance.showStories = false;
         }
-
-        return hashString.PadLeft(32, '0');
-    }
-
-    public static string GetEncriptedToken(string alias, int points)
-    {
-        string token = "";
-        token = (alias.Length * points + 7).ToString();
-        return token;
+        return gameConfig;
     }
 
 }
