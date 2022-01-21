@@ -15,11 +15,11 @@ public static class NetworkManager
         try
         {
             var id = PlayerPrefs.GetString("id");
-            var alias = GameManager.Instance.user.alias;
-            var score = CanvasManager.Instance.score;
-            var avatar = GameManager.Instance.user.avatar;
+            var alias = GameSession.Instance.user.alias;
+            var avatar = GameSession.Instance.user.avatar;
+            var score = GameManager.Instance.score;
             var token = Helpers.GetEncryptedToken(alias, score);
-            string url = String.Concat(GameManager.Instance.gameServer.updateScoreURL, String.Format("?alias={0}&score={1}&token={2}&id={3}&avatar={4}", alias, score, token, id, avatar));
+            string url = String.Concat(GameSession.Instance.serverEndpoints.updateScoreURL, String.Format("?alias={0}&score={1}&token={2}&id={3}&avatar={4}", alias, score, token, id, avatar));
             var webRequest = await UnityWebRequest.Get(url).SendWebRequest();
             if (webRequest.result == UnityWebRequest.Result.ConnectionError) throw new Exception("Can't connect to server");
             topScore = JsonUtility.FromJson<TopScore>(webRequest.downloadHandler.text);
@@ -28,16 +28,16 @@ public static class NetworkManager
         return topScore;
     }
 
-    public static async UniTask<GameDataResponse> GetGameDataByUserID(string id)
+    public static async UniTask<GameDataResponse> GetServerDataByUserID(string id)
     {
         GameDataResponse gameDataResponse = new GameDataResponse();
         try
         {
-            var url = GameManager.Instance.gameServer.getGameDataURL + "?id=" + id;
+            var url = GameSession.Instance.serverEndpoints.getGameDataURL + "?id=" + id;
             var webRequest = await UnityWebRequest.Get(url).SendWebRequest();
             if (webRequest.result == UnityWebRequest.Result.ConnectionError) throw new Exception("Can't connect to database");
-            if (webRequest.responseCode != 200) throw new Exception("User have not send any score yet");
             gameDataResponse = JsonUtility.FromJson<GameDataResponse>(webRequest.downloadHandler.text);
+            if (gameDataResponse.userData.alias == null) throw new Exception("User have not send any score yet");
             var userDB = gameDataResponse.userData;
             gameDataResponse.userData = new User
             {
@@ -48,11 +48,12 @@ public static class NetworkManager
         }
         catch (Exception err)
         {
-            // Load Local User and GameData
+            // Load new local User and GameData
             Debug.LogWarning(err.Message);
+            var aliasDefault = "Player-" + PlayerPrefs.GetString("id").Substring(0, 4);
             gameDataResponse.userData = new User
             {
-                alias = PlayerPrefs.HasKey("alias") ? PlayerPrefs.GetString("alias") : "Player-" + PlayerPrefs.GetString("id").Substring(0, 4),
+                alias = PlayerPrefs.HasKey("alias") ? PlayerPrefs.GetString("alias") : aliasDefault,
                 score = PlayerPrefs.HasKey("score") ? PlayerPrefs.GetInt("score") : 0,
                 avatar = PlayerPrefs.HasKey("avatar") ? PlayerPrefs.GetInt("avatar") : 1
             };

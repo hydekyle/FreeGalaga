@@ -59,7 +59,7 @@ public class EnemiesManager : MonoBehaviour
 
     public void EnemyTouchBottom(Enemy enemy)
     {
-        CanvasManager.Instance.LoseScore(enemy.points / 2);
+        GameManager.Instance.LoseScore(enemy.points / 2);
         enemy.Die();
     }
 

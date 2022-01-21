@@ -40,7 +40,7 @@ public struct Stats
 }
 
 [Serializable]
-public struct GameServer
+public struct ServerEndpoints
 {
     public string getHighScoresURL;
     public string updateScoreURL;

@@ -153,7 +153,7 @@ public class Enemy : MonoBehaviour
     public void DestroyedByPlayer()
     {
         GameManager.Instance.DropPowerUp(transform.position, powerUp);
-        CanvasManager.Instance.AddScore(points);
+        GameManager.Instance.AddScore(points);
         Die();
     }
 

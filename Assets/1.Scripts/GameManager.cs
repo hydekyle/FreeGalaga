@@ -26,8 +26,8 @@ public class GameManager : MonoBehaviour
     public int lives = 3;
     public GameObject bulletEnemyPrefab, bombPrefab;
     public GameObject boostShield, boostHealth, boostPoints, boostAttackspeed;
-    public GameConfiguration gameConfiguration;
-    public string serverURL;
+    public int score;
+    float lastTimePowerUpDropped;
 
     [Header("SETTINGS")]
     public GameObject bigExplosion;
@@ -39,10 +39,6 @@ public class GameManager : MonoBehaviour
     public bool retryAvailable = false;
     [HideInInspector]
     public bool gameIsActive = false;
-    [HideInInspector]
-    public GameServer gameServer;
-    public User user;
-    float lastTimePowerUpDropped;
 
     void Awake()
     {
@@ -52,21 +48,13 @@ public class GameManager : MonoBehaviour
         enemyBulletsPoolRed = EZObjectPool.CreateObjectPool(tablesEtc.disparosEnemigos[1], "Bullets Enemy Red", 5, false, true, true);
         enemyBulletsPoolFire = EZObjectPool.CreateObjectPool(tablesEtc.disparosEnemigos[2], "Bullets Enemy Fire", 4, false, true, true);
         enemyBombs = EZObjectPool.CreateObjectPool(bombPrefab, "Bombs Boss", 6, false, true, true);
-        // Get a unique ID if dont have one
-        if (!PlayerPrefs.HasKey("id"))
-        {
-            var newID = System.Guid.NewGuid().ToString();
-            PlayerPrefs.SetString("id", newID);
-        }
     }
 
     async void Start()
     {
-        gameServer = Helpers.GetGameServer();
-        var serverData = await NetworkManager.GetGameDataByUserID(PlayerPrefs.GetString("id"));
-        user = serverData.userData;
-        gameConfiguration = serverData.gameConfig;
-        CanvasManager.Instance.ShowStartMenu(user);
+        await UniTask.WaitUntil(() => GameSession.Instance.isGameReady);
+        CanvasManager.Instance.LoadCanvasText();
+        CanvasManager.Instance.ShowStartMenu();
     }
 
     public void StartGame()
@@ -80,10 +68,11 @@ public class GameManager : MonoBehaviour
 
     void SpawnPlayer()
     {
-        SetLives(gameConfiguration.livesPerCredit);
-        player.stats.movementVelocity = GameManager.Instance.gameConfiguration.playerMovementSpeed / 4f;
-        player.stats.shootCooldown = GameManager.Instance.gameConfiguration.playerAttackSpeed / 4f;
+        SetLives(GameSession.Instance.gameConfiguration.livesPerCredit);
+        player.stats.movementVelocity = GameSession.Instance.gameConfiguration.playerMovementSpeed / 4f;
+        player.stats.shootCooldown = GameSession.Instance.gameConfiguration.playerAttackSpeed / 4f;
         player.GetComponent<SpriteRenderer>().enabled = true;
+        CanvasManager.Instance.SetScoreUI(0);
     }
 
     public void AddRandomPowerUps(List<Enemy> enemyList)
@@ -121,6 +110,18 @@ public class GameManager : MonoBehaviour
                 break;
         }
         lastTimePowerUpDropped = Time.time;
+    }
+
+    public void AddScore(int value)
+    {
+        score += value;
+        CanvasManager.Instance.SetScoreUI(score);
+    }
+
+    public void LoseScore(int value)
+    {
+        score = score - value > 0 ? score - value : 0;
+        CanvasManager.Instance.SetScoreUI(score);
     }
 
     public void ExplosionBigAtPosition(Vector3 explosionPosition, Color explosionColor)
@@ -210,7 +211,6 @@ public class GameManager : MonoBehaviour
         EnemiesManager.Instance.ClearAllEnemies();
         Invoke("PlayerLevelUp", 1.2f);
         Invoke("LoadNextLevel", 2.6f);
-
         player.lastTimeAttackBoosted += 2.6f; // Para evitar desperdiciar el power-up entre escenas
         player.shield.nextTimeShutDownShield += 2.6f;
     }
@@ -236,7 +236,7 @@ public class GameManager : MonoBehaviour
 
     public async void SendScore()
     {
-        var score = CanvasManager.Instance.score;
+        var score = GameManager.Instance.score;
         GameSession.Instance.GameFinished();
         GameManager.Instance.SaveScore(score);
         var updateResponse = await NetworkManager.UpdateUserDataAndGetTopScore();
@@ -245,7 +245,7 @@ public class GameManager : MonoBehaviour
 
     public void SaveScore(int score)
     {
-        user.score = score;
+        GameSession.Instance.user.score = score;
         if (PlayerPrefs.HasKey("score"))
         {
             var lastScore = PlayerPrefs.GetInt("score");
@@ -331,7 +331,7 @@ public class GameManager : MonoBehaviour
     void AddScoreByTime()
     {
         var score = (int)(300f - Time.timeSinceLevelLoad);
-        CanvasManager.Instance.AddScore(score);
+        GameManager.Instance.AddScore(score);
     }
 
     IEnumerator ChangeLivesByPoints()
@@ -342,7 +342,7 @@ public class GameManager : MonoBehaviour
         {
             AudioManager.Instance.PlayAudioPlayer(tablesSounds.lifeUp);
             CanvasManager.Instance.SetLivesNumber(--lives);
-            CanvasManager.Instance.AddScore(1000);
+            GameManager.Instance.AddScore(1000);
             yield return new WaitForSeconds(1f);
         }
         GameOver(false);

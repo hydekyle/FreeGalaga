@@ -10,7 +10,8 @@ public class Settings : MonoBehaviour
     public AudioMixer audioMixer;
     public Image musicIMG, soundIMG, touchpadIMG;
     public Sprite musicON, musicOFF, soundON, soundOFF, touchpadON, touchpadOFF;
-    bool music, sound, touchpad;
+    bool isMusicEnabled, isSoundEnabled, isTouchpadEnabled;
+    bool musicCached, soundCached, touchpadCached;
 
     void Awake()
     {
@@ -22,16 +23,16 @@ public class Settings : MonoBehaviour
     {
         if (PlayerPrefs.HasKey("Music"))
         {
-            music = PlayerPrefs.GetInt("Music") == 1 ? true : false;
-            sound = PlayerPrefs.GetInt("Sound") == 1 ? true : false;
-            touchpad = PlayerPrefs.GetInt("Touchpad") == 1 ? true : false;
+            isMusicEnabled = PlayerPrefs.GetInt("Music") == 1 ? true : false;
+            isSoundEnabled = PlayerPrefs.GetInt("Sound") == 1 ? true : false;
+            isTouchpadEnabled = PlayerPrefs.GetInt("Touchpad") == 1 ? true : false;
         }
         else
         {
-            music = sound = touchpad = true;
+            isMusicEnabled = isSoundEnabled = isTouchpadEnabled = true;
         }
 
-        ResolveValues();
+        ResolveSetting();
     }
 
     private void Update()
@@ -39,53 +40,62 @@ public class Settings : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape)) OpenSettings();
     }
 
-    private void ResolveValues()
+    private void ResolveSetting()
     {
-        if (music) musicIMG.sprite = musicON;
+        if (isMusicEnabled) musicIMG.sprite = musicON;
         else musicIMG.sprite = musicOFF;
-        if (sound) soundIMG.sprite = soundON;
+        if (isSoundEnabled) soundIMG.sprite = soundON;
         else soundIMG.sprite = soundOFF;
+        if (isTouchpadEnabled) touchpadIMG.sprite = touchpadON;
+        else touchpadIMG.sprite = touchpadOFF;
 
-        MusicSetActive(music);
-        SoundSetActive(sound);
+        MusicSetActive(isMusicEnabled);
+        SoundSetActive(isSoundEnabled);
     }
 
     public void TouchpadEnabled()
     {
-        if (touchpad) touchpadIMG.sprite = touchpadON;
-        else touchpadIMG.sprite = touchpadOFF;
-        TouchpadSetActive(touchpad);
+        TouchpadSetActive(isTouchpadEnabled);
     }
 
     public void BTN_Music()
     {
-        music = !music;
-        ResolveValues();
+        isMusicEnabled = !isMusicEnabled;
+        ResolveSetting();
     }
 
     public void BTN_Sound()
     {
-        sound = !sound;
-        ResolveValues();
+        isSoundEnabled = !isSoundEnabled;
+        ResolveSetting();
     }
 
     public void BTN_Touchpad()
     {
-        touchpad = !touchpad;
-        ResolveValues();
+        isTouchpadEnabled = !isTouchpadEnabled;
+        ResolveSetting();
     }
 
     public void BTN_Accept()
     {
-        PlayerPrefs.SetInt("Music", music == true ? 1 : 0);
-        PlayerPrefs.SetInt("Sound", sound == true ? 1 : 0);
-        PlayerPrefs.SetInt("Touchpad", touchpad == true ? 1 : 0);
-
+        SaveSettings();
         Quit();
+    }
+
+    void SaveSettings()
+    {
+        PlayerPrefs.SetInt("Music", isMusicEnabled == true ? 1 : 0);
+        PlayerPrefs.SetInt("Sound", isSoundEnabled == true ? 1 : 0);
+        PlayerPrefs.SetInt("Touchpad", isTouchpadEnabled == true ? 1 : 0);
     }
 
     public void BTN_Back()
     {
+        isMusicEnabled = musicCached;
+        isSoundEnabled = soundCached;
+        isTouchpadEnabled = touchpadCached;
+        ResolveSetting();
+        SaveSettings();
         Quit();
     }
 
@@ -102,18 +112,17 @@ public class Settings : MonoBehaviour
     void TouchpadSetActive(bool active)
     {
         CanvasManager.Instance.androidControls.gameObject.SetActive(active);
+        ResolveSetting();
     }
 
     public void OpenSettings()
     {
-
         var settings = transform.GetChild(0).gameObject;
-        if (!settings.activeSelf)
-        {
-            settings.SetActive(true);
-            Time.timeScale = 0f;
-        }
-        //ReadCookie ();
+        settings.SetActive(true);
+        Time.timeScale = 0f;
+        musicCached = isMusicEnabled;
+        soundCached = isSoundEnabled;
+        touchpadCached = isTouchpadEnabled;
     }
 
     private void Quit()

@@ -27,14 +27,14 @@ public static class Helpers
     public static async UniTask<GameDataResponse> GetGameData()
     {
         string id = PlayerPrefs.GetString("id");
-        var userData = await NetworkManager.GetGameDataByUserID(id);
+        var userData = await NetworkManager.GetServerDataByUserID(id);
         return userData;
     }
 
-    public static GameServer GetGameServer()
+    public static ServerEndpoints GetServerEndpoints()
     {
-        GameServer gameServer = new GameServer();
-        var serverURL = GameManager.Instance.serverURL;
+        ServerEndpoints gameServer = new ServerEndpoints();
+        var serverURL = GameSession.Instance.serverURL;
         gameServer.getHighScoresURL = serverURL + "/getScores";
         gameServer.updateScoreURL = serverURL + "/updateScore";
         gameServer.getGameDataURL = serverURL + "/getGameData";

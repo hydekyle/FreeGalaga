@@ -44,15 +44,15 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        Control();
         CheckBooster();
+        if (GameManager.Instance.gameIsActive) Control();
     }
 
     void Control()
     {
         if (Input.GetButton("Shoot") || Input.GetButton("ShootPad"))
         {
-            if (GameManager.Instance.gameIsActive && GameManager.Instance.lives > 0) Shoot();
+            if (GameManager.Instance.lives > 0) Shoot();
         }
         Vector3 deltaPosition = new Vector3(Mathf.Clamp(Input.GetAxis("Horizontal"), -1f, 1f), Mathf.Clamp(Input.GetAxis("Vertical"), -1f, 1f), 0);
         transform.position += deltaPosition * Time.deltaTime * stats.movementVelocity;
@@ -157,7 +157,7 @@ public class Player : MonoBehaviour
     void GetPoints()
     {
         AudioManager.Instance.PlayAudioPlayer(GameManager.Instance.tablesSounds.lifeUp);
-        CanvasManager.Instance.AddScore(1000);
+        GameManager.Instance.AddScore(1000);
     }
 
     void GetHealth()

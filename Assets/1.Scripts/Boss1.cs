@@ -22,7 +22,7 @@ public class Boss1 : MonoBehaviour
 
     void Initialize()
     {
-        stats.health = GameManager.Instance.gameConfiguration.finalBossHealth;
+        stats.health = GameSession.Instance.gameConfiguration.finalBossHealth;
         nextHealthToDropPoints = stats.health - 400;
         nextHealthToDropShield = stats.health / 2;
         nextTimeDropBoost = Time.time + 7f;
@@ -118,7 +118,7 @@ public class Boss1 : MonoBehaviour
     void GetStrike(int damage)
     {
         stats.health -= damage;
-        CanvasManager.Instance.AddScore(damage);
+        GameManager.Instance.AddScore(damage);
         if (stats.health <= 0) Die();
         else
         {
@@ -132,7 +132,7 @@ public class Boss1 : MonoBehaviour
 
     void Die()
     {
-        CanvasManager.Instance.AddScore(11000);
+        GameManager.Instance.AddScore(11000);
         GameManager.Instance.FinalBossKilled(transform.position);
         gameObject.SetActive(false);
     }

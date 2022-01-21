@@ -12,7 +12,6 @@ using System.Linq;
 public class CanvasManager : MonoBehaviour
 {
     public static CanvasManager Instance;
-    public int score = 0;
     int myRankPosition = 11;
     public Text scoreText, livesText, levelText, usernameText;
     public Image levelBackground;
@@ -66,9 +65,9 @@ public class CanvasManager : MonoBehaviour
         for (var x = 0; x < topUsers.Count; x++)
         {
             var userSlot = content.GetChild(x);
-            bool itsMe = topUsers[x].alias == GameManager.Instance.user.alias;
+            bool itsMe = topUsers[x].alias == GameSession.Instance.user.alias;
             var usernameText = userSlot.Find("Username").GetComponent<TextMeshProUGUI>();
-            usernameText.text = itsMe ? GameManager.Instance.user.alias : topUsers[x].alias;
+            usernameText.text = itsMe ? GameSession.Instance.user.alias : topUsers[x].alias;
             userSlot.Find("Points").GetComponent<TextMeshProUGUI>().text = topUsers[x].score.ToString();
             userSlot.Find("Avatar").GetComponent<Image>().sprite = GetAvatarSprite(itsMe ? PlayerPrefs.GetInt("avatar") : topUsers[x].avatar);
             if (itsMe)
@@ -95,18 +94,6 @@ public class CanvasManager : MonoBehaviour
     private void MakeRetryAvailable()
     {
         GameManager.Instance.retryAvailable = true;
-    }
-
-    public void LoseScore(int value)
-    {
-        score = score - value > 0 ? score - value : 0;
-        scoreText.text = score.ToString();
-    }
-
-    public void AddScore(int value)
-    {
-        score += value;
-        scoreText.text = score.ToString();
     }
 
     public void SetBackground(Sprite sprite)
@@ -138,7 +125,7 @@ public class CanvasManager : MonoBehaviour
     public void SetAvatarSprite(int avatarIndex)
     {
         PlayerPrefs.SetInt("avatar", avatarIndex);
-        GameManager.Instance.user.avatar = avatarIndex;
+        GameSession.Instance.user.avatar = avatarIndex;
         avatarHolder.sprite = GetAvatarSprite(avatarIndex);
     }
 
@@ -148,18 +135,19 @@ public class CanvasManager : MonoBehaviour
         return spritesAvatar[selected];
     }
 
-    public void LoadCanvasText(User user)
+    public void LoadCanvasText()
     {
-        informationText.text = GameManager.Instance.gameConfiguration.gameInfo;
+        var user = GameSession.Instance.user;
+        informationText.text = GameSession.Instance.gameConfiguration.gameInfo;
+        informationText.ForceMeshUpdate();
         avatarHolder.sprite = GetAvatarSprite(user.avatar);
         textAlias.text = user.alias;
         usernameText.text = user.alias;
         SetScoreUI(user.score);
     }
 
-    public void ShowStartMenu(User user)
+    public void ShowStartMenu()
     {
-        LoadCanvasText(user);
         loadingBlackScreen.gameObject.SetActive(false);
         startMenu.SetActive(true);
         var menuScreen = startMenu.GetComponent<RectTransform>();
@@ -192,15 +180,15 @@ public class CanvasManager : MonoBehaviour
 
     void ShowMainStory()
     {
-        historyText.text = GameManager.Instance.gameConfiguration.history;
+        historyText.text = GameSession.Instance.gameConfiguration.history;
         storiesUI.SetActive(true);
     }
 
     public void ShowStartGameMessage()
     {
-        historyText.text = GameManager.Instance.gameConfiguration.startGameMessage;
+        historyText.text = GameSession.Instance.gameConfiguration.startGameMessage;
         storiesUI.SetActive(true);
-        Invoke(nameof(BTN_Next), GameManager.Instance.gameConfiguration.storyLevelWaitTime / 1000f);
+        Invoke(nameof(BTN_Next), GameSession.Instance.gameConfiguration.storyLevelWaitTime / 1000f);
     }
 
     void DisableStoryButton()
@@ -226,11 +214,6 @@ public class CanvasManager : MonoBehaviour
         mainStoryButton.SetActive(false);
         mainStoryButton.transform.parent.Find("Button_Next").GetComponent<Button>().interactable = true;
     }
-
-    // public void ShowGameover()
-    // {
-    //     ShowLevelStory(GameManager.Instance.gameConfiguration.stories.Count);
-    // }
 
     public void BTN_Next()
     {
@@ -262,9 +245,11 @@ public class CanvasManager : MonoBehaviour
         GameManager.Gameover();
     }
 
-    void SetScoreUI(int amount)
+    public void SetScoreUI(int amount)
     {
-        textHighScore.text = amount.ToString();
+        var scoreAmountText = amount.ToString();
+        textHighScore.text = scoreAmountText;
+        scoreText.text = scoreAmountText;
     }
 
     public void SetNewAlias()
@@ -272,10 +257,10 @@ public class CanvasManager : MonoBehaviour
         var newAlias = inputTextAlias.text;
         if (newAlias.Length == 0 || newAlias.ToLower() == "new alias") return;
         PlayerPrefs.SetString("alias", newAlias);
-        GameManager.Instance.user.alias = newAlias;
+        GameSession.Instance.user.alias = newAlias;
         textAlias.text = newAlias;
         aliasEditWindow.SetActive(false);
-        LoadCanvasText(GameManager.Instance.user);
+        LoadCanvasText();
     }
 
 }

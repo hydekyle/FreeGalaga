@@ -15,28 +15,16 @@ public class TitleScreen : MonoBehaviour
 
     private void Start()
     {
-        Invoke("StartGame", 3f);
+        Invoke("StartGame", 0.1f);
     }
 
     public void BTN_Play()
-    {
-        StartGame();
-        // if (!loading)
-        // {
-        //     image.sprite = historySprite;
-        //     loading = true;
-        //     historyGO.SetActive (true);
-        // }
-    }
-
-    public void BTN_PlayNow()
     {
         StartGame();
     }
 
     void StartGame()
     {
-        titleImage.color = new Color(255f, 255f, 255f, 0.5f);
         SceneManager.LoadScene("MainLevel");
     }
 

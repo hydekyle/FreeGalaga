@@ -18,7 +18,7 @@ public class MiniBoss : MonoBehaviour
     private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        stats.health = GameManager.Instance.gameConfiguration.miniBossHealth;
+        stats.health = GameSession.Instance.gameConfiguration.miniBossHealth;
     }
 
     private void FixedUpdate()
@@ -72,7 +72,7 @@ public class MiniBoss : MonoBehaviour
 
     void Die()
     {
-        CanvasManager.Instance.AddScore(1000);
+        GameManager.Instance.AddScore(1000);
         boss.gameObject.SetActive(true);
         StopAllCoroutines();
         GameManager.Instance.ExplosionBigAtPosition(transform.position, Color.magenta);
@@ -83,7 +83,7 @@ public class MiniBoss : MonoBehaviour
     public void GetStrike(int strikeDamage)
     {
         stats.health -= strikeDamage;
-        CanvasManager.Instance.AddScore(strikeDamage);
+        GameManager.Instance.AddScore(strikeDamage);
         if (stats.health <= 0) Die();
         else
         {
