@@ -35,9 +35,19 @@ public class AudioManager : MonoBehaviour
         enemySource.PlayOneShot(clip);
     }
 
+    public void PlayAudioTyping()
+    {
+        playerSource.PlayOneShot(scriptableSounds.basicShot);
+    }
+
     public void PlayButtonClick()
     {
         PlayAudioPlayer(scriptableSounds.buttonClick);
+    }
+
+    public void PlayRetroPunch()
+    {
+        PlayAudioPlayer(scriptableSounds.retroPunch);
     }
 
     public void PlayBlop()

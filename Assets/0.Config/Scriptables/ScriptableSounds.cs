@@ -21,4 +21,5 @@ public class ScriptableSounds : ScriptableObject
     public AudioClip theWin;
     public AudioClip buttonClick;
     public AudioClip blop;
+    public AudioClip retroPunch;
 }

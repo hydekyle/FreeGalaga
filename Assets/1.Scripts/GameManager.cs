@@ -71,7 +71,7 @@ public class GameManager : MonoBehaviour
         SetLives(GameSession.Instance.gameConfiguration.livesPerCredit);
         player.stats.movementVelocity = GameSession.Instance.gameConfiguration.playerMovementSpeed / 4f;
         player.stats.shootCooldown = GameSession.Instance.gameConfiguration.playerAttackSpeed / 4f;
-        player.GetComponent<SpriteRenderer>().enabled = true;
+        player.gameObject.SetActive(true);
         CanvasManager.Instance.SetScoreUI(0);
     }
 

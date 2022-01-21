@@ -162,7 +162,7 @@ public class CanvasManager : MonoBehaviour
 
     public void BTN_Start()
     {
-        AudioManager.Instance.PlayButtonClick();
+        AudioManager.Instance.PlayRetroPunch();
         StartGame();
     }
 
@@ -198,6 +198,7 @@ public class CanvasManager : MonoBehaviour
 
     public void BTN_CloseMainStory()
     {
+        AudioManager.Instance.PlayRetroPunch();
         FadeOutMainStory();
         ShowStartGameMessage();
     }
@@ -226,11 +227,13 @@ public class CanvasManager : MonoBehaviour
     public GameObject informationUI;
     public void BTN_InformationBack()
     {
+        AudioManager.Instance.PlayButtonClick();
         informationUI.SetActive(false);
     }
 
     public void BTN_Information()
     {
+        AudioManager.Instance.PlayRetroPunch();
         GameManager.Information();
     }
 
@@ -242,6 +245,7 @@ public class CanvasManager : MonoBehaviour
 
     public void BTN_Gameover()
     {
+        AudioManager.Instance.PlayRetroPunch();
         GameManager.Gameover();
     }
 

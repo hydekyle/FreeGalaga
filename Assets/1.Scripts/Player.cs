@@ -45,14 +45,14 @@ public class Player : MonoBehaviour
     void Update()
     {
         CheckBooster();
-        if (GameManager.Instance.gameIsActive) Control();
+        Control();
     }
 
     void Control()
     {
         if (Input.GetButton("Shoot") || Input.GetButton("ShootPad"))
         {
-            if (GameManager.Instance.lives > 0) Shoot();
+            if (GameManager.Instance.gameIsActive && GameManager.Instance.lives > 0) Shoot();
         }
         Vector3 deltaPosition = new Vector3(Mathf.Clamp(Input.GetAxis("Horizontal"), -1f, 1f), Mathf.Clamp(Input.GetAxis("Vertical"), -1f, 1f), 0);
         transform.position += deltaPosition * Time.deltaTime * stats.movementVelocity;

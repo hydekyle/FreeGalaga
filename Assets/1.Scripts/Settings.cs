@@ -51,6 +51,7 @@ public class Settings : MonoBehaviour
 
         MusicSetActive(isMusicEnabled);
         SoundSetActive(isSoundEnabled);
+        TouchpadSetActive(isTouchpadEnabled);
     }
 
     public void TouchpadEnabled()
@@ -112,7 +113,6 @@ public class Settings : MonoBehaviour
     void TouchpadSetActive(bool active)
     {
         CanvasManager.Instance.androidControls.gameObject.SetActive(active);
-        ResolveSetting();
     }
 
     public void OpenSettings()
