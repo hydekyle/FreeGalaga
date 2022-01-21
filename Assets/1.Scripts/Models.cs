@@ -10,9 +10,17 @@ public struct User
     public string alias;
 }
 
+[Serializable]
 public struct TopScore
 {
     public User[] users;
+}
+
+[Serializable]
+public struct GameDataResponse
+{
+    public GameConfiguration gameConfig;
+    public User userData;
 }
 
 [Serializable]
@@ -36,8 +44,7 @@ public struct GameServer
 {
     public string getHighScoresURL;
     public string updateScoreURL;
-    public string getUserDataURL;
-    public string getGameConfigURL;
+    public string getGameDataURL;
 }
 
 [Serializable]

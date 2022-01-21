@@ -24,22 +24,21 @@ public static class Helpers
         return hashString.PadLeft(32, '0');
     }
 
-    public static async UniTask<User> GetUserData()
+    public static async UniTask<GameDataResponse> GetGameData()
     {
         string id = PlayerPrefs.GetString("id");
-        var userData = await NetworkManager.GetUserDataByID(id);
+        var userData = await NetworkManager.GetGameDataByUserID(id);
         return userData;
     }
 
     public static GameServer GetGameServer()
     {
-        GameServer gameData = new GameServer();
+        GameServer gameServer = new GameServer();
         var serverURL = GameManager.Instance.serverURL;
-        gameData.getHighScoresURL = serverURL + "/getScores";
-        gameData.getUserDataURL = serverURL + "/getUserDataByID";
-        gameData.updateScoreURL = serverURL + "/updateScore";
-        gameData.getGameConfigURL = serverURL + "/getGameConfig";
-        return gameData;
+        gameServer.getHighScoresURL = serverURL + "/getScores";
+        gameServer.updateScoreURL = serverURL + "/updateScore";
+        gameServer.getGameDataURL = serverURL + "/getGameData";
+        return gameServer;
     }
 
     public static string GetEncryptedToken(string alias, int points)
@@ -48,5 +47,18 @@ public static class Helpers
         string token = "";
         token = (alias.Length * points + 7).ToString();
         return token;
+    }
+
+    public static GameConfiguration GetGameConfigOffline()
+    {
+        GameConfiguration gameConfig = new GameConfiguration();
+        gameConfig.livesPerCredit = 1;
+        gameConfig.playerMovementSpeed = 10;
+        gameConfig.playerAttackSpeed = 10;
+        gameConfig.storyLevelWaitTime = 0;
+        gameConfig.miniBossHealth = 1000;
+        gameConfig.finalBossHealth = 2000;
+        GameManager.Instance.showStories = false;
+        return gameConfig;
     }
 }

@@ -11357,7 +11357,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: b62931e1aea879c4db2efe00f698f8e1, type: 3}
   storiesUI: {fileID: 1351121005}
   informationText: {fileID: 737628849}
-  historyText: {fileID: 0}
+  historyText: {fileID: 275499402}
   storyImage: {fileID: 1978771328}
   mainStoryButton: {fileID: 683611435}
   aliasEditWindow: {fileID: 2074377940}
@@ -15337,15 +15337,15 @@ MonoBehaviour:
   enemyBombs: {fileID: 0}
   retryAvailable: 0
   gameIsActive: 0
-  gameData:
+  gameServer:
     getHighScoresURL: 
     updateScoreURL: 
     getUserDataURL: 
     getGameConfigURL: 
   user:
     avatar: 0
+    score: 0
     alias: 
-    score: 
   showStories: 0
 --- !u!4 &2140480312
 Transform:

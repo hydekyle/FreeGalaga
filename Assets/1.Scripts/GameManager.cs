@@ -41,7 +41,6 @@ public class GameManager : MonoBehaviour
     public bool gameIsActive = false;
     [HideInInspector]
     public GameServer gameServer;
-    [HideInInspector]
     public User user;
     float lastTimePowerUpDropped;
 
@@ -64,8 +63,9 @@ public class GameManager : MonoBehaviour
     async void Start()
     {
         gameServer = Helpers.GetGameServer();
-        gameConfiguration = await NetworkManager.GetGameConfiguration(gameServer);
-        user = await NetworkManager.GetUserDataByID(PlayerPrefs.GetString("id"));
+        var serverData = await NetworkManager.GetGameDataByUserID(PlayerPrefs.GetString("id"));
+        user = serverData.userData;
+        gameConfiguration = serverData.gameConfig;
         CanvasManager.Instance.ShowStartMenu(user);
     }
 
@@ -75,6 +75,7 @@ public class GameManager : MonoBehaviour
         AudioManager.Instance.PlayMainThemeMusic();
         LoadLevel(++activeLevelNumber);
         SpawnPlayer();
+        Settings.Instance.TouchpadEnabled();
     }
 
     void SpawnPlayer()
@@ -230,7 +231,16 @@ public class GameManager : MonoBehaviour
         player.gameObject.SetActive(false);
         EnemiesManager.Instance.StopEnemies();
         gameIsActive = false;
-        CanvasManager.Instance.SendScore(user.alias, CanvasManager.Instance.score);
+        SendScore();
+    }
+
+    public async void SendScore()
+    {
+        var score = CanvasManager.Instance.score;
+        GameSession.Instance.GameFinished();
+        GameManager.Instance.SaveScore(score);
+        var updateResponse = await NetworkManager.UpdateUserDataAndGetTopScore();
+        CanvasManager.Instance.ShowHighScores(updateResponse.users);
     }
 
     public void SaveScore(int score)
@@ -349,12 +359,6 @@ public class GameManager : MonoBehaviour
     public void ResetGame()
     {
         SceneManager.LoadScene("MainLevel");
-    }
-
-    public void ChangeAlias(string newAlias)
-    {
-        PlayerPrefs.SetString("alias", newAlias);
-        user.alias = newAlias;
     }
 
 }

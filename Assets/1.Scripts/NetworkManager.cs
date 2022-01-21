@@ -9,32 +9,37 @@ using Cysharp.Threading.Tasks;
 
 public static class NetworkManager
 {
-    public static async UniTask<bool> UpdateUserData(string alias, int score)
+    public static async UniTask<TopScore> UpdateUserDataAndGetTopScore()
     {
-        bool isNewRecord = false;
+        TopScore topScore = new TopScore();
         try
         {
+            var id = PlayerPrefs.GetString("id");
+            var alias = GameManager.Instance.user.alias;
+            var score = CanvasManager.Instance.score;
+            var avatar = GameManager.Instance.user.avatar;
             var token = Helpers.GetEncryptedToken(alias, score);
-            string url = String.Concat(GameManager.Instance.gameServer.updateScoreURL, String.Format("?alias={0}&score={1}&token={2}&id={3}&avatar={4}", alias, score, token, PlayerPrefs.GetString("id"), GameManager.Instance.user.avatar));
+            string url = String.Concat(GameManager.Instance.gameServer.updateScoreURL, String.Format("?alias={0}&score={1}&token={2}&id={3}&avatar={4}", alias, score, token, id, avatar));
             var webRequest = await UnityWebRequest.Get(url).SendWebRequest();
             if (webRequest.result == UnityWebRequest.Result.ConnectionError) throw new Exception("Can't connect to server");
-            isNewRecord = webRequest.downloadHandler.text == "1" ? true : false;
+            topScore = JsonUtility.FromJson<TopScore>(webRequest.downloadHandler.text);
         }
         catch (Exception err) { Debug.LogWarning(err.Message); }
-        return isNewRecord;
+        return topScore;
     }
 
-    public static async UniTask<User> GetUserDataByID(string id)
+    public static async UniTask<GameDataResponse> GetGameDataByUserID(string id)
     {
-        User user = new User();
+        GameDataResponse gameDataResponse = new GameDataResponse();
         try
         {
-            var url = GameManager.Instance.gameServer.getUserDataURL + "?id=" + id;
+            var url = GameManager.Instance.gameServer.getGameDataURL + "?id=" + id;
             var webRequest = await UnityWebRequest.Get(url).SendWebRequest();
             if (webRequest.result == UnityWebRequest.Result.ConnectionError) throw new Exception("Can't connect to database");
             if (webRequest.responseCode != 200) throw new Exception("User have not send any score yet");
-            var userDB = JsonUtility.FromJson<User>(webRequest.downloadHandler.text);
-            user = new User
+            gameDataResponse = JsonUtility.FromJson<GameDataResponse>(webRequest.downloadHandler.text);
+            var userDB = gameDataResponse.userData;
+            gameDataResponse.userData = new User
             {
                 alias = PlayerPrefs.HasKey("alias") ? PlayerPrefs.GetString("alias") : userDB.alias,
                 score = userDB.score,
@@ -43,58 +48,54 @@ public static class NetworkManager
         }
         catch (Exception err)
         {
-            // Generate a new user if we can't get userdata from db
+            // Load Local User and GameData
             Debug.LogWarning(err.Message);
-            user = new User
+            gameDataResponse.userData = new User
             {
                 alias = PlayerPrefs.HasKey("alias") ? PlayerPrefs.GetString("alias") : "Player-" + PlayerPrefs.GetString("id").Substring(0, 4),
                 score = PlayerPrefs.HasKey("score") ? PlayerPrefs.GetInt("score") : 0,
                 avatar = PlayerPrefs.HasKey("avatar") ? PlayerPrefs.GetInt("avatar") : 1
             };
         }
-        return user;
+        if (gameDataResponse.gameConfig.playerMovementSpeed == 0) gameDataResponse.gameConfig = Helpers.GetGameConfigOffline();
+        return gameDataResponse;
     }
 
-    public static async UniTask<TopScore> GetHighScores()
-    {
-        TopScore topScore = new TopScore();
-        try
-        {
-            var url = GameManager.Instance.gameServer.getHighScoresURL;
-            var webRequest = await UnityWebRequest.Get(url).SendWebRequest();
-            if (webRequest.result == UnityWebRequest.Result.ConnectionError) throw new Exception("Can't connect to ranking");
-            topScore = JsonUtility.FromJson<TopScore>(webRequest.downloadHandler.text);
-        }
-        catch (Exception err)
-        {
-            Debug.LogWarning(err.Message);
-            GameManager.Instance.ResetGame();
-        }
-        return topScore;
-    }
+    // public static async UniTask<GameConfiguration> GetGameConfiguration(GameServer gameServer)
+    // {
+    //     GameConfiguration gameConfig = new GameConfiguration();
+    //     try
+    //     {
+    //         var url = gameServer.getGameDataURL;
+    //         var webRequest = await UnityWebRequest.Get(url).SendWebRequest();
+    //         if (webRequest.result == UnityWebRequest.Result.ConnectionError) throw new Exception("Can't load GameConfig from remote server. Loading default settings.");
+    //         gameConfig = JsonUtility.FromJson<GameConfiguration>(webRequest.downloadHandler.text);
+    //     }
+    //     catch (Exception err)
+    //     {
+    //         Debug.LogWarning(err.Message);
 
-    public static async UniTask<GameConfiguration> GetGameConfiguration(GameServer gameServer)
-    {
-        GameConfiguration gameConfig = new GameConfiguration();
-        try
-        {
-            var url = gameServer.getGameConfigURL;
-            var webRequest = await UnityWebRequest.Get(url).SendWebRequest();
-            if (webRequest.result == UnityWebRequest.Result.ConnectionError) throw new Exception("Can't load GameConfig from remote server. Loading default settings.");
-            gameConfig = JsonUtility.FromJson<GameConfiguration>(webRequest.downloadHandler.text);
-        }
-        catch (Exception err)
-        {
-            Debug.LogWarning(err.Message);
-            gameConfig.livesPerCredit = 3;
-            gameConfig.playerMovementSpeed = 7;
-            gameConfig.playerAttackSpeed = 7;
-            gameConfig.storyLevelWaitTime = 0;
-            gameConfig.miniBossHealth = 1000;
-            gameConfig.finalBossHealth = 2000;
-            GameManager.Instance.showStories = false;
-        }
-        return gameConfig;
-    }
+    //     }
+    //     return gameConfig;
+    // }
+
+    // // We fetch high scores as response when player send score to avoid x2 calls
+    // public static async UniTask<TopScore> GetHighScores()
+    // {
+    //     TopScore topScore = new TopScore();
+    //     try
+    //     {
+    //         var url = GameManager.Instance.gameServer.getHighScoresURL;
+    //         var webRequest = await UnityWebRequest.Get(url).SendWebRequest();
+    //         if (webRequest.result == UnityWebRequest.Result.ConnectionError) throw new Exception("Can't connect to ranking");
+    //         topScore = JsonUtility.FromJson<TopScore>(webRequest.downloadHandler.text);
+    //     }
+    //     catch (Exception err)
+    //     {
+    //         Debug.LogWarning(err.Message);
+    //         GameManager.Instance.ResetGame();
+    //     }
+    //     return topScore;
+    // }
 
 }

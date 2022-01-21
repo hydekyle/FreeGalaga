@@ -13,7 +13,7 @@ public class CanvasManager : MonoBehaviour
 {
     public static CanvasManager Instance;
     public int score = 0;
-    int myHighScore, myRankPosition = 11;
+    int myRankPosition = 11;
     public Text scoreText, livesText, levelText, usernameText;
     public Image levelBackground;
     public Image barImage;
@@ -59,18 +59,9 @@ public class CanvasManager : MonoBehaviour
         else shieldIcon.fillAmount = Mathf.MoveTowards(shieldIcon.fillAmount, fillValue, Time.deltaTime * 3);
     }
 
-    public async void SendScore(string alias, int score)
+    public void ShowHighScores(User[] users)
     {
-        GameSession.Instance.GameFinished();
-        GameManager.Instance.SaveScore(score);
-        await NetworkManager.UpdateUserData(alias, score);
-        myHighScore = score; // Cache for sharing on FB
-        ShowHighScores();
-    }
-
-    public async void ShowHighScores()
-    {
-        var topUsers = (await NetworkManager.GetHighScores()).users.ToList();
+        var topUsers = users.ToList();
         Transform content = highScoresWindow.Find("Leader Board").Find("Scroll View").Find("Viewport").Find("Content");
         for (var x = 0; x < topUsers.Count; x++)
         {
@@ -84,7 +75,6 @@ public class CanvasManager : MonoBehaviour
             {
                 usernameText.color = Color.yellow;
                 myRankPosition = x + 1;
-                myHighScore = topUsers[x].score;
             }
             SetAndroidControls(false);
             highScoresWindow.gameObject.SetActive(true);
@@ -99,7 +89,7 @@ public class CanvasManager : MonoBehaviour
 
     public void BTN_SendScoreFB()
     {
-        GameManager.ShareScore(myRankPosition, myHighScore);
+        GameManager.ShareScore(myRankPosition, PlayerPrefs.GetInt("score"));
     }
 
     private void MakeRetryAvailable()
@@ -285,6 +275,7 @@ public class CanvasManager : MonoBehaviour
         GameManager.Instance.user.alias = newAlias;
         textAlias.text = newAlias;
         aliasEditWindow.SetActive(false);
+        LoadCanvasText(GameManager.Instance.user);
     }
 
 }

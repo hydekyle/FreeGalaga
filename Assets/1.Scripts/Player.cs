@@ -7,25 +7,22 @@ public class Player : MonoBehaviour
 {
     public GameObject shotPrefab;
     public Stats stats;
-    EZObjectPool playerShots;
     public float lastTimeShot;
-    float minPosX, maxPosX, minPosY = -5f, maxPosY = -2f;
-    AudioClip shotAudioClip;
-    Transform gunPoint;
     public BoxCollider2D myCollider;
     public int playerLevel = 1;
-    SpriteRenderer spriteRenderer;
-    public Shield shield;
     public float lastTimeAttackBoosted = -10f;
-    public bool vulnerable = true;
+    public Shield shield;
+    public bool vulnerable = true, isAttackBoosted = false;
+    float minPosX, maxPosX, minPosY = -5f, maxPosY = -2f;
     float attackBoostTime = 7f;
+    bool lastShootRight;
 
-    private void Start()
-    {
-        Initialize();
-    }
+    EZObjectPool playerShots;
+    Transform gunPoint;
+    SpriteRenderer spriteRenderer;
+    AudioClip shotAudioClip;
 
-    void Initialize()
+    void Start()
     {
         bulletMaterial.color = Color.white;
         minPosX = GameManager.Instance.minPosX;
@@ -48,12 +45,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         Control();
-        if (isAttackBoosted && Time.time > lastTimeAttackBoosted + attackBoostTime) DesactivateAttackBoost();
-        else
-        {
-            float fillValue = Mathf.Clamp((lastTimeAttackBoosted + attackBoostTime - Time.time) * 2 / 10f, 0f, 1f);
-            CanvasManager.Instance.SetFillBoostIcon(fillValue);
-        }
+        CheckBooster();
     }
 
     void Control()
@@ -62,10 +54,19 @@ public class Player : MonoBehaviour
         {
             if (GameManager.Instance.gameIsActive && GameManager.Instance.lives > 0) Shoot();
         }
-
         Vector3 deltaPosition = new Vector3(Mathf.Clamp(Input.GetAxis("Horizontal"), -1f, 1f), Mathf.Clamp(Input.GetAxis("Vertical"), -1f, 1f), 0);
         transform.position += deltaPosition * Time.deltaTime * stats.movementVelocity;
         transform.position = new Vector3(Mathf.Clamp(transform.position.x, minPosX, maxPosX), Mathf.Clamp(transform.position.y, minPosY, maxPosY), 0);
+    }
+
+    void CheckBooster()
+    {
+        if (isAttackBoosted && Time.time > lastTimeAttackBoosted + attackBoostTime) DesactivateAttackBoost();
+        else
+        {
+            float fillValue = Mathf.Clamp((lastTimeAttackBoosted + attackBoostTime - Time.time) * 2 / 10f, 0f, 1f);
+            CanvasManager.Instance.SetFillBoostIcon(fillValue);
+        }
     }
 
     public void Shoot()
@@ -78,7 +79,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    bool lastShootRight;
     Vector3 GetGunPosition()
     {
         if (playerLevel == 4)
@@ -182,13 +182,6 @@ public class Player : MonoBehaviour
         isAttackBoosted = false;
         bulletMaterial.color = Color.white;
     }
-
-    public bool isAttackBoosted = false;
-
-    // public bool IsAttackBoosted ()
-    // {
-    //     return Time.time < lastTimeAttackBoosted + 6.66f;
-    // }
 
     private void OnTriggerStay2D(Collider2D other)
     {
